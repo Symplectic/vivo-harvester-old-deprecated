@@ -1,0 +1,115 @@
+<!--
+ | Copyright (c) 2012 Symplectic Limited. All rights reserved.
+ | This Source Code Form is subject to the terms of the Mozilla Public
+ | License, v. 2.0. If a copy of the MPL was not distributed with this
+ | file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.co.symplectic</groupId>
+    <artifactId>vivo-harvester-external-dependencies</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>Vivo Harvester :: External Dependencies</name>
+    <organization>
+        <name>Symplectic</name>
+        <url>http://www.symplectic.co.uk/</url>
+    </organization>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-d2rmap-V03</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>d2rmap-V03.jar</file>
+                            <groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>d2rmap</artifactId>
+                            <version>V03</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-Gloze-1.01-beta2</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>Gloze-1.01-beta2.jar</file>
+                            <groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>Gloze</artifactId>
+                            <version>1.01-beta2</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-jettison-1.0-RC2</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>jettison-1.0-RC2.jar</file>
+                            <groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>jettison</artifactId>
+                            <version>1.0-RC2</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-oclc-harvester2-0.1.12</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>oclc-harvester2-0.1.12.jar</file>
+                            <groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>oclc-harvester2</artifactId>
+                            <version>0.1.12</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-servlet-api-2.3</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>servlet-api-2.3.jar</file>
+                            <groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>servlet-api</artifactId>
+                            <version>2.3</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <developers>
+        <developer>
+            <name>Graham Triggs</name>
+            <email>graham@symplectic.co.uk</email>
+            <organization>Symplectic</organization>
+            <organizationUrl>http://www.symplectic.co.uk</organizationUrl>
+            <roles>
+                <role>Head of Repository Systems</role>
+            </roles>
+        </developer>
+    </developers>
+</project>

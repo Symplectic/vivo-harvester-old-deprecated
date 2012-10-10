@@ -1,0 +1,70 @@
+<!--
+ | Copyright (c) 2012 Symplectic Limited. All rights reserved.
+ | This Source Code Form is subject to the terms of the Mozilla Public
+ | License, v. 2.0. If a copy of the MPL was not distributed with this
+ | file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.co.symplectic</groupId>
+    <artifactId>vivo-harvester-core</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>Vivo Harvester Core</name>
+    <organization>
+        <name>Symplectic</name>
+        <url>http://www.symplectic.co.uk/</url>
+    </organization>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-harvester-1.3</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>harvester-1.3.jar</file>
+							<pomFile>harvester-1.3.xml</pomFile>
+                            <!-- groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>d2rmap</artifactId>
+                            <version>V03</version>
+                            <packaging>jar</packaging -->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-harvester-1.5</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>harvester-1.5.jar</file>
+							<pomFile>harvester-1.5.xml</pomFile>
+                            <!-- groupId>org.vivoweb.harvester.dependencies</groupId>
+                            <artifactId>d2rmap</artifactId>
+                            <version>V03</version>
+                            <packaging>jar</packaging -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <developers>
+        <developer>
+            <name>Graham Triggs</name>
+            <email>graham@symplectic.co.uk</email>
+            <organization>Symplectic</organization>
+            <organizationUrl>http://www.symplectic.co.uk</organizationUrl>
+            <roles>
+                <role>Head of Repository Systems</role>
+            </roles>
+        </developer>
+    </developers>
+</project>

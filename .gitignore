@@ -1,0 +1,19 @@
+# Compiled files
+*.class
+
+# Package Files
+elements-harvester/*.jar
+elements-harvester/*.war
+elements-harvester/*.ear
+
+# IntelliJ IDEA
+.idea
+*.iml
+target/
+
+# Logs
+*.log
+
+# Generated file during execution
+elements-harvester/example-scripts/example-elements/data/
+elements-harvester/example-scripts/example-elements/logs/

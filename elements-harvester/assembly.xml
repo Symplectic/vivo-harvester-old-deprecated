@@ -1,0 +1,44 @@
+<!--
+ | Copyright (c) 2012 Symplectic Limited. All rights reserved.
+ | This Source Code Form is subject to the terms of the Mozilla Public
+ | License, v. 2.0. If a copy of the MPL was not distributed with this
+ | file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -->
+<assembly xmlns="http://maven.apache.org/POM/4.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.1.0-SNAPSHOT.xsd">
+    <id>distrib</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <baseDirectory>/</baseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>example-scripts</directory>
+            <outputDirectory>example-scripts</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/bin</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <scope>runtime</scope>
+            <!--
+                Each dependency that needs to be in the final package needs to be explicitly stated here
+
+                This includes the project artifact, which must always be present.
+
+                DO NOT INCLUDE org.vivoweb:harvester - this will be in the main VIVO harvester distribution
+            -->
+            <includes>
+                <include>uk.co.symplectic:elements-vivo-harvester</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
