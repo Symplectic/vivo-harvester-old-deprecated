@@ -1,6 +1,13 @@
 # Symplectic Elements Harvester Extensions for VIVO
 
-This is a 
+This is the second release of the VIVO Harvester extensions that enables the use of Symplectic Elements as a data source for VIVO.
+
+It contains the following enhancements over the first release:
+
+* More efficient Elements API usage
+* Faster transformation of Elements data to VIVO model
+* Improved handling of object relationships
+* Supports differential updates to a running VIVO instance
 
 ## Prerequisites
 
