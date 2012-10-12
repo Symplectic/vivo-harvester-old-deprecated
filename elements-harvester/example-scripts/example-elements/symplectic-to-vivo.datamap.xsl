@@ -10,7 +10,8 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:core="http://vivoweb.org/ontology/core#" xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:score='http://vivoweb.org/ontology/score#' xmlns:bibo='http://purl.org/ontology/bibo/'
-	xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'>
+	xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
+    xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'>
 
     <xsl:import href="symplectic-to-vivo.datamap.config.xsl" />
 
@@ -122,19 +123,27 @@
 			<xsl:value-of select="api:text" />
 		</bibo:placeOfPublication>
 	</xsl:template>
-	<xsl:template match="api:field[@name='authors']">
-		<svo:authors>
-			<xsl:apply-templates select="api:people" />
-		</svo:authors>
-	</xsl:template>
-	<xsl:template match="api:field[@name='editors']">
-		<svo:editors>
-			<xsl:apply-templates select="api:people" />
-		</svo:editors>
-	</xsl:template>
-	
-	
-	<xsl:template match="api:date" mode="dateTimeValue">
+    <xsl:template match="api:field[@name='authors']">
+        <!-- Can't convert these to svo:authors, as they are labels, not people objects -->
+        <symp:authors>
+            <xsl:apply-templates select="api:people" />
+        </symp:authors>
+    </xsl:template>
+    <xsl:template match="api:field[@name='editors']">
+        <!-- Can't convert these to svo:editors, as they are labels, not people objects -->
+        <symp:editors>
+            <xsl:apply-templates select="api:people" />
+        </symp:editors>
+    </xsl:template>
+    <xsl:template match="api:people/api:person">
+        <xsl:if test="preceding-sibling::*">
+            <xsl:text>, </xsl:text>
+        </xsl:if>
+        <xsl:value-of select="api:last-name" /><xsl:text> </xsl:text><xsl:value-of select="api:initials" />
+    </xsl:template>
+
+
+    <xsl:template match="api:date" mode="dateTimeValue">
 		<xsl:variable name="datePrecision">
 			<xsl:choose>
 				<xsl:when

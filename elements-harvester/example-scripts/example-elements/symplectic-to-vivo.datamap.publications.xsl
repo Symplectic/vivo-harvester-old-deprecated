@@ -39,7 +39,7 @@
                  xmlns:core='http://vivoweb.org/ontology/core#' xmlns:foaf='http://xmlns.com/foaf/0.1/'
                  xmlns:score='http://vivoweb.org/ontology/score#' xmlns:xs='http://www.w3.org/2001/XMLSchema#'
                  xmlns:svo='http://www.symplectic.co.uk/vivo/' xmlns:api='http://www.symplectic.co.uk/publications/api'
-                 xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'>
+                 xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/' xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'>
             <!--  Main publication object -->
             <rdf:Description rdf:about="{$baseURI}publication{@id}">
                 <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
