@@ -108,13 +108,14 @@ public class ElementsFetch implements RecordStreamOrigin {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
-                api.execute(feedQuery, new ElementsObjectHandler(objectStore, rdfStore, xslFilename));
+                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore, rdfStore, xslFilename);
+                objectHandler.setCurrentStaffOnly(currentStaffOnly);
+                api.execute(feedQuery, objectHandler);
             }
         }
 
         ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
         relationshipFeedQuery.setProcessAllPages(true);
-//        relationshipFeedQuery.setFullDetails(true);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
         ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(objectStore, rdfStore, xslFilename, objectsInRelationships);

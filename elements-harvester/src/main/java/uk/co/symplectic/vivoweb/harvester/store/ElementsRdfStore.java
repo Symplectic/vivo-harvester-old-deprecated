@@ -38,33 +38,37 @@ public class ElementsRdfStore {
     }
 
     public void pruneExcept(ElementsObjectCategory category, Set<String> idsToKeep) {
-        File objectDir = new File(dir, category.getSingular());
-        if (objectDir.exists()) {
-            pruneIn(objectDir, idsToKeep, null);
-        } else {
-            pruneIn(dir, idsToKeep, category.getSingular());
+        if (dir != null) {
+            File objectDir = new File(dir, category.getSingular());
+            if (objectDir.exists()) {
+                pruneIn(objectDir, idsToKeep, null);
+            } else {
+                pruneIn(dir, idsToKeep, category.getSingular());
+            }
         }
     }
 
     private void pruneIn(File dir, Set<String> idsToKeep, String prefix) {
         File[] files = dir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                pruneIn(file, idsToKeep, prefix);
-            } else if (StringUtils.isEmpty(prefix)) {
-                if (!idsToKeep.contains(file.getName())) {
-                    file.delete();
-                }
-            } else if (file.getName().startsWith(prefix)) {
-                boolean keepFile = false;
-                for (String id : idsToKeep) {
-                    if (file.getName().equals(prefix + id)) {
-                        keepFile = true;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    pruneIn(file, idsToKeep, prefix);
+                } else if (StringUtils.isEmpty(prefix)) {
+                    if (!idsToKeep.contains(file.getName())) {
+                        file.delete();
                     }
-                }
+                } else if (file.getName().startsWith(prefix)) {
+                    boolean keepFile = false;
+                    for (String id : idsToKeep) {
+                        if (file.getName().equals(prefix + id)) {
+                            keepFile = true;
+                        }
+                    }
 
-                if (!keepFile) {
-                    file.delete();
+                    if (!keepFile) {
+                        file.delete();
+                    }
                 }
             }
         }
