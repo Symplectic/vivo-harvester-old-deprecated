@@ -10,6 +10,7 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.StAXUtils;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
+import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -32,32 +33,8 @@ public class ElementsObjectStore {
         }
     }
 
-    public boolean hasObject(String category, String id) {
-        File file = dir;
-        if (dir == null) {
-            throw new IllegalStateException();
-        }
-
-        file = new File(file, category);
-        file = new File(file, id);
-
-        return file.exists();
-    }
-
-    public boolean hasRelationship(String id) {
-        File file = dir;
-        if (dir == null) {
-            throw new IllegalStateException();
-        }
-
-        file = new File(file, "relationship");
-        file = new File(file, id);
-
-        return file.exists();
-    }
-
-    public void prune(List<ElementsObjectCategory> keepAllInTheseCategories) {
-
+    public File generateResourceHandle(List<XMLAttribute> attributeList, String resourceLabel) {
+        return getResourceFile(XMLUtils.getObjectCategory(attributeList), resourceLabel, getId(attributeList));
     }
 
     public ElementsStoredObject retrieveObject(ElementsObjectCategory category, String id) {
@@ -71,9 +48,9 @@ public class ElementsObjectStore {
     }
 
     public ElementsStoredObject storeObject(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
-        File file = getObjectFile(getObjectCategory(attributeList), getId(attributeList));
+        File file = getObjectFile(XMLUtils.getObjectCategory(attributeList), getId(attributeList));
         store(file, reader, "object", docEncoding, docVersion);
-        return new ElementsStoredObject(file, getObjectCategory(attributeList), getId(attributeList));
+        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), getId(attributeList));
     }
 
     public ElementsStoredRelationship storeRelationship(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
@@ -100,17 +77,8 @@ public class ElementsObjectStore {
         }
     }
 
-    private ElementsObjectCategory getObjectCategory(List<XMLAttribute> attributeList) {
-        XMLAttribute catAttr = getAttribute(attributeList, null, "category");
-        if (catAttr != null) {
-            return ElementsObjectCategory.valueOf(catAttr.getValue());
-        }
-
-        return null;
-    }
-
     private String getId(List<XMLAttribute> attributeList) {
-        XMLAttribute idAttr = getAttribute(attributeList, null, "id");
+        XMLAttribute idAttr = XMLUtils.getAttribute(attributeList, null, "id");
         if (idAttr == null) {
             throw new IllegalStateException();
         }
@@ -122,23 +90,11 @@ public class ElementsObjectStore {
         return layoutStrategy.getObjectFile(dir, category, id);
     }
 
-    private File getRelationshipFile(String id) {
-        return layoutStrategy.getRelationshipFile(dir, id);
+    private File getResourceFile(ElementsObjectCategory category, String resourceLabel, String id) {
+        return layoutStrategy.getResourceFile(dir, category, resourceLabel, id);
     }
 
-    private XMLAttribute getAttribute(List<XMLAttribute> attributeList, String attributePrefix, String attributeName) {
-        for (XMLAttribute attribute : attributeList) {
-            if (attributePrefix != null) {
-                if (attributePrefix.equals(attribute.getPrefix()) && attributeName.equals(attribute.getName())) {
-                    return attribute;
-                }
-            }
-
-            if (attribute.getPrefix() == null && attributeName.equals(attribute.getName())) {
-                return attribute;
-            }
-        }
-
-        return null;
+    private File getRelationshipFile(String id) {
+        return layoutStrategy.getRelationshipFile(dir, id);
     }
 }

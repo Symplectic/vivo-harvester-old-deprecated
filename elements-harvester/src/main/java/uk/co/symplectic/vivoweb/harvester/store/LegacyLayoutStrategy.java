@@ -26,6 +26,20 @@ public class LegacyLayoutStrategy implements LayoutStrategy {
     }
 
     @Override
+    public File getResourceFile(File storeDir, ElementsObjectCategory category, String resourceLabel, String id) {
+        File file = storeDir;
+        if (storeDir == null || category == null) {
+            throw new IllegalStateException();
+        }
+
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        return new File(file, category.getSingular() + "-" + resourceLabel + id);
+    }
+
+    @Override
     public File getRelationshipFile(File storeDir, String id) {
         File file = storeDir;
         if (storeDir == null) {

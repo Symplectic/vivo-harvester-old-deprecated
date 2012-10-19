@@ -108,7 +108,7 @@ public class ElementsFetch implements RecordStreamOrigin {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
-                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore, rdfStore, xslFilename);
+                ElementsObjectHandler objectHandler = new ElementsObjectHandler(api, objectStore, rdfStore, xslFilename);
                 objectHandler.setCurrentStaffOnly(currentStaffOnly);
                 api.execute(feedQuery, objectHandler);
             }
@@ -118,7 +118,7 @@ public class ElementsFetch implements RecordStreamOrigin {
         relationshipFeedQuery.setProcessAllPages(true);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
-        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(objectStore, rdfStore, xslFilename, objectsInRelationships);
+        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(api, objectStore, rdfStore, xslFilename, objectsInRelationships);
         relationshipHandler.setCurrentStaffOnly(currentStaffOnly);
         relationshipHandler.setVisibleLinksOnly(visibleLinksOnly);
         api.execute(relationshipFeedQuery, relationshipHandler);

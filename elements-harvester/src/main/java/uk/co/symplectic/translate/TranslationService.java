@@ -25,10 +25,6 @@ public final class TranslationService {
 
     public TranslationService() {}
 
-    public static void translateToFile(File output) {
-
-    }
-
     public Templates compileSource(Node domNode) {
         return TranslationServiceImpl.compileSource(new DOMSource(domNode));
     }

@@ -7,19 +7,23 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
+import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectStreamHandler;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
+import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Templates;
 import javax.xml.xpath.XPathConstants;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.util.List;
 
 public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler {
@@ -29,9 +33,13 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
     private boolean currentStaffOnly = true;
 
     private TranslationService translationService = new TranslationService();
+    private ResourceFetchService fetchService     = new ResourceFetchService();
     private Templates template = null;
 
-    ElementsObjectHandler(ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename) {
+    private ElementsAPI elementsApi;
+
+    ElementsObjectHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename) {
+        this.elementsApi = elementsApi;
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         if (!StringUtils.isEmpty(xslFilename)) {
@@ -57,6 +65,17 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
             ElementsUserInfo userInfo = ElementsXMLParsers.parseUserInfo(object.getFile());
             if (userInfo != null) {
                 translateObject = userInfo.getIsCurrentStaff();
+                if (!StringUtils.isEmpty(userInfo.getPhotoUrl())) {
+                    if (elementsApi != null) {
+                        try {
+                            fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(attributes, "photo"));
+                        } catch (MalformedURLException mue) {
+                            // Log error
+                        }
+                    } else {
+                        // Log missing API object
+                    }
+                }
             }
         }
 

@@ -34,6 +34,12 @@ public class ElementsXMLParsers {
                         name = xmlReader.getLocalName();
                         if ("api".equals(prefix) && "is-current-staff".equals(name)) {
                             userInfo.setIsCurrentStaff(Boolean.parseBoolean(xmlReader.getElementText()));
+                        } else if ("api".equals(prefix) && "photo".equals(name)) {
+                            for (int attIdx = 0; attIdx < xmlReader.getAttributeCount(); attIdx++) {
+                                if ("href".equals(xmlReader.getAttributeLocalName(attIdx))) {
+                                    userInfo.setPhotoUrl(xmlReader.getAttributeValue(attIdx));
+                                }
+                            }
                         }
                         break;
                 }

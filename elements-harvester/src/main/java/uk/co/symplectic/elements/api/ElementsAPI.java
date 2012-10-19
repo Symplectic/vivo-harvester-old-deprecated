@@ -7,11 +7,14 @@
 package uk.co.symplectic.elements.api;
 
 import org.apache.axiom.om.util.StAXUtils;
+import org.apache.commons.io.IOUtils;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 
 import javax.xml.stream.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  * Main Elements API Client class
@@ -157,12 +160,39 @@ public class ElementsAPI {
 
         return info;
     }
-        /**
-        * Executes a single query. If paginated, may be called multiple times by execute()
-        * @param url
-        * @param parser
-        * @return
-        */
+
+    public boolean fetchResource(String resourceURL, OutputStream outputStream) {
+        InputStream apiResponse = null;
+        try {
+            ElementsAPIHttpClient apiClient;
+            if (isSecured) {
+                apiClient = new ElementsAPIHttpClient(resourceURL, username, password);
+            } else {
+                apiClient = new ElementsAPIHttpClient(resourceURL);
+            }
+
+            apiResponse = apiClient.executeGetRequest();
+            IOUtils.copy(apiResponse, outputStream);
+        } catch (IOException e) {
+        } finally {
+            if (apiResponse != null) {
+                try {
+                    apiResponse.close();
+                } catch (IOException e) {
+
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Executes a single query. If paginated, may be called multiple times by execute()
+     * @param url
+     * @param parser
+     * @return
+     */
     private ElementsFeedPagination executeQuery(String url, ElementsFeedEntryParser parser) {
         InputStream apiResponse = null;
         try {

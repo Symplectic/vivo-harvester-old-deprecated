@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 
 public class ElementsUserInfo {
     private boolean isCurrentStaff = true;
+    private String photoUrl = null;
 
     public ElementsUserInfo() {}
 
@@ -17,5 +18,13 @@ public class ElementsUserInfo {
 
     public void setIsCurrentStaff(boolean isCurrentStaff) {
         this.isCurrentStaff = isCurrentStaff;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

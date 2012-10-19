@@ -24,50 +24,9 @@ import java.util.concurrent.*;
  * Users should access via the TranslationService() object.
  */
 final class TranslationServiceImpl {
-    private static Logger log = LoggerFactory.getLogger(TranslationService.class);
+    private static Logger log = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
-    private final static int SHUTDOWN_WAIT_CYCLE_IN_SECS = 30;
-    private final static int SHUTDOWN_STALLED_WAIT_TIME_IN_SECS = 300;  /* 5 minutes */
-
-    private final static int MAX_STALLED_SHUTDOWN_CYCLES = (SHUTDOWN_STALLED_WAIT_TIME_IN_SECS / SHUTDOWN_WAIT_CYCLE_IN_SECS);
-
-    private static ExecutorService service;
-
-    static {
-        int poolSize = Runtime.getRuntime().availableProcessors();
-
-        /**
-         * Uses a ThreadFactory to create Daemon threads.
-         *
-         * By doing so, when the program exits the main() method - and regardless of whether
-         * System.exit() has been called - Java will not treat the active threads as blocking
-         * the termination.
-         *
-         * This means that the shutdown hook (which is added below) will be run, causing the
-         * graceful termination of the ExecutorService, and the running tasks.
-         *
-         * Without Daemon threads, the program will not terminate, nor will the shutdown hooks be called
-         * unless System.exit is called explicitly.
-         */
-        service = Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable runnable) {
-                Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-                thread.setDaemon(true);
-                return thread;
-            }});
-
-        /**
-         * Shutdown hook to gracefully terminate the ExecutorService. Gives any existing tasks a chance to
-         * complete before forcing termination.
-         */
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                shutdown();
-            }
-        });
-    }
+    private static ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("TranslationService");
 
     private TranslationServiceImpl() {}
 
@@ -100,23 +59,23 @@ final class TranslationServiceImpl {
     }
 
     static void translate(File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = service.submit(new TranslateTask(input, output, translationTemplates, callback));
+        Future<Boolean> result = wrapper.service().submit(new TranslateTask(input, output, translationTemplates, callback));
     }
 
     static void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = service.submit(new TranslateTask(inputStream, outputStream, translationTemplates, callback));
+        Future<Boolean> result = wrapper.service().submit(new TranslateTask(inputStream, outputStream, translationTemplates, callback));
     }
 
     static class TranslateTask implements Callable<Boolean> {
-        File inputFile = null;
-        File outputFile = null;
+        private File inputFile = null;
+        private File outputFile = null;
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+        private InputStream inputStream = null;
+        private OutputStream outputStream = null;
 
-        Templates templates;
+        private Templates templates;
 
-        PostTranslateCallback postTranslateCallback;
+        private PostTranslateCallback postTranslateCallback;
 
         TranslateTask(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
             this.inputFile = null;
@@ -222,31 +181,6 @@ final class TranslationServiceImpl {
     }
 
     static void shutdown() {
-        service.shutdown();
-        try {
-            int stalledCount = 0;
-            long lastCompletedTasks = 0;
-            while (!service.awaitTermination(SHUTDOWN_WAIT_CYCLE_IN_SECS, TimeUnit.SECONDS)) {
-                long completedTasks = ExecutorServiceUtils.getCompletedTaskCount(service);
-                if (completedTasks > -1 && completedTasks == lastCompletedTasks) {
-                    System.err.println("Waiting for shutdown of translation service. Completed " + completedTasks + " tasks out of " + ExecutorServiceUtils.getTaskCount(service));
-                    stalledCount++;
-
-                    if (stalledCount > MAX_STALLED_SHUTDOWN_CYCLES) {
-                        System.err.println("Waited " + SHUTDOWN_STALLED_WAIT_TIME_IN_SECS + " seconds without progress. Abandoning.");
-                        service.shutdownNow();
-                        if (!service.awaitTermination(SHUTDOWN_WAIT_CYCLE_IN_SECS, TimeUnit.SECONDS)) {
-                            break;
-                        }
-                    }
-                } else {
-                    stalledCount = 0;
-                }
-                lastCompletedTasks = completedTasks;
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        wrapper.shutdown();
     }
 }

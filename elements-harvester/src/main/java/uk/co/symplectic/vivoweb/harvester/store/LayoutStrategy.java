@@ -13,6 +13,8 @@ import java.io.File;
 public interface LayoutStrategy {
     public File getObjectFile(File storeDir, ElementsObjectCategory category, String id);
 
+    public File getResourceFile(File storeDir, ElementsObjectCategory category, String resourceLabel, String id);
+
     public File getRelationshipFile(File storeDir, String id);
 
     public String getRootNodeForType(String type);

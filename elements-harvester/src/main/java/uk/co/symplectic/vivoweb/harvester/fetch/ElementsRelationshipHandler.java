@@ -7,6 +7,7 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
+import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipStreamHandler;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
@@ -29,10 +30,13 @@ public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipS
     private TranslationService translationService = new TranslationService();
     private Templates template = null;
 
+    private ElementsAPI elementsApi;
+
     private boolean currentStaffOnly = true;
     private boolean visibleLinksOnly = true;
 
-    ElementsRelationshipHandler(ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename, ElementsObjectsInRelationships objectsInRelationships) {
+    ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename, ElementsObjectsInRelationships objectsInRelationships) {
+        this.elementsApi = elementsApi;
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         this.objectsInRelationships = objectsInRelationships;
