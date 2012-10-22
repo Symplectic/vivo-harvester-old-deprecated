@@ -6,5 +6,8 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.fetch.resources;
 
+import java.io.File;
+
 public interface PostFetchCallback {
+    public void fetchSuccess(File downloadedFile);
 }

@@ -30,6 +30,8 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
 
+    private File vivoImageDir = null;
+
     private boolean currentStaffOnly = true;
 
     private TranslationService translationService = new TranslationService();
@@ -51,8 +53,12 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
         }
     }
 
-    void setCurrentStaffOnly(boolean currentStaffOnly) {
+    public void setCurrentStaffOnly(boolean currentStaffOnly) {
         this.currentStaffOnly = currentStaffOnly;
+    }
+
+    public void setVivoImageDir(File vivoImageDir) {
+        this.vivoImageDir = vivoImageDir;
     }
 
     @Override
@@ -63,12 +69,14 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
 
         if (currentStaffOnly && object.getCategory() == ElementsObjectCategory.USER) {
             ElementsUserInfo userInfo = ElementsXMLParsers.parseUserInfo(object.getFile());
-            if (userInfo != null) {
+            if (userInfo != null && vivoImageDir != null) {
                 translateObject = userInfo.getIsCurrentStaff();
                 if (!StringUtils.isEmpty(userInfo.getPhotoUrl())) {
                     if (elementsApi != null) {
                         try {
-                            fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(attributes, "photo"));
+                            fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(attributes, "photo"),
+                                    new ElementsUserPhotosFetchCallback(attributes, rdfStore, vivoImageDir)
+                            );
                         } catch (MalformedURLException mue) {
                             // Log error
                         }

@@ -55,7 +55,6 @@
                         rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#Flag1Value1Thing" />
                 <rdf:type
                         rdf:resource="http://www.symplectic.co.uk/vivo/User" />
-                <vitro-public:mainImage rdf:resource="{$baseURI}{@username}-image"/>
 
                 <xsl:apply-templates select="api:records/api:record[1]" mode="objectReferences" />
                 <xsl:apply-templates select="api:organisation-defined-data" mode="objectReferences" />
@@ -64,37 +63,6 @@
                 <xsl:apply-templates select="api:records/api:record[1]" />
                 <xsl:apply-templates select="api:organisation-defined-data" />
 
-            </rdf:Description>
-            <!--  users Icon.
-                    The users Icon file is expected to already be present in
-                    /users/{@username}.jpg with the thumbnail at /users/thumbnails/user{@username}.thumbnail.jpg
-                    on the server. If hosting under Apache HTTPD, re-write rules should be put in place
-                    to ensure that a replacement image is created when those files are not found.
-                     -->
-            <rdf:Description rdf:about="{$baseURI}{@username}-image">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/public#File"/>
-                <vitro-public:downloadLocation rdf:resource="{$baseURI}{@username}-imageDownload"/>
-                <vitro-public:thumbnailImage rdf:resource="{$baseURI}{@username}-imageThumbnail"/>
-                <vitro-public:filename><xsl:value-of select="@username" />.jpg</vitro-public:filename>
-                <vitro-public:mimeType>image/jpg</vitro-public:mimeType>
-            </rdf:Description>
-            <rdf:Description rdf:about="{$baseURI}{@username}-imageDownload">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream"/>
-                <vitro-public:directDownloadUrl>    </vitro-public:directDownloadUrl>
-            </rdf:Description>
-            <rdf:Description rdf:about="{$baseURI}{@username}-imageThumbnail">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/public#File"/>
-                <vitro-public:downloadLocation rdf:resource="{$baseURI}{@username}-imageThumbnailDownload"/>
-                <vitro-public:filename><xsl:value-of select="@username" />.thumbnail.jpg</vitro-public:filename>
-                <vitro-public:mimeType>image/jpeg</vitro-public:mimeType>
-            </rdf:Description>
-            <rdf:Description rdf:about="{$baseURI}{@username}-imageThumbnailDownload">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream"/>
-                <vitro-public:directDownloadUrl>/users/thumbnails/<xsl:value-of select="@username" />.thumbnail.jpg</vitro-public:directDownloadUrl>
             </rdf:Description>
             <xsl:apply-templates select="api:records/api:record[1]" mode="objectEntries" />
             <xsl:apply-templates select="api:organisation-defined-data" mode="objectEntries" />

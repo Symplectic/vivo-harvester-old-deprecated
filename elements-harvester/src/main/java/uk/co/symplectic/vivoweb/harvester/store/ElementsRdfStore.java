@@ -11,12 +11,10 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.StAXUtils;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
+import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Set;
 
@@ -74,17 +72,8 @@ public class ElementsRdfStore {
         }
     }
 
-    private ElementsObjectCategory getObjectCategory(List<XMLAttribute> attributeList) {
-        XMLAttribute catAttr = getAttribute(attributeList, null, "category");
-        if (catAttr != null) {
-            return ElementsObjectCategory.valueOf(catAttr.getValue());
-        }
-
-        return null;
-    }
-
     public File getObjectFile(List<XMLAttribute> attributeList) {
-        return layoutStrategy.getObjectFile(dir, getObjectCategory(attributeList), getId(attributeList));
+        return layoutStrategy.getObjectFile(dir, XMLUtils.getObjectCategory(attributeList), getId(attributeList));
     }
 
     public File getRelationshipFile(List<XMLAttribute> attributeList) {
@@ -92,28 +81,34 @@ public class ElementsRdfStore {
 
     }
 
+    public boolean writeObjectExtra(List<XMLAttribute> attributeList, String type, String rdf) {
+        File file = layoutStrategy.getObjectExtraFile(dir, XMLUtils.getObjectCategory(attributeList), getId(attributeList), type);
+
+        if (file != null) {
+            try {
+                Writer writer = new BufferedWriter(new FileWriter(file));
+                try {
+                    writer.write(rdf);
+                } finally {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                }
+            } catch (IOException ioe) {
+                // Log error
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private String getId(List<XMLAttribute> attributeList) {
-        XMLAttribute idAttr = getAttribute(attributeList, null, "id");
+        XMLAttribute idAttr = XMLUtils.getAttribute(attributeList, null, "id");
         if (idAttr == null) {
             throw new IllegalStateException();
         }
 
         return idAttr.getValue();
-    }
-
-    private XMLAttribute getAttribute(List<XMLAttribute> attributeList, String attributePrefix, String attributeName) {
-        for (XMLAttribute attribute : attributeList) {
-            if (attributePrefix != null) {
-                if (attributePrefix.equals(attribute.getPrefix()) && attributeName.equals(attribute.getName())) {
-                    return attribute;
-                }
-            }
-
-            if (attribute.getPrefix() == null && attributeName.equals(attribute.getName())) {
-                return attribute;
-            }
-        }
-
-        return null;
     }
 }

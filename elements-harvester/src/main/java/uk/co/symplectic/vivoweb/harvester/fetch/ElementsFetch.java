@@ -23,6 +23,7 @@ import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public class ElementsFetch implements RecordStreamOrigin {
 
     public static final String ARG_CURRENT_STAFF_ONLY    = "currentStaffOnly";
     public static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
+
+    public static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
 
     public static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     public static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
@@ -68,6 +71,8 @@ public class ElementsFetch implements RecordStreamOrigin {
     private boolean useLegacyLayout = false;
     private boolean currentStaffOnly = true;
     private boolean visibleLinksOnly = true;
+
+    private File vivoImageDir = null;
 
     private String rawRecordStoreDir = RAW_RECORD_STORE;
     private String rdfRecordStoreDir = RDF_RECORD_STORE;
@@ -109,6 +114,7 @@ public class ElementsFetch implements RecordStreamOrigin {
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
                 ElementsObjectHandler objectHandler = new ElementsObjectHandler(api, objectStore, rdfStore, xslFilename);
+                objectHandler.setVivoImageDir(vivoImageDir);
                 objectHandler.setCurrentStaffOnly(currentStaffOnly);
                 api.execute(feedQuery, objectHandler);
             }
@@ -190,6 +196,18 @@ public class ElementsFetch implements RecordStreamOrigin {
         } else {
             visibleLinksOnly = true;
         }
+
+        String vivoImageDirArg = argList.get(ARG_VIVO_IMAGE_DIR);
+        if (!StringUtils.isEmpty(vivoImageDirArg)) {
+            vivoImageDir = new File(vivoImageDirArg);
+            if (vivoImageDir.exists()) {
+                if (!vivoImageDir.isDirectory()) {
+                    vivoImageDir = null;
+                }
+            } else {
+                vivoImageDir.mkdirs();
+            }
+        }
     }
 
     /**
@@ -217,6 +235,8 @@ public class ElementsFetch implements RecordStreamOrigin {
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_CURRENT_STAFF_ONLY).setDescription("Current Staff Only").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('z').setLongOpt(ARG_XSL_TEMPLATE).setDescription("XSL Template").withParameter(true, "CONFIG_FILE"));
         return parser;

@@ -7,14 +7,19 @@
  -->
 <Task>
     <Param name="apiEndpoint">http://touch.symplectic.co.uk/bu/insecure</Param>
-    <Param name="apiIsSecure">false</Param>
     <Param name="apiVersion">3.7</Param>
+
+    <Param name="apiIsSecure">false</Param>
+
     <Param name="queryObjects">users,publications,activities</Param><!-- ,grants -->
-    <Param name="paramGroups">3</Param>
+    <!-- Param name="paramGroups">3</Param -->
     <Param name="currentStaffOnly">true</Param>
     <Param name="visibleLinksOnly">true</Param>
+
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
     <Param name="xslTemplate">symplectic-to-vivo.datamap.xsl</Param>
+
+    <Param name="vivoImageDir">/path/to/vivo/images</Param>
 </Task>
 <!-- Param name="legacyLayout">true</Param -->

@@ -65,6 +65,10 @@ public final class ResourceFetchServiceImpl {
             retCode = api.fetchResource(url, os);
             os.close();
 
+            if (postFetchCallback != null) {
+                postFetchCallback.fetchSuccess(outputFile);
+            }
+
             return retCode;
         }
     }
