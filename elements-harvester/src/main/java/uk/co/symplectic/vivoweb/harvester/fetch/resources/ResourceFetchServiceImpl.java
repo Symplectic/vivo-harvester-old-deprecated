@@ -6,7 +6,6 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.fetch.resources;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.elements.api.ElementsAPI;
@@ -19,9 +18,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public final class ResourceFetchServiceImpl {
     private static Logger log = LoggerFactory.getLogger(ResourceFetchServiceImpl.class);

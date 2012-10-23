@@ -20,16 +20,20 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     List<XMLAttribute> objectAttributes = null;
     private ElementsRdfStore rdfStore = null;
     private File vivoImageDir;
+    private String imageUrlBase = "/harvestedImages/";
 
-    private static String baseUrl = "http://vivo.symplectic.co.uk/individual/";
+    private static String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
 
     private static int VIVO_THUMBNAIL_WIDTH = 200;
     private static int VIVO_THUMBNAIL_HEIGHT = 200;
 
-    public ElementsUserPhotosFetchCallback(List<XMLAttribute> objectAttributes, ElementsRdfStore rdfStore, File vivoImageDir) {
+    public ElementsUserPhotosFetchCallback(List<XMLAttribute> objectAttributes, ElementsRdfStore rdfStore, File vivoImageDir, String imageUrlBase) {
         this.objectAttributes = objectAttributes;
         this.rdfStore = rdfStore;
         this.vivoImageDir = vivoImageDir;
+        if (imageUrlBase != null) {
+            this.imageUrlBase = imageUrlBase;
+        }
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
         BufferedImage image = ImageUtils.readFile(downloadedFile);
         if (image != null) {
             // Write out full size image
-            File fullImageDir = new File(vivoImageDir, "fullImages");
+            File fullImageDir = new File(new File(vivoImageDir, "harvestedImages"), "fullImages");
             if (!fullImageDir.exists()) {
                 fullImageDir.mkdirs();
             }
@@ -46,7 +50,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             ImageUtils.writeFile(image, new File(fullImageDir, username + ".jpg"), "jpeg");
 
             // Write out thumbnail
-            File thumbnailDir = new File(vivoImageDir, "thumbnails");
+            File thumbnailDir = new File(new File(vivoImageDir, "harvestedImages"), "thumbnails");
             if (!thumbnailDir.exists()) {
                 thumbnailDir.mkdirs();
             }
@@ -73,9 +77,8 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + username + "-imageDownload\">");
-                photoXml.write("    <rdf:type rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/>");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream\"/>");
-                photoXml.write("    <vitro-public:directDownloadUrl>fullImages/" + username + ".jpg</vitro-public:directDownloadUrl>");
+                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "fullImages/" + username + ".jpg</vitro-public:directDownloadUrl>");
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + username + "-imageThumbnail\">");
@@ -87,9 +90,8 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + username + "-imageThumbnailDownload\">");
-                photoXml.write("    <rdf:type rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/>");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream\"/>");
-                photoXml.write("    <vitro-public:directDownloadUrl>thumbnails/" + username + ".thumbnail.jpg</vitro-public:directDownloadUrl>");
+                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "thumbnails/" + username + ".thumbnail.jpg</vitro-public:directDownloadUrl>");
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("</rdf:RDF>");

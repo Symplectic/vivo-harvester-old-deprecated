@@ -75,7 +75,7 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
                     if (elementsApi != null) {
                         try {
                             fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(attributes, "photo"),
-                                    new ElementsUserPhotosFetchCallback(attributes, rdfStore, vivoImageDir)
+                                    new ElementsUserPhotosFetchCallback(attributes, rdfStore, vivoImageDir, null)
                             );
                         } catch (MalformedURLException mue) {
                             // Log error
