@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>{{ page.title }} - {{ site.title }}</title>
+	{% if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
+	<meta name="HandheldFriendly" content="True" /> 
+	<meta name="MobileOptimized" content="320"/> 
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="cleartype" content="on" />
+	<link rel="shortcut icon" type="image/x-icon" href="{{ ASSET_PATH }}/img/favicon.png" />
+	<link rel="stylesheet" href="{{ ASSET_PATH }}/css/style.css" />
+	<link rel="stylesheet" href="{{ ASSET_PATH }}/css/font.css" />
+	<link rel="stylesheet" href="{{ ASSET_PATH }}/css/mobile.css" media="only screen and (max-width: 480px)" />
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script src="{{ ASSET_PATH }}/js/harvey.js"></script>
+	<script src="{{ ASSET_PATH }}/js/browser.js"></script>
+	<script src="{{ ASSET_PATH }}/js/easing.js"></script>
+	<script src="{{ ASSET_PATH }}/js/carousel.js"></script>
+	<script src="{{ ASSET_PATH }}/js/global.js?7"></script>
+</head>
+
+<body class="{% if page.template %}{{ page.template }}{% endif %}">
+
+	<div id="header">
+		<div class="header-inner">
+			<ul id="nav" class="cf">
+				<li class="logo"><a href="/">{{ site.title }}</a></li>
+				<li class="about"><!-- dropdown -->
+					<a href="/about/"><span>About</span></a>
+				</li>
+				<li class="jobs"><!-- dropdown -->
+					<a href="/jobs/"><span>Jobs</span></a>
+				</li>
+				<li class="product"><!-- dropdown -->
+					<a href="/product-tour/"><span>Product Tour</span></a>
+				</li>
+				<li class="support"><a href="http://support.symplectic.co.uk/"><span>Support</span></a></li>
+			</ul>
+		</div>
+	</div><!-- /#header -->
+
+	<div id="content">
+		<div class="content-inner">
+			{{ content }}
+		</div>
+	</div><!-- /#content -->
+
+	<div id="footer">
+		<div id="status">
+			<div class="footer-inner">
+				<div class="extrabox">
+					<div class="logo">
+						<a href="/">{{ site.title }}</a>
+					</div>
+					<div class="tweets">
+					</div>
+					<div class="legal">
+						<a href="/policies/privacy-notice.html">Privacy Notice |</a>
+						<a href="/policies/cookie-policy.html">Cookie Policy |</a>
+						<a href="/policies/terms-of-use.pdf">Terms</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="colophon">
+			<div class="footer-inner">
+				<div class="logo"><a href="http://www.digital-science.com/">Digital Science</a></div>
+				<div class="info">Symplectic Limited, a Digital Science portfolio company</div>
+			</div>
+		</div>
+	</div><!-- /#footer -->
+
+	{% include JB/analytics %}
+
+</body>
+</html>

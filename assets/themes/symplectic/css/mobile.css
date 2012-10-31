@@ -1,0 +1,659 @@
+/* 
+	DISPLAY: NONE
+*/
+.home-hero,
+#home-blue-line,
+.page-title span,
+#status .toolbox .contacts .demo,
+#status .extrabox,
+.page-aside,
+#product-extra-boxes,
+#timeline-content .quote p span::before{
+	display:none;
+}
+
+
+
+/* 
+	BACKGROUND-IMAGE: NONE
+*/
+
+.home-reasons li,
+body.our-process #content{
+	background-image:none;
+}
+body.home,
+body.product-index{
+	background-image:none !important;
+}
+
+
+
+/* 
+	DISPLAY: BLOCK
+*/
+img,
+.people-staff-list .info,
+.product-hero li{
+	display:block !important;
+}
+#process-content .odd h2 span,
+#process-content .even h2 span{
+	display:inline;
+}
+
+
+
+/* 
+	WIDTH: AUTO
+*/
+#header, 
+#content, 
+#footer,
+.header-inner, 
+.content-inner, 
+.footer-inner,
+#nav,
+#nav li,
+#header #nav li ul.dropdown,
+#header #nav li ul.dropdown li,
+#status .toolbox .menu,
+#status .toolbox .updates,
+#status .extrabox .logo,
+#colophon .logo,
+#colophon .info,
+#status .toolbox .updates,
+#status .toolbox .contacts,
+#status .extrabox .tweets,
+#status .toolbox .contacts .demo a,
+#status .extrabox .tweets #last-tweet, 
+.page-aside,
+.page-main,
+.index-block .media,
+body.jobs-index .index-listing,
+body.news-events-index .index-listing,
+.event-info-box dt,
+.event-info-box dd,
+.home-intro .media,
+.home-intro .contact,
+.home-reasons li,
+#home-territory-filter,
+.product-hero .col-left,
+.product-hero .col-right,
+.product-hero li,
+.product-modules li,
+.standard-package .image,
+.standard-package .text,
+#product-extra-boxes li,
+body.our-process .intro,
+#process-content li div,
+body.people .page-content,
+#timeline-content,
+.about-i-block .link,
+body.timeline .page-title h1,
+.about-offices-address li,
+body.product-sub .page-title h1,
+blockquote,
+.people-staff-list li{
+	width:auto;
+}
+
+
+
+/* 
+	HEIGHT: AUTO
+*/
+#nav,
+body.post .page-title,
+body.our-process #content,
+.home-reasons li,
+.home-uses-container,
+.people-staff-list .info,
+body.timeline .page-title,
+#process-content .odd,
+#process-content .even,
+.product-hero,
+.people-staff-list li.none-photo{
+	height:auto;
+}
+
+
+
+/* 
+	FLOAT: NONE
+*/
+img,
+#status .toolbox .menu,
+#status .toolbox .updates,
+#status .extrabox .logo,
+#colophon .logo,
+#colophon .info,
+#status .toolbox .updates,
+#status .toolbox .contacts,
+#status .extrabox .tweets,
+#status .toolbox .contacts .demo a,
+#status .toolbox .contacts .social,
+#colophon .logo a,
+#colophon .creator a,
+.page-aside,
+.page-main,
+.index-block .media,
+.event-info-box dt,
+.event-info-box dd,
+.home-intro .media,
+#home-territory-filter,
+.product-hero .col-left,
+.product-hero .col-right,
+.product-hero li,
+.product-modules li,
+#product-extra-boxes li,
+.standard-package .image,
+.standard-package .text,
+.home-intro .caption span,
+#home-uses-slides li,
+.page-content img,
+.about-i-block-even,
+.about-i-block .link,
+.about-offices-address li,
+.people-staff-list li{
+	float:none;
+	text-align:left;
+}
+
+
+
+/* 
+	MARGIN LEFT/RIGHT: AUTO
+*/
+#status .toolbox .contacts .social,
+body.jobs-index .page-title,
+body.news-events .page-title,
+.home-reasons h2 a,
+body.people .page-content,
+.home-intro .media,
+.page-content img,
+.product-modules li,
+body.timeline .page-title{
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
+
+/* 
+	POSITION: RELATIVE
+*/
+
+#status .toolbox .contacts .demo a,
+body.product-index .page-title,
+#process-content li div,
+#process-content .even div,
+#process-content .odd div{
+	position:relative;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;	
+}
+#footer{
+	position:relative !important;
+}
+
+
+/* 
+	FONT ADJUSTMENTS
+*/
+body{
+	font-size:0.8em;
+}
+h1,
+body.timeline .page-title h1,
+body.product-sub .page-title h1,
+#people-individual-page h2,
+.standard-package h2{
+	font-size:2.5em;
+}
+
+h2,
+.product-hero h2,
+#people-individual-page h3,
+.product-packages h2{
+	font-size:2em;
+}
+.product-hero li,{
+	font-size:1.1em;
+}
+
+#header, #footer{
+	font-size:1.2em;
+}
+.intro,
+.product-modules li,
+body.timeline .intro{
+	font-size:1em;
+}
+
+#nav li a span{
+	font-size:1.1em;
+	line-height:1.4em;
+}
+.home-intro .text {
+	font-size: 1.4em
+}
+
+
+/* 
+	MISC
+*/
+
+/* HTML */
+img{
+	display:block;
+	max-width:60%;
+}
+iframe{
+	z-index:1;
+}
+ul{
+	padding-left:0;
+}
+
+/* Layout  */
+#content{
+	position:initial;
+	padding:0 15px;
+}
+.page-wrapper{
+	padding:0;
+	margin-top:15px;
+}
+
+/* Nav  */
+
+#nav{
+	margin:0;
+	z-index:5;
+}
+
+	#nav .logo{
+		height:70px;
+		width:100%;
+		padding-bottom:0;
+	}
+		#nav .logo a{
+			background-image:url(../img/mobile/nav_home.png);
+			background-position:50% 0 !important;
+			background-color:black;
+		}
+
+	#nav li,
+	#nav .support{
+		position:initial;
+		width:25%;
+		height:auto;
+	}
+		#nav a{
+			padding: 8px 0px;
+			min-height:55px;
+			background-position:50% 37px;
+		}	
+			#nav a:hover,
+			#nav a:active,
+			#nav a.hover,
+			body.about #nav .about a,
+			body.jobs #nav .jobs a,
+			body.job-individual #nav .jobs a,
+			body.product #nav .product a	 {
+				background-position:50% -32px;
+			}
+			
+			#nav .about a {
+				background-image: url(../img/mobile/nav_about.png);
+			}
+
+			#nav .jobs a {
+				background-image: url(../img/mobile/nav_jobs.png);
+			}
+
+			#nav .product a {
+				background-image: url(../img/mobile/nav_product.png);
+			}
+
+			#nav .support a,
+			#nav .support a:hover {
+				background-image: url(../img/mobile/nav_support.png);
+				background-position:50% 37px;
+			}
+				body.support #nav .support a,
+				#nav .support a:hover{
+					background-position:50% -32px;
+				}
+		
+				#nav li a span{
+					font-size:1em;
+					line-height:1.1em;
+					letter-spacing:-1px;
+					padding:0;
+					background-color:rgba(255,255,255,0.8);
+				}
+					body.about #nav .about a span,
+					body.jobs #nav .jobs a span,
+					body.job-individual #nav .jobs a span,
+					body.product #nav .product a	span,
+					#nav li a:hover span{
+						background-color:#5F6273;
+					}
+					#nav li.support a:hover span{
+						background-color:transparent;
+					}
+
+
+		#header #nav li ul.dropdown{
+			width:100%;
+			top:auto;
+			padding:0;
+			border:0;
+		}
+			#header #nav li ul.dropdown li{
+				width: 100%;
+				margin:0;
+				border-width:0 0 1px 0;
+			}
+				#nav ul.dropdown a{
+					min-height:0;
+					-moz-background-size:auto;
+					-ie-background-size:auto;
+					-o-background-size:auto;
+					-webkit-background-size:auto;
+					background-size:auto;
+				}
+
+/* Misc furniture */
+.footer-inner{
+	padding:0 15px;
+}
+
+#status .toolbox .updates{
+	margin:0 -15px;
+}
+	#status .toolbox .updates h2{
+		padding:0 15px;
+	}
+	#status .toolbox .updates li{
+		margin:0;
+	}
+	#status .toolbox .updates ul a{
+		padding:15px;
+	}
+
+.contacts{
+	padding:15px 0;
+}
+
+.home-reasons li{
+	background-size:100% 100%;
+	background-position:-20px 0;
+	margin:15px 0;
+	padding-bottom:20px;
+}
+
+.home-reasons li div {
+	padding-right:0;
+	padding-left:0;
+}
+
+.home-uses-container{
+	background-image:none;
+	background-color:#747788;
+}
+#home-uses-slides ul{
+	padding:15px;
+}
+	#home-uses-slides li{
+		padding:15px 0;
+		text-align:center;
+	}
+		#home-uses-slides li img{
+			display:inline-block;
+		}
+		#home-uses-slides li a{
+			opacity:1;
+		}
+
+.about-i-block img{
+	margin-top:0;
+	margin-bottom:0;
+}
+
+.product-hero,
+body.product-index .page-wrapper{
+	padding:0;
+}
+
+.product-hero .col-left{
+	margin-top:0;
+	padding:0;
+	margin-bottom:20px;
+}
+.product-hero{
+	margin:0;
+}
+
+.people-staff-list{
+	padding:0;
+	margin:0;
+	background-color:transparent;
+}
+	.people-staff-list li{
+		padding: 0 0 15px 0;
+		overflow:hidden;
+	}
+		.people-staff-list li a{
+			overflow:hidden;
+		}
+		.people-staff-list .info{
+			margin-top:0;
+			padding:10px 0;
+			bottom:0;
+			top:auto;
+		}
+			.people-staff-list .none-photo .info{
+				
+			}
+
+			.people-staff-list .info .name,
+			.people-staff-list .info .occupation{
+				padding:0px;
+			}
+			.people-staff-list .avatar{
+				max-width:480px;
+				width:100%;
+			}
+body.timeline .page-title {
+	background:none;
+}
+
+body.timeline .page-title h1{
+	padding:0;
+}
+	body.timeline .page-title h1 br{
+		display:none;
+	}
+body.timeline .intro{
+	padding:0;	
+}
+
+
+body.product-sub .page-title,
+body.about-sub .page-title {
+	background-position:0 0;
+}
+
+body.product-sub .page-title h1{
+	padding:0;
+}
+
+body.our-process .intro{
+	padding-left:0;
+}
+
+#process-content li{
+	padding:15px 0;
+}
+
+body.people-individual .page-title{
+	padding-bottom:0;
+}
+
+#status .toolbox .updates h2 {
+	margin-bottom:0;
+}
+	#status .toolbox .updates h2 a{
+		padding-bottom:0;
+	}
+#status .toolbox .updates li:first-child{
+	background-image:none;
+}
+	#status .toolbox .updates li:first-child a{
+		padding-top:15px;
+	}
+
+#status .toolbox .menu{
+	padding-top:8px;
+}
+
+body.post .page-title{
+	margin-bottom:10px;
+}
+.link-box{
+	text-align:center;
+	display:block;
+}
+
+.standard-package{
+	margin:-15px -15px 15px -15px;
+	padding:15px;
+}
+
+/* timeline */
+#timeline-content p{
+	margin-bottom:5px;
+}
+#timeline-content .green p.l span,
+#timeline-content .red p.l span,
+#timeline-content .orange p.l span,
+#timeline-content .blue p.l span,
+#timeline-content .quote p.l span{ 
+	background:none;
+	padding-right:40px;
+}
+#timeline-content .green p.r span,
+#timeline-content .red p.r span ,
+#timeline-content .orange p.r span,
+#timeline-content .blue p.r span,
+#timeline-content .quote p.r span{ 
+	background:none;
+	padding-left:40px;
+}
+#timeline-content .green p.l span:after,
+#timeline-content .green p.r span:before,
+#timeline-content .red p.l span:after,
+#timeline-content .red p.r span:before,
+#timeline-content .orange p.l span:after,
+#timeline-content .orange p.r span:before,
+#timeline-content .blue p.l span:after,
+#timeline-content .blue p.r span:before{
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 40px;
+  height: 20px;
+  background-repeat:no-repeat;
+}
+#timeline-content .green p.r span:before,
+#timeline-content .red p.r span:before,
+#timeline-content .orange p.r span:before,
+#timeline-content .blue p.r span:before{
+	margin-left:-40px;
+}
+#timeline-content .green p.l span:after{
+	background-image: url(../img/timeline_green_left.png);
+	background-position:100% 0%;
+}
+#timeline-content .green p.r span:before{
+	background-image: url(../img/timeline_green_right.png);
+	background-position:0% 0%;
+}
+#timeline-content .red p.l span:after{
+	background-image: url(../img/timeline_red_left.png);
+	background-position:100% 0%;
+}
+#timeline-content .red p.r span:before{
+	background-image: url(../img/timeline_red_right.png);
+	background-position:0% 0%;
+}
+#timeline-content .orange p.l span:after{
+	background-image: url(../img/timeline_orange_left.png);
+	background-position:100% 0%;
+}
+#timeline-content .orange p.r span:before{
+	background-image: url(../img/timeline_orange_right.png);
+	background-position:0% 0%;
+}
+#timeline-content .blue p.l span:after{
+	background-image: url(../img/timeline_blue_left.png);
+	background-position:100% 0%;
+}
+#timeline-content .blue p.r span:before{
+	background-image: url(../img/timeline_blue_right.png);
+	background-position:0% 0%;
+}
+
+
+@media all and (-webkit-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	
+	#nav .logo a{
+		background-image:url(../img/mobile/nav_home@2x.png);
+		-moz-background-size:240px 70px;
+		-ie-background-size:240px 70px;
+		-o-background-size:240px 70px;
+		-webkit-background-size:240px 70px;
+		background-size:240px 70px;
+	}
+	#nav .about a {
+		background-image: url(../img/mobile/nav_about@2x.png);
+		-moz-background-size:28px 94px;
+		-ie-background-size:28px 94px;
+		-o-background-size:28px 94px;
+		-webkit-background-size:28px 94px;
+		background-size:28px 94px;
+	}
+
+	#nav .jobs a {
+		background-image: url(../img/mobile/nav_jobs@2x.png);
+		-moz-background-size:27px 92px;
+		-ie-background-size:27px 92px;
+		-o-background-size:27px 92px;
+		-webkit-background-size:27px 92px;
+		background-size:27px 92px;
+	}
+
+	#nav .product a {
+		background-image: url(../img/mobile/nav_product@2x.png);
+		-moz-background-size:15px 96px;
+		-ie-background-size:15px 96px;
+		-o-background-size:15px 96px;
+		-webkit-background-size:15px 96px;
+		background-size:15px 96px;
+	}
+
+	#nav .support a,
+	#nav .support a:hover {
+		background-image: url(../img/mobile/nav_support@2x.png);
+		-moz-background-size:29px 95px;
+		-ie-background-size:29px 95px;
+		-o-background-size:29px 95px;
+		-webkit-background-size:29px 95px;
+		background-size:29px 95px;
+	}
+}
