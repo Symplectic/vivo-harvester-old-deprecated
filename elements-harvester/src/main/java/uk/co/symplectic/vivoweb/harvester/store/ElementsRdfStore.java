@@ -9,6 +9,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.StAXUtils;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 import uk.co.symplectic.xml.XMLUtils;
@@ -73,16 +74,16 @@ public class ElementsRdfStore {
     }
 
     public File getObjectFile(List<XMLAttribute> attributeList) {
-        return layoutStrategy.getObjectFile(dir, XMLUtils.getObjectCategory(attributeList), getId(attributeList));
+        return layoutStrategy.getObjectFile(dir, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
     }
 
     public File getRelationshipFile(List<XMLAttribute> attributeList) {
-        return layoutStrategy.getRelationshipFile(dir, getId(attributeList));
+        return layoutStrategy.getRelationshipFile(dir, XMLUtils.getId(attributeList));
 
     }
 
-    public boolean writeObjectExtra(List<XMLAttribute> attributeList, String type, String rdf) {
-        File file = layoutStrategy.getObjectExtraFile(dir, XMLUtils.getObjectCategory(attributeList), getId(attributeList), type);
+    public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, String rdf) {
+        File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type);
 
         if (file != null) {
             try {
@@ -101,14 +102,5 @@ public class ElementsRdfStore {
         }
 
         return true;
-    }
-
-    private String getId(List<XMLAttribute> attributeList) {
-        XMLAttribute idAttr = XMLUtils.getAttribute(attributeList, null, "id");
-        if (idAttr == null) {
-            throw new IllegalStateException();
-        }
-
-        return idAttr.getValue();
     }
 }

@@ -13,10 +13,28 @@ import java.util.List;
 public final class XMLUtils {
     private XMLUtils() {}
 
+    public static String getId(List<XMLAttribute> attributeList) {
+        XMLAttribute idAttr = XMLUtils.getAttribute(attributeList, null, "id");
+        if (idAttr != null) {
+            return idAttr.getValue();
+        }
+
+        return null;
+    }
+
     public static ElementsObjectCategory getObjectCategory(List<XMLAttribute> attributeList) {
         XMLAttribute catAttr = getAttribute(attributeList, null, "category");
         if (catAttr != null) {
             return ElementsObjectCategory.valueOf(catAttr.getValue());
+        }
+
+        return null;
+    }
+
+    public static String getUsername(List<XMLAttribute> attributeList) {
+        XMLAttribute nameAttr = XMLUtils.getAttribute(attributeList, null, "username");
+        if (nameAttr != null) {
+            return nameAttr.getValue();
         }
 
         return null;

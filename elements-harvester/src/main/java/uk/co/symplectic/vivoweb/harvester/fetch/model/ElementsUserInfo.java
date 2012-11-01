@@ -4,13 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.fetch;
+package uk.co.symplectic.vivoweb.harvester.fetch.model;
 
-public class ElementsUserInfo {
+import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
+
+public class ElementsUserInfo extends ElementsObjectInfo {
     private boolean isCurrentStaff = true;
     private String photoUrl = null;
+    private String username = null;
 
-    public ElementsUserInfo() {}
+    public ElementsUserInfo(String id) {
+        super(ElementsObjectCategory.USER, id);
+    }
 
     public boolean getIsCurrentStaff() {
         return isCurrentStaff;
@@ -26,5 +32,13 @@ public class ElementsUserInfo {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.StAXUtils;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 import uk.co.symplectic.xml.XMLUtils;
@@ -33,8 +34,8 @@ public class ElementsObjectStore {
         }
     }
 
-    public File generateResourceHandle(List<XMLAttribute> attributeList, String resourceLabel) {
-        return getResourceFile(XMLUtils.getObjectCategory(attributeList), resourceLabel, getId(attributeList));
+    public File generateResourceHandle(ElementsObjectInfo objectInfo, String resourceLabel) {
+        return getResourceFile(objectInfo.getCategory(), resourceLabel, objectInfo.getId());
     }
 
     public ElementsStoredObject retrieveObject(ElementsObjectCategory category, String id) {
@@ -48,15 +49,15 @@ public class ElementsObjectStore {
     }
 
     public ElementsStoredObject storeObject(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
-        File file = getObjectFile(XMLUtils.getObjectCategory(attributeList), getId(attributeList));
+        File file = getObjectFile(XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
         store(file, reader, "object", docEncoding, docVersion);
-        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), getId(attributeList));
+        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
     }
 
     public ElementsStoredRelationship storeRelationship(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
-        File file = getRelationshipFile(getId(attributeList));
+        File file = getRelationshipFile(XMLUtils.getId(attributeList));
         store(file, reader, "relationship", docEncoding, docVersion);
-        return new ElementsStoredRelationship(file, getId(attributeList));
+        return new ElementsStoredRelationship(file, XMLUtils.getId(attributeList));
     }
 
     private void store(File destFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion) throws XMLStreamException {
@@ -75,15 +76,6 @@ public class ElementsObjectStore {
                 }
             }
         }
-    }
-
-    private String getId(List<XMLAttribute> attributeList) {
-        XMLAttribute idAttr = XMLUtils.getAttribute(attributeList, null, "id");
-        if (idAttr == null) {
-            throw new IllegalStateException();
-        }
-
-        return idAttr.getValue();
     }
 
     private File getObjectFile(ElementsObjectCategory category, String id) {

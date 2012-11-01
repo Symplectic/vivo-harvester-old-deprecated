@@ -21,6 +21,10 @@ public final class StAXUtils {
     private static XMLInputFactory xmlInputFactory = null;
     private static XMLOutputFactory xmlOutputFactory = null;
 
+    public static XMLInputFactory getXMLInputFactory() {
+        return org.apache.axiom.om.util.StAXUtils.getXMLInputFactory();
+    }
+
     public static List<XMLAttribute> getAttributes(XMLStreamReader xsr) {
         if (xsr.getEventType() != XMLStreamConstants.START_ELEMENT) {
             throw new IllegalStateException();

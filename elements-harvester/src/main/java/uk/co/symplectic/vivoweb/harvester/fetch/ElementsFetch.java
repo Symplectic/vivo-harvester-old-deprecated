@@ -114,8 +114,8 @@ public class ElementsFetch implements RecordStreamOrigin {
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
                 ElementsObjectHandler objectHandler = new ElementsObjectHandler(api, objectStore, rdfStore, xslFilename);
-                objectHandler.setVivoImageDir(vivoImageDir);
                 objectHandler.setCurrentStaffOnly(currentStaffOnly);
+                objectHandler.addObjectObserver(new ElementsUserPhotoRetrievalObserver(api, objectStore, rdfStore, vivoImageDir));
                 api.execute(feedQuery, objectHandler);
             }
         }

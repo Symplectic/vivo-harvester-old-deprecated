@@ -7,20 +7,13 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.PostTranslateCallback;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
-import javax.xml.xpath.*;
 import java.io.*;
-import java.util.Iterator;
 
 public class ElementsRelationshipTranslationCallback implements PostTranslateCallback {
     private File inputFile;
