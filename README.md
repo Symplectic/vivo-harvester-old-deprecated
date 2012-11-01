@@ -13,6 +13,10 @@ It contains the following enhancements over the first release:
 
 You must have the Java Development Kit and Maven 2+ installed.
 
+NOTE: You will need to have an official Oracle JDK - this is also true for the VIVO web application. There are some dependencies on libraries that are not included in OpenJDK.
+
+IMPORTANT: It has been found that JDK 1.7.0 (runtime build 1.7.0-b147) has a problem with the concurrency methods used. Please ensure that a more recent JDK is used (1.7.0_03 and upwards have been tested with no apparent issues).
+
 ## Usage
 
 Once you have cloned this repository, start a command line / terminal, and navigate to the 'dependencies' directory. From here, run the following command:
