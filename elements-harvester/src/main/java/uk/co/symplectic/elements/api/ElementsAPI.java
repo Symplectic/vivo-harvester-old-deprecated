@@ -6,15 +6,17 @@
  ******************************************************************************/
 package uk.co.symplectic.elements.api;
 
-import org.apache.axiom.om.util.StAXUtils;
 import org.apache.commons.io.IOUtils;
+import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 
-import javax.xml.stream.*;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 
 /**
  * Main Elements API Client class
@@ -226,8 +228,6 @@ public class ElementsAPI {
         XMLStreamReader atomReader = xmlInputFactory.createXMLStreamReader(response);
 
         while (atomReader.hasNext()) {
-            String prefix;
-            String name;
             switch (atomReader.getEventType()) {
                 case XMLStreamConstants.START_DOCUMENT:
                     parser.setEncoding(atomReader.getEncoding());
@@ -235,8 +235,8 @@ public class ElementsAPI {
                     break;
 
                 case XMLStreamConstants.START_ELEMENT:
-                    prefix = atomReader.getPrefix();
-                    name = atomReader.getLocalName();
+                    String prefix = atomReader.getPrefix();
+                    String name = atomReader.getLocalName();
                     if ("entry".equals(name)) {
                         parser.parseEntry(new XMLStreamFragmentReader(atomReader));
                     } else if ("api".equals(prefix) && "pagination".equals(name)) {
@@ -268,13 +268,9 @@ public class ElementsAPI {
                             }
                         }
                     }
-
-                    name = null;
                     break;
 
                 case XMLStreamConstants.END_ELEMENT:
-                    name = atomReader.getLocalName();
-                    name = null;
                     break;
             }
 

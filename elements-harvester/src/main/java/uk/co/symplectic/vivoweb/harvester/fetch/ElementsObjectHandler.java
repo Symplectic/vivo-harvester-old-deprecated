@@ -7,25 +7,24 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
-import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectStreamHandler;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUnkownObjectInfo;
+import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
-import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Templates;
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,18 +33,13 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
 
-    private File vivoImageDir = null;
-
     private boolean currentStaffOnly = true;
 
     private TranslationService translationService = new TranslationService();
     private ResourceFetchService fetchService     = new ResourceFetchService();
     private Templates template = null;
 
-    private ElementsAPI elementsApi;
-
-    ElementsObjectHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename) {
-        this.elementsApi = elementsApi;
+    ElementsObjectHandler(ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename) {
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         if (!StringUtils.isEmpty(xslFilename)) {
@@ -65,28 +59,20 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
         this.currentStaffOnly = currentStaffOnly;
     }
 
-    public void setVivoImageDir(File vivoImageDir) {
-        this.vivoImageDir = vivoImageDir;
-    }
-
     @Override
     public void handle(List<XMLAttribute> attributes, XMLStreamFragmentReader objectReader, String docEncoding, String docVersion) throws XMLStreamException {
         ElementsStoredObject object = objectStore.storeObject(attributes, objectReader, docEncoding, docVersion);
-        ElementsObjectInfo objectInfo = ElementsObjectInfo.create(object.getCategory(), object.getId());
 
         boolean translateObject = true;
 
         if (object.getCategory() == ElementsObjectCategory.USER) {
             if (currentStaffOnly) {
-                objectInfo = ElementsXMLParsers.parseUserInfo(object.getFile());
-                ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
+                ElementsUserInfo userInfo = (ElementsUserInfo)object.getObjectInfo();
                 translateObject = userInfo.getIsCurrentStaff();
             } else {
-                ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
+                ElementsUserInfo userInfo = (ElementsUserInfo)object.getObjectInfo();
                 userInfo.setUsername(XMLUtils.getUsername(attributes));
             }
-        } else {
-            objectInfo = ElementsObjectInfo.create(object.getCategory(), object.getId());
         }
 
         if (translateObject) {
@@ -108,7 +94,7 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
             translationService.translate(object.getFile(), outFile, template, new ElementsDeleteEmptyTranslationCallback(outFile));
 
             for (ElementsObjectObserver objectObserver : objectObservers) {
-                objectObserver.beingTranslated(objectInfo);
+                objectObserver.beingTranslated(object.getObjectInfo());
             }
         }
     }

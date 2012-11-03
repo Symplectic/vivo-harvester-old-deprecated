@@ -6,7 +6,6 @@
  ******************************************************************************/
 package uk.co.symplectic.xml;
 
-import org.apache.axiom.om.util.StAXUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -17,8 +16,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class XMLDocumentString implements XMLDocument {

@@ -6,10 +6,9 @@
  ******************************************************************************/
 package uk.co.symplectic.elements.api;
 
-import uk.co.symplectic.utils.StAXUtils;
+import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
-import uk.co.symplectic.xml.XMLDocument;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;

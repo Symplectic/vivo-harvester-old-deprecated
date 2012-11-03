@@ -8,13 +8,10 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.utils.StAXUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 import uk.co.symplectic.xml.XMLAttribute;
-import uk.co.symplectic.xml.XMLStreamFragmentReader;
 import uk.co.symplectic.xml.XMLUtils;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.util.List;
 import java.util.Set;
@@ -91,9 +88,7 @@ public class ElementsRdfStore {
                 try {
                     writer.write(rdf);
                 } finally {
-                    if (writer != null) {
-                        writer.close();
-                    }
+                    writer.close();
                 }
             } catch (IOException ioe) {
                 // Log error

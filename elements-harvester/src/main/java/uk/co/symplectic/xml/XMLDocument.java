@@ -12,8 +12,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public interface XMLDocument {
     Document getDocument() throws ParserConfigurationException, SAXException;

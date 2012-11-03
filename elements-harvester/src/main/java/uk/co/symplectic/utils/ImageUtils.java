@@ -63,9 +63,8 @@ public final class ImageUtils {
                                            boolean higherQuality)
     {
         Object hint = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-        int type = (img.getTransparency() == Transparency.OPAQUE) ?
-                BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-        BufferedImage ret = (BufferedImage)img;
+        int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        BufferedImage ret = img;
         int currentWidth, currentHeight;
         if (higherQuality) {
             // Use multi-step technique: start with original size, then

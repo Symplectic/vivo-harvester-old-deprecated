@@ -4,18 +4,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.fetch;
+package uk.co.symplectic.vivoweb.harvester.fetch.model;
+
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectId;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ElementsRelationshipInfo {
+    private String id = null;
     private boolean isVisible = true;
     private String userId = null;
     private List<ElementsObjectId> objectIds = new ArrayList<ElementsObjectId>();
 
     public ElementsRelationshipInfo() {}
+
+    private ElementsRelationshipInfo(String id) {
+        this.id = id;
+    }
+
+    public static ElementsRelationshipInfo create(String id) {
+        return new ElementsRelationshipInfo(id);
+    }
 
     public boolean getIsVisisble() {
         return isVisible;

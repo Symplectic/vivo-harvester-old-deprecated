@@ -10,12 +10,12 @@ import uk.co.symplectic.utils.ImageUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
-import uk.co.symplectic.xml.XMLAttribute;
-import uk.co.symplectic.xml.XMLUtils;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private ElementsUserInfo userInfo = null;

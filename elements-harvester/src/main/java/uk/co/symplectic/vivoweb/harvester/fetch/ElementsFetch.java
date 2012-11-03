@@ -25,30 +25,27 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class ElementsFetch implements RecordStreamOrigin {
-    public static final String ARG_RAWOUTPUT_DIRECTORY      = "rawOutput";
-    public static final String ARG_RDFOUTPUT_DIRECTORY      = "rdfOutput";
+    private static final String ARG_RAWOUTPUT_DIRECTORY      = "rawOutput";
+    private static final String ARG_RDFOUTPUT_DIRECTORY      = "rdfOutput";
 
-    public static final String ARG_XSL_TEMPLATE         = "xslTemplate";
+    private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
-    public static final String ARG_OUTPUT_LEGACY         = "legacyLayout";
-    public static final String ARG_ELEMENTS_API_ENDPOINT = "apiEndpoint";
-    public static final String ARG_ELEMENTS_API_SECURE   = "apiIsSecure";
-    public static final String ARG_ELEMENTS_API_VERSION  = "apiVersion";
-    public static final String ARG_ELEMENTS_API_USERNAME = "apiUsername";
-    public static final String ARG_ELEMENTS_API_PASSWORD = "apiPassword";
+    private static final String ARG_OUTPUT_LEGACY         = "legacyLayout";
+    private static final String ARG_ELEMENTS_API_ENDPOINT = "apiEndpoint";
+    private static final String ARG_ELEMENTS_API_SECURE   = "apiIsSecure";
+    private static final String ARG_ELEMENTS_API_VERSION  = "apiVersion";
+    private static final String ARG_ELEMENTS_API_USERNAME = "apiUsername";
+    private static final String ARG_ELEMENTS_API_PASSWORD = "apiPassword";
 
-    public static final String ARG_CURRENT_STAFF_ONLY    = "currentStaffOnly";
-    public static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
+    private static final String ARG_CURRENT_STAFF_ONLY    = "currentStaffOnly";
+    private static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
 
-    public static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
+    private static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
 
-    public static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
-    public static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
+    private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
+    private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
 
     // These should really be pulled from configuration
     private static final String RAW_RECORD_STORE = "data/raw-records";
@@ -113,7 +110,7 @@ public class ElementsFetch implements RecordStreamOrigin {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
-                ElementsObjectHandler objectHandler = new ElementsObjectHandler(api, objectStore, rdfStore, xslFilename);
+                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore, rdfStore, xslFilename);
                 objectHandler.setCurrentStaffOnly(currentStaffOnly);
                 objectHandler.addObjectObserver(new ElementsUserPhotoRetrievalObserver(api, objectStore, rdfStore, vivoImageDir));
                 api.execute(feedQuery, objectHandler);
@@ -149,7 +146,7 @@ public class ElementsFetch implements RecordStreamOrigin {
      * @param argList parsed argument list
      * @throws IOException error creating task
      */
-    protected ElementsFetch(ArgList argList) {
+    private ElementsFetch(ArgList argList) {
         // Extract arguments and assign to the fields
 //        this(argList.get("m"), argList.get("t"), argList.get("n"), argList.get("b"), RecordHandler.parseConfig(argList.get("o"), argList.getValueMap("O")));
         apiEndpoint = argList.get(ARG_ELEMENTS_API_ENDPOINT);

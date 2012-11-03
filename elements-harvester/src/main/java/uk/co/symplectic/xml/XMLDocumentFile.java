@@ -6,7 +6,6 @@
  ******************************************************************************/
 package uk.co.symplectic.xml;
 
-import org.apache.axiom.om.util.StAXUtils;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -17,7 +16,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class XMLDocumentFile implements XMLDocument {
     private File xmlFile;

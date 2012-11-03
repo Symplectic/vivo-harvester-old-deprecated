@@ -19,48 +19,45 @@ public class LegacyLayoutStrategy implements LayoutStrategy {
 
     @Override
     public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type) {
-        File file = storeDir;
         if (storeDir == null || category == null) {
             throw new IllegalStateException();
         }
 
-        if (!file.exists()) {
-            file.mkdirs();
+        if (!storeDir.exists()) {
+            storeDir.mkdirs();
         }
 
         if (!StringUtils.isEmpty(type)) {
-            return new File(file, category.getSingular() + id + "-" + type);
+            return new File(storeDir, category.getSingular() + id + "-" + type);
         } else {
-            return new File(file, category.getSingular() + id);
+            return new File(storeDir, category.getSingular() + id);
         }
     }
 
     @Override
     public File getResourceFile(File storeDir, ElementsObjectCategory category, String resourceLabel, String id) {
-        File file = storeDir;
         if (storeDir == null || category == null) {
             throw new IllegalStateException();
         }
 
-        if (!file.exists()) {
-            file.mkdirs();
+        if (!storeDir.exists()) {
+            storeDir.mkdirs();
         }
 
-        return new File(file, category.getSingular() + "-" + resourceLabel + id);
+        return new File(storeDir, category.getSingular() + "-" + resourceLabel + id);
     }
 
     @Override
     public File getRelationshipFile(File storeDir, String id) {
-        File file = storeDir;
         if (storeDir == null) {
             throw new IllegalStateException();
         }
 
-        if (!file.exists()) {
-            file.mkdirs();
+        if (!storeDir.exists()) {
+            storeDir.mkdirs();
         }
 
-        return new File(file, "relationship" + id);
+        return new File(storeDir, "relationship" + id);
     }
 
     public String getRootNodeForType(String type) {

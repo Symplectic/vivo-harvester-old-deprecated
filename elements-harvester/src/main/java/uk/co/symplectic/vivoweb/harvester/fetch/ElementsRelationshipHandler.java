@@ -9,16 +9,19 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipStreamHandler;
+import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
-import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Templates;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipStreamHandler {
@@ -76,7 +79,7 @@ public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipS
          *
          * In this case, we supply an object that will clean up any empty translation output.
          */
-        ElementsRelationshipTranslationCallback callback = new ElementsRelationshipTranslationCallback(relationship.getFile(), outFile, objectsInRelationships, objectStore);
+        ElementsRelationshipTranslationCallback callback = new ElementsRelationshipTranslationCallback(relationship, outFile, objectsInRelationships, objectStore);
         callback.setCurrentStaffOnly(currentStaffOnly);
         callback.setVisibleLinksOnly(visibleLinksOnly);
         translationService.translate(relationship.getFile(), outFile, template, callback);

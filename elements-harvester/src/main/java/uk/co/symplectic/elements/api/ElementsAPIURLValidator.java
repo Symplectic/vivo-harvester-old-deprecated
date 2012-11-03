@@ -11,10 +11,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 class ElementsAPIURLValidator {
-    String url;
-    boolean isSecured;
+    private String url;
+    private boolean isSecured;
 
-    String failureMsg = null;
+    private String failureMsg = null;
 
     ElementsAPIURLValidator(String url, boolean isSecured) {
         this.url = url;

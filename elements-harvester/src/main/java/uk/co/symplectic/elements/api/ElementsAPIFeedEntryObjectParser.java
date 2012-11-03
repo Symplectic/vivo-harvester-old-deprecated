@@ -6,7 +6,7 @@
  ******************************************************************************/
 package uk.co.symplectic.elements.api;
 
-import uk.co.symplectic.utils.StAXUtils;
+import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 

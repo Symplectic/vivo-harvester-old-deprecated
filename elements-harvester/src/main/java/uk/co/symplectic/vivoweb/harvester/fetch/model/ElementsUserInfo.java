@@ -7,7 +7,6 @@
 package uk.co.symplectic.vivoweb.harvester.fetch.model;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 
 public class ElementsUserInfo extends ElementsObjectInfo {
     private boolean isCurrentStaff = true;

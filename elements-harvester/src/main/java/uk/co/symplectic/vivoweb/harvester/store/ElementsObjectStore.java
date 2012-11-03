@@ -7,14 +7,15 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.utils.StAXUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
-import uk.co.symplectic.xml.XMLAttribute;
-import uk.co.symplectic.xml.XMLStreamFragmentReader;
-import uk.co.symplectic.xml.XMLUtils;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfoCache;
+import uk.co.symplectic.xml.*;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 public class ElementsObjectStore {
@@ -50,21 +51,26 @@ public class ElementsObjectStore {
 
     public ElementsStoredObject storeObject(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
         File file = getObjectFile(XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
-        store(file, reader, "object", docEncoding, docVersion);
-        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
+        ElementsObjectInfoObserver infoObserver = new ElementsObjectInfoObserver();
+        store(file, reader, "object", docEncoding, docVersion, infoObserver);
+        ElementsObjectInfoCache.put(infoObserver.getObjectInfo());
+        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList), infoObserver.getObjectInfo());
     }
 
     public ElementsStoredRelationship storeRelationship(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
         File file = getRelationshipFile(XMLUtils.getId(attributeList));
-        store(file, reader, "relationship", docEncoding, docVersion);
-        return new ElementsStoredRelationship(file, XMLUtils.getId(attributeList));
+        ElementsRelationshipInfoObserver infoObserver = new ElementsRelationshipInfoObserver();
+        store(file, reader, "relationship", docEncoding, docVersion, infoObserver);
+        return new ElementsStoredRelationship(file, XMLUtils.getId(attributeList), infoObserver.getRelationshipInfo());
     }
 
-    private void store(File destFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion) throws XMLStreamException {
+    private void store(File destFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
         Writer writer = null;
         try {
             writer = new FileWriter(destFile);
-            StAXUtils.fragmentToWriter(reader, writer, layoutStrategy.getRootNodeForType(type), docEncoding, docVersion);
+            XMLStreamProcessor processor = new XMLStreamProcessor();
+            processor.process(reader, new CopyToWriterObserver(writer, layoutStrategy.getRootNodeForType(type), docEncoding, docVersion), observer);
+
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         } finally {

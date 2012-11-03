@@ -12,7 +12,6 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.concurrent.Callable;
 
 public final class ResourceFetchService {
     private static Logger log = LoggerFactory.getLogger(ResourceFetchService.class);

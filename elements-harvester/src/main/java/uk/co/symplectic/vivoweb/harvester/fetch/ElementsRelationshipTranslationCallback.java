@@ -9,14 +9,16 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.PostTranslateCallback;
+import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
 
-import java.io.*;
+import java.io.File;
 
 public class ElementsRelationshipTranslationCallback implements PostTranslateCallback {
-    private File inputFile;
+    private ElementsStoredRelationship relationship;
     private File outputFile;
 
     private ElementsObjectStore objectStore;
@@ -26,8 +28,8 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
 
-    ElementsRelationshipTranslationCallback(File inputFile, File outputFile, ElementsObjectsInRelationships objectsInRelationships, ElementsObjectStore objectStore) {
-        this.inputFile  = inputFile;
+    ElementsRelationshipTranslationCallback(ElementsStoredRelationship relationship, File outputFile, ElementsObjectsInRelationships objectsInRelationships, ElementsObjectStore objectStore) {
+        this.relationship = relationship;
         this.outputFile = outputFile;
         this.objectsInRelationships = objectsInRelationships;
         this.objectStore = objectStore;
@@ -55,7 +57,7 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
         boolean deleteOutputFile = false;
         boolean includeRelationship = true;
 
-        ElementsRelationshipInfo relationshipInfo = ElementsXMLParsers.parseRelatonshipInfo(inputFile);
+        ElementsRelationshipInfo relationshipInfo = relationship.getRelationshipInfo();
 
         if (visibleLinksOnly && includeRelationship) {
             includeRelationship = relationshipInfo.getIsVisisble();
@@ -65,13 +67,8 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
             String userId = relationshipInfo.getUserId();
             if (!StringUtils.isEmpty(userId)) {
                 ElementsStoredObject user = objectStore.retrieveObject(ElementsObjectCategory.USER, userId);
-                if (user != null && user.getFile().exists()) {
-                    ElementsUserInfo userInfo = ElementsXMLParsers.parseUserInfo(user.getFile());
-                    if (userInfo != null) {
-                        includeRelationship = userInfo.getIsCurrentStaff();
-                    } else {
-                        includeRelationship = false;
-                    }
+                if (user != null && user.getObjectInfo() != null) {
+                    includeRelationship = ((ElementsUserInfo)user.getObjectInfo()).getIsCurrentStaff();
                 } else {
                     includeRelationship = false;
                 }

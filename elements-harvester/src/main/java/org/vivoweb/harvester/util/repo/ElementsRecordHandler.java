@@ -15,8 +15,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.*;
-import java.io.*;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -26,11 +31,13 @@ public class ElementsRecordHandler extends RecordHandler {
 	/**
 	 * SLF4J Logger
 	 */
-	protected static Logger log = LoggerFactory.getLogger(ElementsRecordHandler.class);
+	private static Logger log = LoggerFactory.getLogger(ElementsRecordHandler.class);
+
 	/**
 	 * The directory to store record files in
 	 */
-	protected String fileDir;
+	private String fileDir;
+
 	/**
 	 * The directory to store record metadata files in
 	 */
@@ -190,15 +197,18 @@ public class ElementsRecordHandler extends RecordHandler {
 		}
 
         private void addAllFiles(Set<String> listing, String prefix, File dir) {
-            if (dir.isDirectory()) {
-                for (File file : dir.listFiles()) {
-                    if (file.isDirectory()) {
-                        addAllFiles(listing, prefix + file.getName() + File.separator, file);
-                    } else {
-                        if (StringUtils.isEmpty(prefix)) {
-                            listing.add(file.getName());
+            if (dir != null && dir.isDirectory()) {
+                File[] files = dir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isDirectory()) {
+                            addAllFiles(listing, prefix + file.getName() + File.separator, file);
                         } else {
-                            listing.add(prefix + file.getName());
+                            if (StringUtils.isEmpty(prefix)) {
+                                listing.add(file.getName());
+                            } else {
+                                listing.add(prefix + file.getName());
+                            }
                         }
                     }
                 }

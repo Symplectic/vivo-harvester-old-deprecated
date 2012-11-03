@@ -85,11 +85,8 @@ public final class ResourceFetchServiceImpl {
 
         @Override
         public Boolean call() throws Exception {
-            Boolean retCode = Boolean.TRUE;
-
             // Not implemented yet
-
-            return retCode;
+            return Boolean.TRUE;
         }
     }
 

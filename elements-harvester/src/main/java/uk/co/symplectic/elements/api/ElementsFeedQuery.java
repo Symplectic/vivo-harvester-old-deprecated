@@ -10,7 +10,7 @@ abstract class ElementsFeedQuery {
     private boolean fullDetails = false;
     private boolean processAllPages = false;
 
-    public ElementsFeedQuery() {
+    ElementsFeedQuery() {
         super();
     }
 
