@@ -25,11 +25,11 @@ public class ElementsRelationshipInfoObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void preProcessing() throws XMLStreamException {
+    public void preProcessing() {
     }
 
     @Override
-    public void postProcessing() throws XMLStreamException {
+    public void postProcessing() {
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ElementsRelationshipInfoObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void observeStartElement(XMLElement element) {
+    public void observeElement(XMLElement element, String elementText) {
         if ("api".equals(element.getPrefix()) && "relationship".equals(element.getLocalName())) {
             relationshipInfo = ElementsRelationshipInfo.create(XMLUtils.getId(element.getAttributes()));
         } else if (relationshipInfo != null) {
@@ -60,14 +60,7 @@ public class ElementsRelationshipInfoObserver implements XMLStreamObserver {
 
                     relationshipInfo.addObjectId(new ElementsObjectId(catObj, id));
                 }
-            }
-        }
-    }
-
-    @Override
-    public void observeEndElement(XMLElement element, String elementText) {
-        if (relationshipInfo != null) {
-            if ("api".equals(element.getPrefix()) && "is-visible".equals(element.getLocalName())) {
+            } else if ("api".equals(element.getPrefix()) && "is-visible".equals(element.getLocalName())) {
                 relationshipInfo.setIsVisible(Boolean.parseBoolean(elementText));
             }
         }

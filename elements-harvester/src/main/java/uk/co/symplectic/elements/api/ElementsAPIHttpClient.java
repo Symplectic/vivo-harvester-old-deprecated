@@ -8,10 +8,12 @@ package uk.co.symplectic.elements.api;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 class ElementsAPIHttpClient {
     private String username;
@@ -23,7 +25,6 @@ class ElementsAPIHttpClient {
         this.url      = url;
         this.username = username;
         this.password = password;
-
     }
 
     ElementsAPIHttpClient(String url) {
@@ -31,16 +32,28 @@ class ElementsAPIHttpClient {
     }
 
     InputStream executeGetRequest() throws IOException {
+        // Prepare the HttpClient
         HttpClient client = new HttpClient(ElementsAPIConnectionManager.getInstance());
         if (username != null) {
-            UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+            client.getState().setCredentials(AuthScope.ANY, credentials);
         }
 
+        // Ensure we do not send request too frequently
+        regulateRequestFrequency();
+
+        // Issue get request
         GetMethod getMethod = new GetMethod(url);
         client.executeMethod(getMethod);
         return getMethod.getResponseBodyAsStream();
     }
 
+    /**
+     * Execute a get request,
+     * @param maxRetries Number of times to retry the request
+     * @return InputStream corresponding to the request body
+     * @throws IOException Failure reading the request stream
+     */
     InputStream executeGetRequest(int maxRetries) throws IOException {
         if (maxRetries == 0) {
             return executeGetRequest();
@@ -57,5 +70,26 @@ class ElementsAPIHttpClient {
         }
 
         throw lastError;
+    }
+
+    /**
+     * Delay method - ensure that requests are not sent too frequently to the Elements API,
+     * by calling this method prior to executing the HttpClient request.
+     */
+    private static Date lastRequest = null;
+    private static long intervalInMSecs = 250;
+    private static synchronized void regulateRequestFrequency() {
+        try {
+            if (lastRequest != null) {
+                Date current = new Date();
+                if (lastRequest.getTime() + intervalInMSecs > current.getTime()) {
+                    Thread.sleep(intervalInMSecs - (current.getTime() - lastRequest.getTime()));
+                }
+            }
+        } catch (InterruptedException ie) {
+            // Ignore an interrupt
+        } finally {
+            lastRequest = new Date();
+        }
     }
 }

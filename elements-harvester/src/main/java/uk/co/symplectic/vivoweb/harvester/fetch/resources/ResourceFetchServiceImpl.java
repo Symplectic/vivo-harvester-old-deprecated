@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
 public final class ResourceFetchServiceImpl {
     private static Logger log = LoggerFactory.getLogger(ResourceFetchServiceImpl.class);
 
-    private static ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("ResourceFestchService");
+    private static ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("ResourceFetchService");
 
     private ResourceFetchServiceImpl() {}
 

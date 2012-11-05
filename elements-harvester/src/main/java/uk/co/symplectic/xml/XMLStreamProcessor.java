@@ -17,6 +17,7 @@ public class XMLStreamProcessor {
             throw new IllegalStateException();
         }
 
+        XMLElement currentElement = null;
         StringBuilder elementTextBuilder = null;
 
         for (XMLStreamObserver observer : observers) {
@@ -34,34 +35,45 @@ public class XMLStreamProcessor {
 
             switch (xsr.getEventType()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    for (XMLStreamObserver observer : observers) {
-                        if (observer != null) {
-                            observer.observeStartElement(XMLElement.create(xsr));
+                    if (currentElement != null) {
+                        for (XMLStreamObserver observer : observers) {
+                            if (observer != null) {
+                                observer.observeElement(currentElement, null);
+                            }
                         }
                     }
 
+                    currentElement = XMLElement.create(xsr);
                     elementTextBuilder = new StringBuilder();
                     break;
 
                 case XMLStreamConstants.END_ELEMENT:
-                    String elementText = elementTextBuilder != null ? elementTextBuilder.toString() : null;
-                    elementTextBuilder = null;
+                    if (currentElement != null) {
+                        String elementText = elementTextBuilder != null ? elementTextBuilder.toString() : null;
 
-                    for (XMLStreamObserver observer : observers) {
-                        if (observer != null) {
-                            observer.observeEndElement(XMLElement.create(xsr), elementText);
+                        for (XMLStreamObserver observer : observers) {
+                            if (observer != null) {
+                                observer.observeElement(currentElement, elementText);
+                            }
                         }
                     }
 
+                    currentElement = null;
+                    elementTextBuilder = null;
                     break;
 
-                case XMLEvent.CDATA:
-                case XMLEvent.CHARACTERS:
-                case XMLEvent.SPACE:
-                case XMLEvent.ENTITY_REFERENCE:
+                case XMLStreamConstants.CDATA:
+                case XMLStreamConstants.CHARACTERS:
+                case XMLStreamConstants.SPACE:
+                case XMLStreamConstants.ENTITY_REFERENCE:
                     if (elementTextBuilder != null) {
                         elementTextBuilder.append(xsr.getText());
                     }
+                    break;
+
+                case XMLStreamConstants.PROCESSING_INSTRUCTION:
+                case XMLStreamConstants.COMMENT:
+                    // skip these
                     break;
             }
 

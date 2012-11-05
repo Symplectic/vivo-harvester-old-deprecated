@@ -28,7 +28,7 @@ public class ElementsRelationshipInfo {
         return new ElementsRelationshipInfo(id);
     }
 
-    public boolean getIsVisisble() {
+    public boolean getIsVisible() {
         return isVisible;
     }
 

@@ -45,7 +45,7 @@ public class XMLDocumentFile implements XMLDocument {
         try {
             XMLInputFactory xmlInputFactory = StAXUtils.getXMLInputFactory();
             return xmlInputFactory.createXMLStreamReader(new FileInputStream(xmlFile));
-        } catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fileNotFoundException) {
             return null;
         }
     }

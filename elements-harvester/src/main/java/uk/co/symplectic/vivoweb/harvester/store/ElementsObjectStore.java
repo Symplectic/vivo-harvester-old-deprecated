@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 
 public class ElementsObjectStore {
@@ -64,12 +65,19 @@ public class ElementsObjectStore {
         return new ElementsStoredRelationship(file, XMLUtils.getId(attributeList), infoObserver.getRelationshipInfo());
     }
 
-    private void store(File destFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
+    private void store(File outputFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
         Writer writer = null;
         try {
-            writer = new FileWriter(destFile);
+            writer = new FileWriter(outputFile);
             XMLStreamProcessor processor = new XMLStreamProcessor();
-            processor.process(reader, new CopyToWriterObserver(writer, layoutStrategy.getRootNodeForType(type), docEncoding, docVersion), observer);
+            processor.process(reader,
+                    new XMLStreamCopyToWriterObserver(writer,
+                            layoutStrategy.getRootNodeForType(type),
+                            docEncoding,
+                            docVersion,
+                            Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"))
+                    ),
+                    observer);
 
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);

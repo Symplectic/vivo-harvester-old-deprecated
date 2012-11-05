@@ -67,7 +67,7 @@ public class XMLElement {
     }
 
     public static XMLElement create(XMLStreamReader xmlStreamReader) throws XMLStreamException {
-        XMLElement element = null;
+        XMLElement element;
 
         if (xmlStreamReader.getEventType() == XMLStreamConstants.START_ELEMENT) {
             element = new XMLElement();

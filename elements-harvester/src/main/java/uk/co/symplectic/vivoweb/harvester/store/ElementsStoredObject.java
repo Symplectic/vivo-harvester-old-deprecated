@@ -76,8 +76,8 @@ public class ElementsStoredObject {
 
                     objectInfo = observer.getObjectInfo();
                     ElementsObjectInfoCache.put(objectInfo);
-                } catch (FileNotFoundException fnfe) {
-                } catch (XMLStreamException e) {
+                } catch (FileNotFoundException fileNotFoundException) {
+                } catch (XMLStreamException xmlStreamException) {
                 } finally {
                     if (inputStream != null) {
                         try { inputStream.close(); } catch (IOException e) {}

@@ -49,7 +49,7 @@ public class ElementsRecordHandler extends RecordHandler {
 	protected ElementsRecordHandler() {
 		// Nothing to do here
 		// Used by config construction
-		// Should only be used in conjuction with setParams()
+		// Should only be used in conjunction with setParams()
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ElementsRecordHandler extends RecordHandler {
 	/**
 	 * Sanitizes a record id
 	 * @param id the record id
-	 * @return null if no sanitization needed, else the new id
+	 * @return null if not needed, else the new id
 	 */
 	private String sanitizeID(String id) {
 		String s = id.replaceAll("\\n", "_-_NEWLINE_-_").replaceAll("\\r", "_-_RETURN_-_").replaceAll("\\t", "_-_TAB_-_").replaceAll(" ", "_-_SPACE_-_").replaceAll("\\\\", "_-_BACKSLASH_-_").replaceAll("/", "_-_FORWARDSLASH_-_").replaceAll(":", "_-_COLON_-_").replaceAll("\\*", "_-_STAR_-_").replaceAll("\\?", "_-_QUESTIONMARK_-_").replaceAll("\"", "_-_DOUBLEQUOTE_-_").replaceAll("<", "_-_LESSTHAN_-_").replaceAll(">", "_-_GREATERTHAN_-_").replaceAll("\\|", "_-_PIPE_-_");
@@ -183,7 +183,7 @@ public class ElementsRecordHandler extends RecordHandler {
 		/**
 		 * Iterator over the files
 		 */
-		Iterator<String> fileNameIter;
+		Iterator<String> fileNameIterator;
 
 		/**
 		 * Default Constructor
@@ -192,7 +192,7 @@ public class ElementsRecordHandler extends RecordHandler {
 			Set<String> allFileListing = new TreeSet<String>();
 			log.debug("Compiling list of records");
             addAllFiles(allFileListing, "", new File(fileDir));
-			this.fileNameIter = allFileListing.iterator();
+			this.fileNameIterator = allFileListing.iterator();
 			log.debug("List compiled");
 		}
 
@@ -217,13 +217,13 @@ public class ElementsRecordHandler extends RecordHandler {
 
 		@Override
 		public boolean hasNext() {
-			return this.fileNameIter.hasNext();
+			return this.fileNameIterator.hasNext();
 		}
 
 		@Override
 		public Record next() {
 			try {
-				return getRecord(this.fileNameIter.next());
+				return getRecord(this.fileNameIterator.next());
 			} catch(IOException e) {
 				throw new NoSuchElementException(e.getMessage());
 			}
@@ -277,9 +277,9 @@ public class ElementsRecordHandler extends RecordHandler {
 		}
 
 		/**
-		 * Parses the metadata file and return sortedset of recordmetadata
-		 * @param fmo the fileobject of the metadata file
-		 * @return sortedset of recordmetadata
+		 * Parses the metadata file and return sorted set of RecordMetaData
+		 * @param fmo the file object of the metadata file
+		 * @return sorted set of RecordMetaData
 		 * @throws javax.xml.parsers.ParserConfigurationException parser configured incorrectly
 		 * @throws org.xml.sax.SAXException error parsing xml
 		 * @throws java.io.IOException error reading xml
@@ -301,17 +301,17 @@ public class ElementsRecordHandler extends RecordHandler {
 				this.tempOperator = IllegalArgumentException.class;
 				this.tempMD5 = "";
 			} else if(qName.equalsIgnoreCase("Date")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("Operation")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("Operator")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("MD5")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("MetaDataRecordList")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("DateReadable")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else {
 				throw new SAXException("Unknown Tag: " + qName);
 			}
@@ -340,9 +340,9 @@ public class ElementsRecordHandler extends RecordHandler {
 			} else if(qName.equalsIgnoreCase("MD5")) {
 				this.tempMD5 = this.tempVal;
 			} else if(qName.equalsIgnoreCase("MetaDataRecordList")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else if(qName.equalsIgnoreCase("DateReadable")) {
-				// Do Nothing, but don't remove so it doesnt go to else clause
+				// Do Nothing, but don't remove so it doesn't go to else clause
 			} else {
 				throw new SAXException("Unknown Tag: " + qName);
 			}

@@ -60,7 +60,7 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
         ElementsRelationshipInfo relationshipInfo = relationship.getRelationshipInfo();
 
         if (visibleLinksOnly && includeRelationship) {
-            includeRelationship = relationshipInfo.getIsVisisble();
+            includeRelationship = relationshipInfo.getIsVisible();
         }
 
         if (currentStaffOnly && includeRelationship) {

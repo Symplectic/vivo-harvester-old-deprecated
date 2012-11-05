@@ -27,6 +27,10 @@ class ElementsAPIv3_7URLBuilder implements ElementsAPIURLBuilder {
             queryUrl.addParam("detail", "full");
         }
 
+        if (feedQuery.getPerPage() > 0) {
+            queryUrl.addParam("per-page", Integer.toString(feedQuery.getPerPage(), 100));
+        }
+
         if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {
             queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
         }
@@ -42,6 +46,10 @@ class ElementsAPIv3_7URLBuilder implements ElementsAPIURLBuilder {
 
         if (feedQuery.getFullDetails()) {
             queryUrl.addParam("detail", "full");
+        }
+
+        if (feedQuery.getPerPage() > 0) {
+            queryUrl.addParam("per-page", Integer.toString(feedQuery.getPerPage(), 100));
         }
 
         return queryUrl.toString();

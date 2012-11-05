@@ -19,24 +19,24 @@ public class ElementsObjectInfo {
 
     public static ElementsObjectInfo create(ElementsObjectCategory category, String id) {
         if (ElementsObjectCategory.ACTIVITY == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.CONCEPT == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.EQUIPMENT == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.GRANT == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.ORG_STRUCTURE == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.PROJECT == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.PUBLICATION == category) {
-            return new ElementsUnkownObjectInfo(category, id);
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.USER == category) {
             return new ElementsUserInfo(id);
         }
 
-        return new ElementsUnkownObjectInfo(category, id);
+        return new ElementsUnknownObjectInfo(category, id);
     }
 
     public ElementsObjectCategory getCategory() {

@@ -25,11 +25,11 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void preProcessing() throws XMLStreamException {
+    public void preProcessing() {
     }
 
     @Override
-    public void postProcessing() throws XMLStreamException {
+    public void postProcessing() {
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void observeStartElement(XMLElement element) {
+    public void observeElement(XMLElement element, String elementText) {
         if ("api".equals(element.getPrefix()) && "object".equals(element.getLocalName())) {
             objectInfo = ElementsObjectInfo.create(XMLUtils.getObjectCategory(element.getAttributes()), XMLUtils.getId(element.getAttributes()));
             if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
@@ -54,17 +54,9 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
                             }
                         }
                     }
+                } else if ("api".equals(element.getPrefix()) && "is-current-staff".equals(element.getLocalName())) {
+                    userInfo.setIsCurrentStaff(Boolean.parseBoolean(elementText));
                 }
-            }
-        }
-    }
-
-    @Override
-    public void observeEndElement(XMLElement element, String elementText) {
-        if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
-            ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
-            if ("api".equals(element.getPrefix()) && "is-current-staff".equals(element.getLocalName())) {
-                userInfo.setIsCurrentStaff(Boolean.parseBoolean(elementText));
             }
         }
     }

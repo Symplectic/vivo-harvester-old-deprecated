@@ -27,8 +27,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class ElementsFetch implements RecordStreamOrigin {
-    private static final String ARG_RAWOUTPUT_DIRECTORY      = "rawOutput";
-    private static final String ARG_RDFOUTPUT_DIRECTORY      = "rdfOutput";
+    private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
+    private static final String ARG_RDF_OUTPUT_DIRECTORY = "rdfOutput";
 
     private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
@@ -97,6 +97,9 @@ public class ElementsFetch implements RecordStreamOrigin {
         // When retrieving objects, always get the full record
         feedQuery.setFullDetails(true);
 
+        // Get 100 objects per request
+        feedQuery.setPerPage(100);
+
         // Load all pages, not just one
         feedQuery.setProcessAllPages(true);
 
@@ -119,6 +122,7 @@ public class ElementsFetch implements RecordStreamOrigin {
 
         ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
         relationshipFeedQuery.setProcessAllPages(true);
+        relationshipFeedQuery.setPerPage(100);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
         ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(api, objectStore, rdfStore, xslFilename, objectsInRelationships);
@@ -131,7 +135,7 @@ public class ElementsFetch implements RecordStreamOrigin {
         for (String category : apiObjects.split("\\s*,\\s*")) {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null && eoCategory != ElementsObjectCategory.USER) {
-                // Delete the 'unkept' RDF objects
+                // Delete the RDF objects not marked to be kept
                 rdfStore.pruneExcept(eoCategory, objectsInRelationships.get(eoCategory));
             }
         }
@@ -215,8 +219,8 @@ public class ElementsFetch implements RecordStreamOrigin {
     private static ArgParser getParser(String appName) {
         //RecordHandler.parseConfig(argList.get("o"), argList.getValueMap("O"))
         ArgParser parser = new ArgParser(appName);
-        parser.addArgument(new ArgDef().setShortOption('r').setLongOpt(ARG_RAWOUTPUT_DIRECTORY).setDescription("Raw RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDFOUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setShortOption('r').setLongOpt(ARG_RAW_OUTPUT_DIRECTORY).setDescription("Raw RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
 

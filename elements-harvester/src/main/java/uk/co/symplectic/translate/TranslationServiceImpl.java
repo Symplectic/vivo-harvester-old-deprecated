@@ -44,8 +44,8 @@ final class TranslationServiceImpl {
         TransformerFactory factory = null;
         try {
             factory =  TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
-        } catch (TransformerFactoryConfigurationError tfce) {
-            log.warn("Unable to obtain Saxon XSLT factory. Attempting fallback to default.", tfce);
+        } catch (TransformerFactoryConfigurationError transformerFactoryConfigurationError) {
+            log.warn("Unable to obtain Saxon XSLT factory. Attempting fallback to default.", transformerFactoryConfigurationError);
         }
 
         if (null == factory) {

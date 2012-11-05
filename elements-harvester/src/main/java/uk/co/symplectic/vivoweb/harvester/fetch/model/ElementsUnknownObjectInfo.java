@@ -8,8 +8,8 @@ package uk.co.symplectic.vivoweb.harvester.fetch.model;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 
-public class ElementsUnkownObjectInfo extends ElementsObjectInfo {
-    ElementsUnkownObjectInfo(ElementsObjectCategory category, String id) {
+public class ElementsUnknownObjectInfo extends ElementsObjectInfo {
+    ElementsUnknownObjectInfo(ElementsObjectCategory category, String id) {
         super(category, id);
     }
 }

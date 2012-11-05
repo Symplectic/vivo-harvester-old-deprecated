@@ -64,7 +64,7 @@ public class ElementsStoredRelationship {
                     processor.process(xmlReader, observer);
 
                     relationshipInfo = observer.getRelationshipInfo();
-                } catch (FileNotFoundException fnfe) {
+                } catch (FileNotFoundException fileNotFoundException) {
                 } catch (XMLStreamException e) {
                 } finally {
                     if (inputStream != null) {

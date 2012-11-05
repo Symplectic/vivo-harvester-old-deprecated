@@ -6,37 +6,58 @@
  ******************************************************************************/
 package uk.co.symplectic.xml;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class CopyToWriterObserver implements XMLStreamObserver {
+public class XMLStreamCopyToWriterObserver implements XMLStreamObserver {
+    /**
+     * SLF4J Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(XMLStreamCopyToWriterObserver.class);
+
     private Writer writer = null;
     private XMLStreamWriter xsw = null;
     private String rootElement = null;
     private String docEncoding = null;
     private String docVersion = null;
 
-    public CopyToWriterObserver(Writer writer) {
+    private List<XMLNamespace> namespaces = null;
+
+    public XMLStreamCopyToWriterObserver(Writer writer) {
         this.writer = writer;
     }
 
-    public CopyToWriterObserver(Writer writer, String rootElement, String docEncoding, String docVersion) {
+    public XMLStreamCopyToWriterObserver(Writer writer, String rootElement, String docEncoding, String docVersion, List<XMLNamespace> namespaces) {
         this.writer = writer;
         this.rootElement = rootElement;
         this.docEncoding = docEncoding;
         this.docVersion = docVersion;
+        if (namespaces != null) {
+            this.namespaces = new ArrayList<XMLNamespace>(namespaces.size());
+            for (XMLNamespace namespace : namespaces) {
+                if (namespace != null) {
+                    this.namespaces.add(new XMLNamespace(namespace.getPrefix(), namespace.getURI()));
+                }
+            }
+        }
     }
 
-    public CopyToWriterObserver(XMLStreamWriter xmlStreamWriter) {
+    public XMLStreamCopyToWriterObserver(XMLStreamWriter xmlStreamWriter) {
         this.xsw = xmlStreamWriter;
     }
 
-    public CopyToWriterObserver(XMLStreamWriter xmlStreamWriter, String rootElement, String docEncoding, String docVersion) {
+    public XMLStreamCopyToWriterObserver(XMLStreamWriter xmlStreamWriter, String rootElement, String docEncoding, String docVersion) {
         this.xsw = xmlStreamWriter;
         this.rootElement = rootElement;
         this.docEncoding = docEncoding;
@@ -44,24 +65,41 @@ public class CopyToWriterObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void preProcessing() throws XMLStreamException {
-        if (writer != null && xsw == null) {
-            xsw = StAXUtils.getXMLOutputFactory().createXMLStreamWriter(writer);
+    public void preProcessing() {
+        try {
+            if (writer != null && xsw == null) {
+                xsw = StAXUtils.getXMLOutputFactory().createXMLStreamWriter(writer);
+            }
+        } catch (XMLStreamException xse) {
+            log.error("Unable to create XMLStreamWriter", xse);
         }
 
-        if (rootElement != null) {
-            xsw.writeStartDocument(docEncoding, docVersion);
-            xsw.writeStartElement(rootElement);
-            xsw.writeNamespace("", "http://www.symplectic.co.uk/vivo/");
-            xsw.writeNamespace("api", "http://www.symplectic.co.uk/publications/api");
+        try {
+            if (xsw != null && rootElement != null) {
+                xsw.writeStartDocument(docEncoding, docVersion);
+                xsw.writeStartElement(rootElement);
+                if (namespaces != null) {
+                    for (XMLNamespace namespace : namespaces) {
+                        if (namespace != null) {
+                            xsw.writeNamespace(namespace.getPrefix(), namespace.getURI());
+                        }
+                    }
+                }
+            }
+        } catch (XMLStreamException xse) {
+            log.error("Unable to write start of document", xse);
         }
     }
 
     @Override
-    public void postProcessing() throws XMLStreamException {
-        if (rootElement != null) {
-            xsw.writeEndElement();
-            xsw.writeEndDocument();
+    public void postProcessing() {
+        try {
+            if (rootElement != null) {
+                xsw.writeEndElement();
+                xsw.writeEndDocument();
+            }
+        } catch (XMLStreamException xse) {
+            log.error("Unable to write end of document", xse);
         }
     }
 
@@ -128,10 +166,6 @@ public class CopyToWriterObserver implements XMLStreamObserver {
     }
 
     @Override
-    public void observeStartElement(XMLElement element) {
-    }
-
-    @Override
-    public void observeEndElement(XMLElement element, String elementText) {
+    public void observeElement(XMLElement element, String elementText) {
     }
 }
