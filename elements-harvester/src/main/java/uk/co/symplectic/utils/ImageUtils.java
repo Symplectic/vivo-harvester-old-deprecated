@@ -109,4 +109,20 @@ public final class ImageUtils {
 
         return ret;
     }
+
+    public static int getTargetHeight(int currentWidth, int currentHeight, int targetWidth) {
+        return calculateSecondaryDimension(currentWidth, currentHeight, targetWidth);
+    }
+
+    public static int getTargetWidth(int currentWidth, int currentHeight, int targetHeight) {
+        return calculateSecondaryDimension(currentHeight, currentWidth, targetHeight);
+    }
+
+    private static int calculateSecondaryDimension(int currentX, int currentY, int targetX) {
+        if (currentX != targetX) {
+            return (targetX * currentY) / currentX;
+        }
+
+        return currentY;
+    }
 }

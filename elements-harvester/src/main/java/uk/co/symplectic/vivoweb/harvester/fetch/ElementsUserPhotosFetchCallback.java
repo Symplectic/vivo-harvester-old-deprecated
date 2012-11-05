@@ -55,7 +55,8 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 thumbnailDir.mkdirs();
             }
 
-            ImageUtils.writeFile(ImageUtils.getScaledInstance(image, VIVO_THUMBNAIL_WIDTH, VIVO_THUMBNAIL_HEIGHT, true), new File(thumbnailDir, userInfo.getUsername() + ".thumbnail.jpg"), "jpeg");
+            int targetHeight = ImageUtils.getTargetHeight(image.getWidth(), image.getHeight(), VIVO_THUMBNAIL_WIDTH);
+            ImageUtils.writeFile(ImageUtils.getScaledInstance(image, VIVO_THUMBNAIL_WIDTH, targetHeight, true), new File(thumbnailDir, userInfo.getUsername() + ".thumbnail.jpg"), "jpeg");
 
             // Write out XML
             Writer photoXml = new StringWriter();
