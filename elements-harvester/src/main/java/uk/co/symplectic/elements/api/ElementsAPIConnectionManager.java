@@ -14,6 +14,11 @@ class ElementsAPIConnectionManager {
     private static HttpConnectionManager connectionManager;
     private static HttpConnectionManagerParams params = null;
 
+    static {
+        params = new HttpConnectionManagerParams();
+        params.setConnectionTimeout(30000);
+    }
+
     private ElementsAPIConnectionManager() {}
 
     static HttpConnectionManager getInstance() {
