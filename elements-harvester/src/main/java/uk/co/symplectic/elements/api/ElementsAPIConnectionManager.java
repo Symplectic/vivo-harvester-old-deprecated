@@ -17,6 +17,7 @@ class ElementsAPIConnectionManager {
     static {
         params = new HttpConnectionManagerParams();
         params.setConnectionTimeout(30000);
+        params.setSoTimeout(60000);
     }
 
     private ElementsAPIConnectionManager() {}
