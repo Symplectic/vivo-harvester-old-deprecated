@@ -62,7 +62,7 @@
         <xsl:call-template name="outputRDF">
             <xsl:with-param name="content">
                 <rdf:Description rdf:about="{$baseURI}{$username}">
-                    <core:overview><xsl:value-of select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-details']/api:text"/></core:overview>
+                    <core:overview><xsl:value-of select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-description']/api:text"/></core:overview>
                 </rdf:Description>
             </xsl:with-param>
         </xsl:call-template>
