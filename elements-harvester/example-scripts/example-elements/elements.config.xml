@@ -6,10 +6,11 @@
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
 <Task>
-    <Param name="apiEndpoint">http://touch.symplectic.co.uk/bu/insecure</Param>
-    <Param name="apiVersion">3.7</Param>
-
+    <Param name="apiEndpoint">http://touch.symplectic.co.uk:8391/publications-api/insecure/v3.7.16</Param>
+    <Param name="apiVersion">3.7.16</Param>
     <Param name="apiIsSecure">false</Param>
+
+    <Param name="vivoImageDir">/vivo/example-elements/data/images</Param>
 
     <Param name="queryObjects">users,publications,activities</Param><!-- ,grants -->
     <!-- Param name="paramGroups">3</Param -->
@@ -19,7 +20,4 @@
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
     <Param name="xslTemplate">symplectic-to-vivo.datamap.xsl</Param>
-
-    <Param name="vivoImageDir">/path/to/vivo/data/uploads</Param>
 </Task>
-<!-- Param name="legacyLayout">true</Param -->

@@ -32,6 +32,7 @@
                         xmlns:core='http://vivoweb.org/ontology/core#'
                         xmlns:api='http://www.symplectic.co.uk/publications/api'
                         xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
+                        xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'
                         >
                     <xsl:variable name="publicationID" select="api:related[@direction='from']/api:object/@id" />
                     <xsl:variable name="userID" select="api:related[@direction='to']/api:object/@username" />

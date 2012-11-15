@@ -6,11 +6,11 @@
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
 <xsl:stylesheet version="2.0"
-	xmlns:svo="http://www.symplectic.co.uk/vivo/" xmlns:api="http://www.symplectic.co.uk/publications/api"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:core="http://vivoweb.org/ontology/core#" xmlns:foaf="http://xmlns.com/foaf/0.1/"
-	xmlns:score='http://vivoweb.org/ontology/score#' xmlns:bibo='http://purl.org/ontology/bibo/'
-	xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
+    xmlns:svo="http://www.symplectic.co.uk/vivo/" xmlns:api="http://www.symplectic.co.uk/publications/api"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:core="http://vivoweb.org/ontology/core#" xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:score='http://vivoweb.org/ontology/score#' xmlns:bibo='http://purl.org/ontology/bibo/'
+    xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
     xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'>
 
     <xsl:import href="symplectic-to-vivo.datamap.config.xsl" />
@@ -979,6 +979,9 @@
     <xsl:template match="api:repository-items/api:repository-item[api:public-url]" mode="objectReferences">
         <xsl:variable name="rid" select="ancestor::api:object/@id" />
         <core:webpage rdf:resource="{$baseURI}publication{$rid}-repo-{position()}"/>
+        <xsl:if test="position()=1">
+            <symp:repositoryUrl><xsl:value-of select="api:public-url" /></symp:repositoryUrl>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="api:repository-items/api:repository-item[api:public-url]" mode="objectEntries">

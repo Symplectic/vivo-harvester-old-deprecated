@@ -10,27 +10,30 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:core="http://vivoweb.org/ontology/core#" xmlns:foaf="http://xmlns.com/foaf/0.1/"
                 xmlns:score='http://vivoweb.org/ontology/score#' xmlns:bibo='http://purl.org/ontology/bibo/'
-                xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'>
+                xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
+                xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'>
 
     <xsl:import href="symplectic-to-vivo.datamap.config.xsl" />
 
-    <xsl:variable name="activity-academic-group">31</xsl:variable>
-    <xsl:variable name="activity-biography">19</xsl:variable>
-    <xsl:variable name="activity-external-responsibility">23</xsl:variable>
-    <xsl:variable name="activity-honor-award">21</xsl:variable>
-    <xsl:variable name="activity-invited-talk">30</xsl:variable>
-    <xsl:variable name="activity-member">22</xsl:variable>
-    <xsl:variable name="activity-network">38</xsl:variable>
-    <xsl:variable name="activity-phd-students">33</xsl:variable>
-    <xsl:variable name="activity-profile-teaching-pg">29</xsl:variable>
-    <xsl:variable name="activity-profile-teaching-ug">28</xsl:variable>
-    <xsl:variable name="activity-public-engagement">27</xsl:variable>
-    <xsl:variable name="activity-qualification-award">20</xsl:variable>
-    <xsl:variable name="activity-research-center">36</xsl:variable>
-    <xsl:variable name="activity-research-theme">24</xsl:variable>
-    <xsl:variable name="activity-school">40</xsl:variable>
-    <xsl:variable name="activity-social-media">26</xsl:variable>
-    <xsl:variable name="activity-webpage">25</xsl:variable>
+    <xsl:variable name="activity-biography">53</xsl:variable>
+    <xsl:variable name="activity-external-responsibility">49</xsl:variable>
+    <xsl:variable name="activity-honor-award">19</xsl:variable>
+    <xsl:variable name="activity-invited-talk">47</xsl:variable>
+    <xsl:variable name="activity-member">38</xsl:variable>
+
+    <xsl:variable name="activity-academic-group">academic-group-id</xsl:variable>
+    <xsl:variable name="activity-keyword">keyword-id</xsl:variable>
+    <xsl:variable name="activity-network">network-id</xsl:variable>
+    <xsl:variable name="activity-phd-students">phd-student-id</xsl:variable>
+    <xsl:variable name="activity-profile-teaching-pg">teaching-pg-id</xsl:variable>
+    <xsl:variable name="activity-profile-teaching-ug">teaching-ug-id</xsl:variable>
+    <xsl:variable name="activity-public-engagement">public-id</xsl:variable>
+    <xsl:variable name="activity-qualification-award">award-id</xsl:variable>
+    <xsl:variable name="activity-research-center">research-center-id</xsl:variable>
+    <xsl:variable name="activity-research-theme">research-theme-id</xsl:variable>
+    <xsl:variable name="activity-school">school-id</xsl:variable>
+    <xsl:variable name="activity-social-media">social-media-id</xsl:variable>
+    <xsl:variable name="activity-webpage">webpage-id</xsl:variable>
 
     <!-- Utility template to reduce repetition -->
     <xsl:template name="outputRDF">
@@ -42,10 +45,352 @@
                      xmlns:api='http://www.symplectic.co.uk/publications/api'
                      xmlns:svo='http://www.symplectic.co.uk/vivo/'
                      xmlns:ufVivo='http://vivo.ufl.edu/ontology/vivo-ufl/'
+                     xmlns:symp='http://www.symplectic.co.uk/ontology/elements/'
                     >
                 <xsl:copy-of select="$content" />
             </rdf:RDF>
         </xsl:if>
+    </xsl:template>
+
+    <!--
+        Biography
+    -->
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-biography]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="fullActivityObj" select="document(concat('data/raw-records/',@category,'/',@id))" />
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}">
+                    <core:overview><xsl:value-of select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-details']/api:text"/></core:overview>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!--
+        External Responsibility
+    -->
+    <!-- URI Generator -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]" mode="professionalActivityURI">
+        <xsl:value-of select="$baseURI" /><xsl:text>role</xsl:text><xsl:value-of select="@id" />
+    </xsl:template>
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}">
+                    <core:hasRole rdf:resource="{$activityURI}"/>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}">
+                    <core:roleOf rdf:resource="{$baseURI}{$username}"/>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    <!-- Object Details -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]">
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <!--  role -->
+                <rdf:Description rdf:about="{$activityURI}">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#MemberRole"/>
+                    <core:roleContributesTo rdf:resource="{$activityURI}-org"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                        <core:dateTimeValue rdf:resource="{$activityURI}-start"/>
+                    </xsl:if>
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
+                        <core:dateTimeValue rdf:resource="{$activityURI}-end"/>
+                    </xsl:if>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-title']/api:text"/>
+                        <xsl:text> </xsl:text>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-role']/api:text"/>
+                    </rdfs:label>
+                </rdf:Description>
+                <!--  organisation -->
+                <rdf:Description rdf:about="{$activityURI}-org">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
+                    <core:contributingRole rdf:resource="{$activityURI}"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
+                    </rdfs:label>
+                    <svo:smush>organization:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
+                    </svo:smush>
+                </rdf:Description>
+                <!--  start role -->
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                    <rdf:Description rdf:about="{$activityURI}-start">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
+                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-start"/>
+                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
+                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
+                        </core:dateTime>
+                    </rdf:Description>
+                </xsl:if>
+                <!--  end role -->
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
+                    <rdf:Description rdf:about="{$activityURI}-end">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
+                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-end"/>
+                        <core:dateTimePrecision
+                                rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
+                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-end-year']/api:integer" />-01-01T00:00:00Z
+                        </core:dateTime>
+                    </rdf:Description>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:call-template>
+        <!--
+            type also has
+            c-hyperlink,  example
+        -->
+    </xsl:template>
+
+    <!--
+        Honor Award
+    -->
+    <!-- URI Generator -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]" mode="professionalActivityURI">
+        <xsl:value-of select="$baseURI" /><xsl:text>award</xsl:text><xsl:value-of select="@id" />
+    </xsl:template>
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}">
+                    <core:awardOrHonor rdf:resource="{$activityURI}"/>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}">
+                    <core:awardOrHonorFor rdf:resource="{$baseURI}{$username}"/>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    <!-- Object Details -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]">
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <!--  award -->
+                <rdf:Description rdf:about="{$activityURI}">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                        <core:dateTimeValue rdf:resource="{$activityURI}-date"/>
+                    </xsl:if>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
+                    </rdfs:label>
+                    <svo:smush>award:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
+                    </svo:smush>
+                    <!--  What do we do about award date, was not in the examples but is in the /activities/type -->
+                </rdf:Description>
+                <!--  award date -->
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                    <rdf:Description rdf:about="{$activityURI}-date">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
+                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/award-date"/>
+                        <core:dateTimePrecision
+                                rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
+                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
+                        </core:dateTime>
+                    </rdf:Description>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!--
+        Invited Talk
+    -->
+    <!-- URI Generator -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]" mode="professionalActivityURI">
+        <xsl:value-of select="$baseURI" /><xsl:text>invitedtalk</xsl:text><xsl:value-of select="@id" />
+    </xsl:template>
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}-role">
+                    <core:hasPresenterRole rdf:resource="{$activityURI}"/>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}-role">
+                    <core:presenterRoleOf rdf:resource="{$baseURI}{$username}"/>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    <!-- Object Details -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]">
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$activityURI}-role">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#PresenterRole"/>
+                    <core:roleRealizedIn rdf:resource="{$activityURI}"/>
+                    <rdfs:label>Speaker</rdfs:label>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Presentation"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InvitedTalk"/>
+                    <rdf:type rdf:resource="http://purl.org/NET/c4dm/event.owl#Event"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-details']/api:text"/>
+                    </rdfs:label>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!--
+        Member
+    -->
+    <!-- URI Generator -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]" mode="professionalActivityURI">
+        <xsl:value-of select="$baseURI" /><xsl:text>member</xsl:text><xsl:value-of select="@id" />
+    </xsl:template>
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}">
+                    <core:hasMemberRole rdf:resource="{$activityURI}-role"/>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}-role">
+                    <core:memberRoleOf rdf:resource="{$baseURI}{$username}"/>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    <!-- Object Details -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]">
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <!--  role -->
+                <rdf:Description rdf:about="{$activityURI}-role">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#MemberRole"/>
+                    <core:roleContributesTo rdf:resource="{$activityURI}-org"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                        <core:dateTimeValue rdf:resource="{$activityURI}-start"/>
+                    </xsl:if>
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
+                        <core:dateTimeValue rdf:resource="{$activityURI}-end"/>
+                    </xsl:if>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-role']/api:text"/>
+                    </rdfs:label>
+                </rdf:Description>
+                <!--  organization -->
+                <rdf:Description rdf:about="{$activityURI}-org">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+                    <core:contributingRole rdf:resource="{$activityURI}-role"/>
+                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
+                    <rdfs:label>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
+                    </rdfs:label>
+                    <!--  for some reason smushing this fails -->
+                    <svo:smush>organization:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/></svo:smush>
+                </rdf:Description>
+                <!--  start role -->
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                    <rdf:Description rdf:about="{$activityURI}-start">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
+                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-start"/>
+                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
+                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
+                        </core:dateTime>
+                    </rdf:Description>
+                </xsl:if>
+                <!--  end role -->
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
+                    <rdf:Description rdf:about="{$activityURI}-end">
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
+                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-end"/>
+                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
+                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-end-year']/api:integer" />-01-01T00:00:00Z
+                        </core:dateTime>
+                    </rdf:Description>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <!--
+        Additional Types
+    -->
+
+    <!--
+        Keywords
+    -->
+    <!-- URI Generator -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-keyword]" mode="professionalActivityURI">
+        <xsl:value-of select="$baseURI" /><xsl:text>keyword</xsl:text><xsl:value-of select="@id" />
+    </xsl:template>
+    <!-- Relationship links -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-keyword]" mode="professionalActivityRelationship">
+        <xsl:param name="username" />
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$baseURI}{$username}">
+                    <symp:hasKeyword rdf:resource="{$activityURI}"/>
+                </rdf:Description>
+                <rdf:Description rdf:about="{$activityURI}">
+                    <symp:keywordFor rdf:resource="{$baseURI}{$username}"/>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    <!-- Object details -->
+    <xsl:template match="api:object[@category='activity' and @type-id=$activity-keyword]">
+        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
+        <xsl:call-template name="outputRDF">
+            <xsl:with-param name="content">
+                <rdf:Description rdf:about="{$activityURI}">
+                    <!-- rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Group"/ -->
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+                    <rdfs:label><xsl:value-of select="api:records/api:record/api:native/api:field/api:text"/></rdfs:label>
+                    <svo:smush>keyword:<xsl:value-of select="api:records/api:record/api:native/api:field/api:text"/></svo:smush>
+                </rdf:Description>
+            </xsl:with-param>
+        </xsl:call-template>
     </xsl:template>
 
     <!--
@@ -504,289 +849,6 @@
     </xsl:template>
 
     <!--
-        External Responsibility
-    -->
-    <!-- URI Generator -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]" mode="professionalActivityURI">
-        <xsl:value-of select="$baseURI" /><xsl:text>role</xsl:text><xsl:value-of select="@id" />
-    </xsl:template>
-    <!-- Relationship links -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]" mode="professionalActivityRelationship">
-        <xsl:param name="username" />
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$baseURI}{$username}">
-                    <core:hasRole rdf:resource="{$activityURI}"/>
-                </rdf:Description>
-                <rdf:Description rdf:about="{$activityURI}">
-                    <core:roleOf rdf:resource="{$baseURI}{$username}"/>
-                </rdf:Description>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <!-- Object Details -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-external-responsibility]">
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <!--  role -->
-                <rdf:Description rdf:about="{$activityURI}">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#MemberRole"/>
-                    <core:roleContributesTo rdf:resource="{$activityURI}-org"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                        <core:dateTimeValue rdf:resource="{$activityURI}-start"/>
-                    </xsl:if>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
-                        <core:dateTimeValue rdf:resource="{$activityURI}-end"/>
-                    </xsl:if>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-title']/api:text"/>
-                        <xsl:text> </xsl:text>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-role']/api:text"/>
-                    </rdfs:label>
-                </rdf:Description>
-                <!--  organisation -->
-                <rdf:Description rdf:about="{$activityURI}-org">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
-                    <core:contributingRole rdf:resource="{$activityURI}"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
-                    </rdfs:label>
-                    <svo:smush>organization:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
-                    </svo:smush>
-                </rdf:Description>
-                <!--  start role -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                    <rdf:Description rdf:about="{$activityURI}-start">
-                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-start"/>
-                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
-                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
-                        </core:dateTime>
-                    </rdf:Description>
-                </xsl:if>
-                <!--  end role -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
-                    <rdf:Description rdf:about="{$activityURI}-end">
-                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-end"/>
-                        <core:dateTimePrecision
-                                rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
-                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-end-year']/api:integer" />-01-01T00:00:00Z
-                        </core:dateTime>
-                    </rdf:Description>
-                </xsl:if>
-            </xsl:with-param>
-        </xsl:call-template>
-        <!--
-            type also has
-            c-hyperlink,  example
-        -->
-    </xsl:template>
-
-    <!--
-        Member
-    -->
-    <!-- URI Generator -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]" mode="professionalActivityURI">
-        <xsl:value-of select="$baseURI" /><xsl:text>member</xsl:text><xsl:value-of select="@id" />
-    </xsl:template>
-    <!-- Relationship links -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]" mode="professionalActivityRelationship">
-        <xsl:param name="username" />
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$baseURI}{$username}">
-                    <core:hasMemberRole rdf:resource="{$activityURI}-role"/>
-                </rdf:Description>
-                <rdf:Description rdf:about="{$activityURI}-role">
-                    <core:memberRoleOf rdf:resource="{$baseURI}{$username}"/>
-                </rdf:Description>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <!-- Object Details -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-member]">
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <!--  role -->
-                <rdf:Description rdf:about="{$activityURI}-role">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#MemberRole"/>
-                    <core:roleContributesTo rdf:resource="{$activityURI}-org"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                        <core:dateTimeValue rdf:resource="{$activityURI}-start"/>
-                    </xsl:if>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
-                        <core:dateTimeValue rdf:resource="{$activityURI}-end"/>
-                    </xsl:if>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-role']/api:text"/>
-                    </rdfs:label>
-                </rdf:Description>
-                <!--  organization -->
-                <rdf:Description rdf:about="{$activityURI}-org">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                    <core:contributingRole rdf:resource="{$activityURI}-role"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/>
-                    </rdfs:label>
-                    <!--  for some reason smushing this fails -->
-                    <svo:smush>organization:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-organisation']/api:text"/></svo:smush>
-                </rdf:Description>
-                <!--  start role -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                    <rdf:Description rdf:about="{$activityURI}-start">
-                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-start"/>
-                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
-                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
-                        </core:dateTime>
-                    </rdf:Description>
-                </xsl:if>
-                <!--  end role -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-end-year']" >
-                    <rdf:Description rdf:about="{$activityURI}-end">
-                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/role-end"/>
-                        <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
-                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-end-year']/api:integer" />-01-01T00:00:00Z
-                        </core:dateTime>
-                    </rdf:Description>
-                </xsl:if>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
-    <!--
-        Invited Talk
-    -->
-    <!-- URI Generator -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]" mode="professionalActivityURI">
-        <xsl:value-of select="$baseURI" /><xsl:text>invitedtalk</xsl:text><xsl:value-of select="@id" />
-    </xsl:template>
-    <!-- Relationship links -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]" mode="professionalActivityRelationship">
-        <xsl:param name="username" />
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$baseURI}{$username}-role">
-                    <core:hasPresenterRole rdf:resource="{$activityURI}"/>
-                </rdf:Description>
-                <rdf:Description rdf:about="{$activityURI}-role">
-                    <core:presenterRoleOf rdf:resource="{$baseURI}{$username}"/>
-                </rdf:Description>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <!-- Object Details -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-invited-talk]">
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$activityURI}-role">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Role"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#PresenterRole"/>
-                    <core:roleRealizedIn rdf:resource="{$activityURI}"/>
-                    <rdfs:label>Speaker</rdfs:label>
-                </rdf:Description>
-                <rdf:Description rdf:about="{$activityURI}">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Presentation"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InvitedTalk"/>
-                    <rdf:type rdf:resource="http://purl.org/NET/c4dm/event.owl#Event"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-details']/api:text"/>
-                    </rdfs:label>
-                </rdf:Description>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
-    <!--
-        Honor Award
-    -->
-    <!-- URI Generator -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]" mode="professionalActivityURI">
-        <xsl:value-of select="$baseURI" /><xsl:text>award</xsl:text><xsl:value-of select="@id" />
-    </xsl:template>
-    <!-- Relationship links -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]" mode="professionalActivityRelationship">
-        <xsl:param name="username" />
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$baseURI}{$username}">
-                    <core:awardOrHonor rdf:resource="{$activityURI}"/>
-                </rdf:Description>
-                <rdf:Description rdf:about="{$activityURI}">
-                    <core:awardOrHonorFor rdf:resource="{$baseURI}{$username}"/>
-                </rdf:Description>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <!-- Object Details -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-honor-award]">
-        <xsl:variable name="activityURI"><xsl:apply-templates select="." mode="professionalActivityURI" /></xsl:variable>
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <!--  award -->
-                <rdf:Description rdf:about="{$activityURI}">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
-                    <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                        <core:dateTimeValue rdf:resource="{$activityURI}-date"/>
-                    </xsl:if>
-                    <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
-                    </rdfs:label>
-                    <svo:smush>award:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
-                    </svo:smush>
-                    <!--  What do we do about award date, was not in the examples but is in the /activities/type -->
-                </rdf:Description>
-                <!--  award date -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
-                    <rdf:Description rdf:about="{$activityURI}-date">
-                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                        <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/award-date"/>
-                        <core:dateTimePrecision
-                                rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
-                        <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
-                        </core:dateTime>
-                    </rdf:Description>
-                </xsl:if>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
-    <!--
         Qualification Award
     -->
     <!-- URI Generator -->
@@ -871,22 +933,6 @@
                         </core:dateTime>
                     </rdf:Description>
                 </xsl:if>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
-    <!--
-        Biography
-    -->
-    <!-- Relationship links -->
-    <xsl:template match="api:object[@category='activity' and @type-id=$activity-biography]" mode="professionalActivityRelationship">
-        <xsl:param name="username" />
-        <xsl:variable name="fullActivityObj" select="document(concat('data/raw-records/',@category,'/',@id))" />
-        <xsl:call-template name="outputRDF">
-            <xsl:with-param name="content">
-                <rdf:Description rdf:about="{$baseURI}{$username}">
-                    <core:overview><xsl:value-of select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-details']/api:text"/></core:overview>
-                </rdf:Description>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
