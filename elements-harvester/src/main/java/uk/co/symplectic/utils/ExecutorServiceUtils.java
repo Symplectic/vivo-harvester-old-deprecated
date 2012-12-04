@@ -6,10 +6,20 @@
  ******************************************************************************/
 package uk.co.symplectic.utils;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public final class ExecutorServiceUtils {
+    private static Map<String, Integer> maxProcessorsPerPool = new HashMap<String, Integer>();
+
     private ExecutorServiceUtils() {
+    }
+
+    public static void setMaxProcessorsForPool(String poolName, int size) {
+        maxProcessorsPerPool.put(poolName.toLowerCase(), size);
     }
 
     public static long getCompletedTaskCount(ExecutorService service) {
@@ -30,6 +40,15 @@ public final class ExecutorServiceUtils {
 
     public static ExecutorServiceWrapper newFixedThreadPool(String poolName) {
         int poolSize = Runtime.getRuntime().availableProcessors();
+
+        int maxPoolSize = -1;
+        if (!StringUtils.isEmpty(poolName)) {
+            maxPoolSize = maxProcessorsPerPool.get(poolName.toLowerCase());
+        }
+
+        if (maxPoolSize > 0 && maxPoolSize < poolSize) {
+            poolSize = maxPoolSize;
+        }
 
         /**
          * Uses a ThreadFactory to create Daemon threads.
@@ -54,14 +73,18 @@ public final class ExecutorServiceUtils {
         });
 
         if (service != null) {
+            ExecutorServiceWrapper wrapper = new ExecutorServiceWrapper(service);
+
             /**
              * Shutdown hook to gracefully terminate the ExecutorService. Gives any existing tasks a chance to
              * complete before forcing termination.
              */
-            Runtime.getRuntime().addShutdownHook(new ShutdownHook(service));
+            Runtime.getRuntime().addShutdownHook(new ShutdownHook(wrapper));
+
+            return wrapper;
         }
 
-        return new ExecutorServiceWrapper(service);
+        return null;
     }
 
     static void shutdown(ExecutorService service, ExecutorShutdownParams params) {
@@ -98,22 +121,22 @@ public final class ExecutorServiceUtils {
     }
 
     private static class ShutdownHook extends Thread {
-        private ExecutorService service;
-        private ExecutorShutdownParams params = new ExecutorShutdownParams();
+        private ExecutorServiceWrapper wrapper;
 
-        ShutdownHook(ExecutorService service) {
-            this.service = service;
+        ShutdownHook(ExecutorServiceWrapper wrapper) {
+            this.wrapper = wrapper;
         }
 
         @Override
         public void run() {
-            shutdown(service, params);
+            wrapper.shutdown();
         }
     }
 
     public static class ExecutorServiceWrapper {
         private ExecutorService service;
         private ExecutorShutdownParams shutdownParams = new ExecutorShutdownParams();
+        private boolean shutdownCalled = false;
 
         ExecutorServiceWrapper(ExecutorService service) {
             this.service = service;
@@ -128,7 +151,10 @@ public final class ExecutorServiceUtils {
         }
 
         public void shutdown() {
-            ExecutorServiceUtils.shutdown(service, shutdownParams);
+            if (!shutdownCalled) {
+                shutdownCalled = true;
+                ExecutorServiceUtils.shutdown(service, shutdownParams);
+            }
         }
     }
 

@@ -74,9 +74,17 @@ public class ElementsRdfStore {
         return layoutStrategy.getObjectFile(dir, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
     }
 
+    public File getObjectFile(ElementsObjectCategory category, String id) {
+        return layoutStrategy.getObjectFile(dir, category, id);
+    }
+
     public File getRelationshipFile(List<XMLAttribute> attributeList) {
         return layoutStrategy.getRelationshipFile(dir, XMLUtils.getId(attributeList));
 
+    }
+
+    public File getRelationshipFile(String id) {
+        return layoutStrategy.getRelationshipFile(dir, id);
     }
 
     public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, String rdf) {

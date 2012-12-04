@@ -20,6 +20,7 @@ import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
+import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 
@@ -46,6 +47,9 @@ public class ElementsFetch implements RecordStreamOrigin {
 
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
+
+    private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
+    private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
 
     // These should really be pulled from configuration
     private static final String RAW_RECORD_STORE = "data/raw-records";
@@ -209,6 +213,18 @@ public class ElementsFetch implements RecordStreamOrigin {
                 vivoImageDir.mkdirs();
             }
         }
+
+        setExecutorServiceMaxThreadsForPool("TranslationService",   argList.get(ARG_MAX_XSL_THREADS));
+        setExecutorServiceMaxThreadsForPool("ResourceFetchService", argList.get(ARG_MAX_RESOURCE_THREADS));
+    }
+
+    private void setExecutorServiceMaxThreadsForPool(String poolName, String maxThreads) {
+        if (!StringUtils.isEmpty(maxThreads)) {
+            int maxThreadsAsInt = Integer.parseInt(maxThreads, 10);
+            if (maxThreadsAsInt > 0) {
+                ExecutorServiceUtils.setMaxProcessorsForPool(poolName, maxThreadsAsInt);
+            }
+        }
     }
 
     /**
@@ -238,6 +254,9 @@ public class ElementsFetch implements RecordStreamOrigin {
         parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('z').setLongOpt(ARG_XSL_TEMPLATE).setDescription("XSL Template").withParameter(true, "CONFIG_FILE"));
         return parser;
