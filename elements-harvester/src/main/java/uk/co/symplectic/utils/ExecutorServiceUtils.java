@@ -43,7 +43,10 @@ public final class ExecutorServiceUtils {
 
         int maxPoolSize = -1;
         if (!StringUtils.isEmpty(poolName)) {
-            maxPoolSize = maxProcessorsPerPool.get(poolName.toLowerCase());
+            Integer maxPoolSizeObject = maxProcessorsPerPool.get(poolName.toLowerCase());
+            if (maxPoolSizeObject != null) {
+                maxPoolSize = maxPoolSizeObject;
+            }
         }
 
         if (maxPoolSize > 0 && maxPoolSize < poolSize) {
