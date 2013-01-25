@@ -12,10 +12,7 @@ import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfoCache;
 import uk.co.symplectic.xml.*;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,7 +65,7 @@ public class ElementsObjectStore {
     private void store(File outputFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
         Writer writer = null;
         try {
-            writer = new FileWriter(outputFile);
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             XMLStreamProcessor processor = new XMLStreamProcessor();
             processor.process(reader,
                     new XMLStreamCopyToWriterObserver(writer,
