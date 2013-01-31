@@ -48,69 +48,85 @@
                     <xsl:when test="@type-id=$publication-type-book"> <!-- Book  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Book" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-chapter"> <!-- Chapter  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Chapter"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Chapter" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-conference-paper"> <!-- Confernce Paper  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#ConferencePaper"/>
+                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#ConferencePaper" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-academic-article"> <!--  Academic Article -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/AcademicArticle"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/AcademicArticle" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-patent"> <!-- Patent  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Patent"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Patent" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-report"> <!-- Report  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Report"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Report" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-software"> <!-- Software  -->
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Software"/>
+                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#Software" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-performance"> <!-- Event/Performance  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Event"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Performance"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Performance" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-composition"> <!-- Composition  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Score"/>
+                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#Score" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-exhibition"> <!-- Exhibition  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Event"/>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Exhibit"/>
+                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#Exhibit" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-internet-publication"> <!-- Internet Publication  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Webpage"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Webpage" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-scholarly-edition"> <!-- Scolarly Edition  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Article" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-poster"> <!-- Poster  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#ConferencePoster"/>
+                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#ConferencePoster" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-thesis"> <!-- Thesis/Disertation  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Thesis"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Thesis" />
                     </xsl:when>
                     <xsl:when test="@type-id=$publication-type-film"> <!-- Film  -->
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/AudioVisualDocument"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Film"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Film" />
                     </xsl:when>
                     <xsl:otherwise>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
                         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
+                        <vitro:mostSpecificType rdf:resource="http://purl.org/ontology/bibo/Article" />
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:apply-templates select="api:records/api:record[1]" mode="objectReferences" />

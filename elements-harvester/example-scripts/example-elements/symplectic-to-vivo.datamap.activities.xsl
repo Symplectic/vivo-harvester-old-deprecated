@@ -192,18 +192,18 @@
                     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                     <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
                     <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
-                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                    <xsl:if test="api:records/api:record/api:native/api:field[@name='c-begin-date']" >
                         <core:dateTimeValue rdf:resource="{$activityURI}-date"/>
                     </xsl:if>
                     <rdfs:label>
-                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
+                        <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-name']/api:text"/>
                     </rdfs:label>
-                    <svo:smush>award:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-comments']/api:text"/>
+                    <svo:smush>award:<xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-name']/api:text"/>
                     </svo:smush>
                     <!--  What do we do about award date, was not in the examples but is in the /activities/type -->
                 </rdf:Description>
                 <!--  award date -->
-                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-awarded-year']" >
+                <xsl:if test="api:records/api:record/api:native/api:field[@name='c-begin-date']" >
                     <rdf:Description rdf:about="{$activityURI}-date">
                         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
@@ -211,7 +211,7 @@
                         <core:dateTimePrecision
                                 rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
                         <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-                            <xsl:value-of select="api:records/api:record/api:native/api:field[@name='c-awarded-year']/api:integer" />-01-01T00:00:00Z
+                            <xsl:apply-templates select="api:records/api:record/api:native/api:field[@name='c-begin-date']/api:date" mode="dateTimeValue" /><xsl:text>-01-01T00:00:00Z</xsl:text>
                         </core:dateTime>
                     </rdf:Description>
                 </xsl:if>
