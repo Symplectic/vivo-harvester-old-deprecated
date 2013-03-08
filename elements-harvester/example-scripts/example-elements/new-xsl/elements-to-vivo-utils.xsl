@@ -21,6 +21,12 @@
                 exclude-result-prefixes="rdf rdfs bibo core foaf score ufVivo api svo symp xs"
                 >
 
+    <xsl:function name="symp:objectURI" as="xs:string">
+        <xsl:param name="object" />
+
+        <xsl:value-of select="concat($baseURI,$object/@category,$object/@id)" />
+    </xsl:function>
+
     <xsl:function name="symp:reverse" as="xs:string">
         <xsl:param name="sentence" as="xs:string"/>
         <xsl:sequence select="if (contains($sentence, ' '))

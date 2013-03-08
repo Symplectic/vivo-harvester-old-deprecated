@@ -25,8 +25,20 @@
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
     <xsl:template match="/">
-        <output>
+        <xsl:call-template name="_render_rdf_document">
+            <xsl:with-param name="rdf-nodes">
+                <xsl:apply-templates select="//api:object" />
+            </xsl:with-param>
+        </xsl:call-template>
+        <!-- output>
             <xsl:value-of select="symp:reverse('DOG BITES MAN')"/>
-        </output>
+        </output -->
+    </xsl:template>
+
+    <xsl:template match="api:object[@category='publication']">
+        <xsl:call-template name="_render_rdf_object">
+            <xsl:with-param name="rdf-nodes"/>
+            <xsl:with-param name="objectURI" select="symp:objectURI(.)" />
+        </xsl:call-template>
     </xsl:template>
 </xsl:stylesheet>

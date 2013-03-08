@@ -21,4 +21,5 @@
                 exclude-result-prefixes="rdf rdfs bibo core foaf score ufVivo api svo symp xs"
         >
 
+    <xsl:param name="baseURI">http://vivo.symplectic.co.uk/individual/</xsl:param>
 </xsl:stylesheet>
