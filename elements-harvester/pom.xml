@@ -79,7 +79,31 @@
 			<groupId>org.vivoweb</groupId>
 			<artifactId>harvester</artifactId>
 			<version>1.5</version>
+            <!-- Exclude the Saxon processor to use a newer version -->
+            <!-- exclusions>
+                <exclusion>
+                    <groupId>net.sf.saxon</groupId>
+                    <artifactId>saxon</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.saxon</groupId>
+                    <artifactId>saxon-dom</artifactId>
+                </exclusion>
+            </exclusions -->
 		</dependency>
+
+        <!-- Newer versions of Saxon - use the exclude above to enable -->
+        <!-- dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>9.1.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.4.0.7</version>
+        </dependency -->
 
         <dependency>
             <groupId>junit</groupId>

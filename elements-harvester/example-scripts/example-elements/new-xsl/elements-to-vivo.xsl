@@ -53,11 +53,14 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:template match="api:field" mode="dateTimeValue">
+        <xsl:apply-templates select="*" mode="dateTimeValue" />
+    </xsl:template>
+
     <xsl:template match="api:date" mode="dateTimeValue">
         <xsl:variable name="datePrecision">
             <xsl:choose>
-                <xsl:when
-                        test="string(api:day) and string(api:month) and string(api:year)">yearMonthDayPrecision</xsl:when>
+                <xsl:when test="string(api:day) and string(api:month) and string(api:year)">yearMonthDayPrecision</xsl:when>
                 <xsl:when test="string(api:month) and string(api:year)">yearMonthPrecision</xsl:when>
                 <xsl:when test="string(api:year)">yearPrecision</xsl:when>
                 <xsl:otherwise>none</xsl:otherwise>
@@ -65,30 +68,19 @@
         </xsl:variable>
         <xsl:variable name="month">
             <xsl:choose>
-                <xsl:when
-                        test="string-length(api:month)=1">0<xsl:value-of select="api:month" /></xsl:when>
+                <xsl:when test="string-length(api:month)=1">0<xsl:value-of select="api:month" /></xsl:when>
                 <xsl:otherwise><xsl:value-of select="api:month" /></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="day">
             <xsl:choose>
-                <xsl:when
-                        test="string-length(api:day)=1">0<xsl:value-of select="api:day" /></xsl:when>
+                <xsl:when test="string-length(api:day)=1">0<xsl:value-of select="api:day" /></xsl:when>
                 <xsl:otherwise><xsl:value-of select="api:day" /></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
 
-        <xsl:variable name="aboutURI">
-            <xsl:choose>
-                <xsl:when test="$datePrecision='yearMonthDayPrecision'" >pub/daymonthyear<xsl:value-of select="api:year" /><xsl:value-of select="$month" /><xsl:value-of select="$day" /></xsl:when>
-                <xsl:when test="$datePrecision='yearMonthPrecision'" >pub/monthyear<xsl:value-of select="api:year" /><xsl:value-of select="$month" /></xsl:when>
-                <xsl:when test="$datePrecision='yearPrecision'" >pub/year<xsl:value-of select="api:year" /></xsl:when>
-            </xsl:choose>
-        </xsl:variable>
-
         <xsl:if test="$datePrecision!='none'">
-            <core:dateTimePrecision
-                    rdf:resource="http://vivoweb.org/ontology/core#{$datePrecision}" />
+            <core:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#{$datePrecision}" />
             <core:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
                 <xsl:choose>
                     <xsl:when test="$datePrecision='yearMonthDayPrecision'" ><xsl:value-of select="api:year" />-<xsl:value-of select="$month" />-<xsl:value-of select="$day" />T00:00:00Z</xsl:when>

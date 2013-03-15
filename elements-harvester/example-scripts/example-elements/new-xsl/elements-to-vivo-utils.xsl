@@ -30,7 +30,7 @@
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
 
-        <xsl:value-of select="symp:datasourceField($object, $fieldName, $datasource-precedence, $datasource-precedence-select-by, 1)" />
+        <xsl:copy-of select="symp:datasourceField($object, $fieldName, $datasource-precedence, $datasource-precedence-select-by, 1)" />
     </xsl:function>
 
     <xsl:function name="symp:datasourceField">
@@ -38,7 +38,7 @@
         <xsl:param name="fieldName" as="xs:string" />
         <xsl:param name="datasources" as="xs:string" />
 
-        <xsl:value-of select="symp:datasourceField($object, $fieldName, fn:tokenize($datasources,','), $datasource-precedence-select-by, 1)" />
+        <xsl:copy-of select="symp:datasourceField($object, $fieldName, fn:tokenize($datasources,','), $datasource-precedence-select-by, 1)" />
     </xsl:function>
 
     <xsl:function name="symp:datasourceField">
@@ -47,7 +47,7 @@
         <xsl:param name="datasources" as="xs:string" />
         <xsl:param name="select-by" as="xs:string" />
 
-        <xsl:value-of select="symp:datasourceField($object, $fieldName, fn:tokenize($datasources,','), $select-by, 1)" />
+        <xsl:copy-of select="symp:datasourceField($object, $fieldName, fn:tokenize($datasources,','), $select-by, 1)" />
     </xsl:function>
 
     <xsl:function name="symp:datasourceField">
@@ -61,14 +61,24 @@
         <xsl:if test="$datasources[$position]">
             <xsl:choose>
                 <xsl:when test="$select-by='field'">
-                    <xsl:sequence select="if ($object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName])
-                              then $object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]
-                              else symp:datasourceField($object,$fieldName,$datasources,$select-by,$position+1)" />
+                    <xsl:choose>
+                        <xsl:when test="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]">
+                            <xsl:copy-of select="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]" />
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="symp:datasourceField($object,$fieldName,$datasources,$select-by,$position+1)" />
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:sequence select="if ($object/api:records/api:record[@source-name=$datasources[$position]]/api:native)
-                              then $object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]
-                              else symp:datasourceField($object,$fieldName,$datasources,$select-by,$position+1)" />
+                    <xsl:choose>
+                        <xsl:when test="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native">
+                            <xsl:copy-of select="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]" />
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="symp:datasourceField($object,$fieldName,$datasources,$select-by,$position+1)" />
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:if>
