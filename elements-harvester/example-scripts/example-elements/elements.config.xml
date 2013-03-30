@@ -19,5 +19,5 @@
 
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
-    <Param name="xslTemplate">symplectic-to-vivo.datamap.xsl</Param>
+    <Param name="xslTemplate">elements-to-vivo.xsl</Param>
 </Task>
