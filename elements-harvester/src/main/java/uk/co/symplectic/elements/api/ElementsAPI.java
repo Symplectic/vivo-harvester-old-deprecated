@@ -7,6 +7,8 @@
 package uk.co.symplectic.elements.api;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
 
@@ -26,6 +28,11 @@ public class ElementsAPI {
     // IF you add any value here, you must update getAPI()
     public static final String VERSION_3_7    = "3.7";
     public static final String VERSION_3_7_16 = "3.7.16";
+
+    /**
+     * SLF4J Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(ElementsAPI.class);
 
     // The API version URL builder (needs to be turned into an template to handle multiple categories).
     private ElementsAPIURLBuilder urlBuilder = null;
@@ -208,7 +215,9 @@ public class ElementsAPI {
             apiResponse = apiClient.executeGetRequest();
             return parseResponse(apiResponse, parser);
         } catch (IOException e) {
+            log.error("IO Error handling API request", e);
         } catch (XMLStreamException e) {
+            log.error("XML Stream Error handling API request", e);
         } finally {
             if (apiResponse != null) {
                 try {

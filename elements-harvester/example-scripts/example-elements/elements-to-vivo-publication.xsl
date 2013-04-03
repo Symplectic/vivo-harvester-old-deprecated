@@ -93,7 +93,7 @@
 
     <xsl:function name="svfn:selectJournalTitle">
         <xsl:param name="object" />
-        <xsl:copy-of select="svfn:_selectJournalTitle($object, 1)" />
+        <xsl:copy-of select="string(svfn:_selectJournalTitle($object, 1))" />
     </xsl:function>
 
     <xsl:function name="svfn:_selectJournalTitle">
