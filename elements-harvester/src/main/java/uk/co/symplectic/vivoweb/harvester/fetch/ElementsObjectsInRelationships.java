@@ -8,7 +8,11 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 class ElementsObjectsInRelationships {
     private Map<ElementsObjectCategory, Set<String>> objectCategoryIdMap = new HashMap<ElementsObjectCategory, Set<String>>();

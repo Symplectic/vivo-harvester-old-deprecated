@@ -8,9 +8,6 @@ package uk.co.symplectic.translate;
 
 import org.junit.Test;
 
-import javax.xml.transform.Templates;
-import java.io.*;
-
 public class TranslationServiceTest {
     @Test
     public void testTranslate() throws Exception {

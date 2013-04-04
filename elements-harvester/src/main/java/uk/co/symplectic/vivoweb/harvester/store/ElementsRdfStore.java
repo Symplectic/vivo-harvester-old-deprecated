@@ -12,7 +12,11 @@ import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLUtils;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import java.util.Set;
 

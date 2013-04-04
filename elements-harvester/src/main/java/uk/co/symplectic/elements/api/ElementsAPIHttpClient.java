@@ -10,16 +10,23 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-class ElementsAPIHttpClient {
+public class ElementsAPIHttpClient {
     private String username;
     private String password;
 
     private String url;
+
+    private static int soTimeout = 5 * 60 * 1000; // 5 minutes, in milliseconds
+
+    public static void setSoTimeout(int millis) {
+        soTimeout = millis;
+    }
 
     ElementsAPIHttpClient(String url, String username, String password) {
         this.url      = url;
@@ -37,6 +44,9 @@ class ElementsAPIHttpClient {
         if (username != null) {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
             client.getState().setCredentials(AuthScope.ANY, credentials);
+            HttpClientParams params = new HttpClientParams(client.getParams());
+            params.setSoTimeout(soTimeout);
+            client.setParams(params);
         }
 
         // Ensure we do not send request too frequently
@@ -72,12 +82,16 @@ class ElementsAPIHttpClient {
         throw lastError;
     }
 
+    public static void setRequestDelay(int millis) {
+        intervalInMSecs = millis;
+    }
+
     /**
      * Delay method - ensure that requests are not sent too frequently to the Elements API,
      * by calling this method prior to executing the HttpClient request.
      */
     private static Date lastRequest = null;
-    private static long intervalInMSecs = 250;
+    private static int intervalInMSecs = 250;
     private static synchronized void regulateRequestFrequency() {
         try {
             if (lastRequest != null) {

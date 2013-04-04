@@ -18,6 +18,7 @@ import org.vivoweb.harvester.util.repo.RecordStreamOrigin;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
+import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
@@ -48,6 +49,12 @@ public class ElementsFetch implements RecordStreamOrigin {
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
 
+    private static final String ARG_API_OBJECTS_PER_PAGE  = "objectsPerPage";
+    private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
+
+    private static final String ARG_API_SOCKET_TIMEOUT    = "apiSocketTimeout";
+    private static final String ARG_API_REQUEST_DELAY     = "apiRequestDelay";
+
     private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
     private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
 
@@ -72,6 +79,9 @@ public class ElementsFetch implements RecordStreamOrigin {
     private boolean useLegacyLayout = false;
     private boolean currentStaffOnly = true;
     private boolean visibleLinksOnly = true;
+
+    private int objectsPerPage = 100;
+    private int relationshipsPerPage = 100;
 
     private File vivoImageDir = null;
 
@@ -101,8 +111,8 @@ public class ElementsFetch implements RecordStreamOrigin {
         // When retrieving objects, always get the full record
         feedQuery.setFullDetails(true);
 
-        // Get 100 objects per request
-        feedQuery.setPerPage(100);
+        // Get N objects per request
+        feedQuery.setPerPage(objectsPerPage);
 
         // Load all pages, not just one
         feedQuery.setProcessAllPages(true);
@@ -126,7 +136,7 @@ public class ElementsFetch implements RecordStreamOrigin {
 
         ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
         relationshipFeedQuery.setProcessAllPages(true);
-        relationshipFeedQuery.setPerPage(100);
+        relationshipFeedQuery.setPerPage(relationshipsPerPage);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
         ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(api, objectStore, rdfStore, xslFilename, objectsInRelationships);
@@ -214,6 +224,38 @@ public class ElementsFetch implements RecordStreamOrigin {
             }
         }
 
+        String strObjectsPerPage = argList.get(ARG_API_OBJECTS_PER_PAGE);
+        if (!StringUtils.isEmpty(strObjectsPerPage)) {
+            int tmpObjectsPerPage = Integer.parseInt(strObjectsPerPage, 10);
+            if (tmpObjectsPerPage > 0 && tmpObjectsPerPage < 501) {
+                objectsPerPage = tmpObjectsPerPage;
+            }
+        }
+
+        String strRelsPerPage = argList.get(ARG_API_RELS_PER_PAGE);
+        if (!StringUtils.isEmpty(strRelsPerPage)) {
+            int tmpRelsPerPage = Integer.parseInt(strRelsPerPage, 10);
+            if (tmpRelsPerPage > 0 && tmpRelsPerPage < 501) {
+                relationshipsPerPage = tmpRelsPerPage;
+            }
+        }
+
+        String strSoTimeout = argList.get(ARG_API_SOCKET_TIMEOUT);
+        if (!StringUtils.isEmpty(strSoTimeout)) {
+            int soTimeout = Integer.parseInt(strSoTimeout, 10);
+            if (soTimeout > 4999 && soTimeout < (30 * 60 * 1000)) {
+                ElementsAPIHttpClient.setSoTimeout(soTimeout);
+            }
+        }
+
+        String strRequestDelay = argList.get(ARG_API_REQUEST_DELAY);
+        if (!StringUtils.isEmpty(strRequestDelay)) {
+            int requestDelay = Integer.parseInt(strRequestDelay, 10);
+            if (requestDelay > -1 && requestDelay < (5 * 60 * 1000)) {
+                ElementsAPIHttpClient.setRequestDelay(requestDelay);
+            }
+        }
+
         setExecutorServiceMaxThreadsForPool("TranslationService",   argList.get(ARG_MAX_XSL_THREADS));
         setExecutorServiceMaxThreadsForPool("ResourceFetchService", argList.get(ARG_MAX_RESOURCE_THREADS));
     }
@@ -254,6 +296,12 @@ public class ElementsFetch implements RecordStreamOrigin {
         parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_API_OBJECTS_PER_PAGE).setDescription("Objects Per Page").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_API_RELS_PER_PAGE).setDescription("Relationships Per Page").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_API_SOCKET_TIMEOUT).setDescription("HTTP Socket Timeout").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_API_REQUEST_DELAY).setDescription("API Request Delay").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));

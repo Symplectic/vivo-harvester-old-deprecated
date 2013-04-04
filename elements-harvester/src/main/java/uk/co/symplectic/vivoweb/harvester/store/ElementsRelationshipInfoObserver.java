@@ -9,7 +9,11 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectId;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsRelationshipInfo;
-import uk.co.symplectic.xml.*;
+import uk.co.symplectic.xml.XMLAttribute;
+import uk.co.symplectic.xml.XMLElement;
+import uk.co.symplectic.xml.XMLStreamObserver;
+import uk.co.symplectic.xml.XMLStreamReaderProxy;
+import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
 

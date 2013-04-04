@@ -9,10 +9,20 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfoCache;
-import uk.co.symplectic.xml.*;
+import uk.co.symplectic.xml.XMLAttribute;
+import uk.co.symplectic.xml.XMLNamespace;
+import uk.co.symplectic.xml.XMLStreamCopyToWriterObserver;
+import uk.co.symplectic.xml.XMLStreamFragmentReader;
+import uk.co.symplectic.xml.XMLStreamObserver;
+import uk.co.symplectic.xml.XMLStreamProcessor;
+import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 

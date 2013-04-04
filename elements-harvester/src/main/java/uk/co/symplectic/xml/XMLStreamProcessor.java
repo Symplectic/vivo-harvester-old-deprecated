@@ -9,7 +9,6 @@ package uk.co.symplectic.xml;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.events.XMLEvent;
 
 public class XMLStreamProcessor {
     public void process(XMLStreamReader xsr, XMLStreamObserver... observers) throws XMLStreamException {

@@ -202,7 +202,7 @@ public class ElementsAPI {
      * @param parser
      * @return
      */
-    private ElementsFeedPagination executeQuery(String url, ElementsFeedEntryParser parser) {
+    private ElementsFeedPagination executeQuery(String url, ElementsFeedEntryParser parser) throws IllegalStateException {
         InputStream apiResponse = null;
         try {
             ElementsAPIHttpClient apiClient;
@@ -216,8 +216,10 @@ public class ElementsAPI {
             return parseResponse(apiResponse, parser);
         } catch (IOException e) {
             log.error("IO Error handling API request", e);
+            throw new IllegalStateException("IO Error handling API request", e);
         } catch (XMLStreamException e) {
             log.error("XML Stream Error handling API request", e);
+            throw new IllegalStateException("XML Stream Error handling API request", e);
         } finally {
             if (apiResponse != null) {
                 try {
@@ -227,8 +229,6 @@ public class ElementsAPI {
                 }
             }
         }
-
-        return null;
     }
 
     private ElementsFeedPagination parseResponse(InputStream response, ElementsFeedEntryParser parser) throws XMLStreamException {

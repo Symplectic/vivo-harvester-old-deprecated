@@ -36,7 +36,11 @@ harvester-elementsfetch -X elements.config.xml
 # We don't need to score or match the data, as we have pulled a full set of information
 # But we do need to load it into a Jena model, so that we can perform the update
 harvester-transfer -s translated-records.config.xml -o matched-data.model.xml -d data/matched-data/imported-records.rdf.xml
-harvester-smush -r -i matched-data.model.xml -P http://www.symplectic.co.uk/vivo/smush -n http://vivo.symplectic.co.uk/individual/
+
+# We don't need to smush if we are generating consistent URIs.
+# There are some tricks used in the current default datamp to ensure that is the case, but for a customized datamap
+# this may be required
+# harvester-smush -r -i matched-data.model.xml -P http://www.symplectic.co.uk/vivo/smush -n http://vivo.symplectic.co.uk/individual/
 
 # Perform an update
 # The harvester maintains copies of previous harvests in order to perform the same harvest twice
