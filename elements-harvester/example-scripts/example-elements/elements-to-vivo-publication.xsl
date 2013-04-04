@@ -44,8 +44,8 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:volume','volume')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:freetextKeyword','keywords')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:Title','title')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'rdfs:Title','title')" />
+                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'vivo:Title','title')" />
+                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'rdfs:Title','title')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:location','location')" />
@@ -123,16 +123,18 @@
         <xsl:param name="journalObjectURI" as="xs:string" />
         <xsl:param name="journalTitle" as="xs:string" />
 
-        <xsl:call-template name="_render_rdf_object">
-            <xsl:with-param name="objectURI" select="$journalObjectURI" />
-            <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://purl.org/ontology/bibo/Periodical"/>
-                <rdf:type rdf:resource="http://purl.org/ontology/bibo/Journal"/>
-                <rdf:type rdf:resource="http://purl.org/ontology/bibo/Collection"/>
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
-                <rdfs:label><xsl:value-of select="$journalTitle" /></rdfs:label>
-            </xsl:with-param>
-        </xsl:call-template>
+        <xsl:if test="$journalTitle">
+            <xsl:call-template name="_render_rdf_object">
+                <xsl:with-param name="objectURI" select="$journalObjectURI" />
+                <xsl:with-param name="rdfNodes">
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Periodical"/>
+                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Journal"/>
+                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Collection"/>
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
+                    <rdfs:label><xsl:value-of select="$journalTitle" /></rdfs:label>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
     </xsl:function>
 </xsl:stylesheet>
