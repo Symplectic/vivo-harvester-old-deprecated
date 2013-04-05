@@ -33,10 +33,11 @@
         <xsl:variable name="publicationVenueURI" select="concat($baseURI, 'journal-', svfn:stringToURI($publicationVenueTitle))" />
         <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle)" />
 
-        <xsl:call-template name="_render_rdf_object">
+        <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI(.)" />
             <xsl:with-param name="rdfNodes">
                 <xsl:copy-of select="svfn:getTypesForPublication(@type)" />
+                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'rdfs:label','title')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:abstract','abstract')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:doi','doi')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:issue','issue')" />
@@ -44,8 +45,6 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:volume','volume')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:freetextKeyword','keywords')" />
-                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'vivo:Title','title')" />
-                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'rdfs:Title','title')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:location','location')" />
@@ -124,7 +123,7 @@
         <xsl:param name="journalTitle" as="xs:string" />
 
         <xsl:if test="$journalTitle">
-            <xsl:call-template name="_render_rdf_object">
+            <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$journalObjectURI" />
                 <xsl:with-param name="rdfNodes">
                     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>

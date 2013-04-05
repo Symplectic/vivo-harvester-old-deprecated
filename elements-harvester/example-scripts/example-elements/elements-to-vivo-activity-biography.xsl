@@ -23,17 +23,32 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!-- Import general config / utils XSLT -->
     <xsl:import href="elements-to-vivo-config.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-    <!-- Output the RDF objects for award data -->
+    <!--
+        Biography Professional Activity
+        ===============================
+        This professional activity is adding statements to the user (person) object.
+        As such, it needs to be executed as part of the relationship processing - so we add the mode="processRelationship".
+        In this mode, the template will be passed a parameter, which is the URI of the user object.
+    -->
     <xsl:template match="api:object[@category='activity' and @type='c-biography']" mode="processRelationship">
         <xsl:param name="userURI" />
+
+        <!-- Retrieve the full object for the current api:object. This maps in the XML previously downloaded and stored in a separate file -->
         <xsl:variable name="fullActivityObj" select="svfn:fullObject(.)" />
 
+        <!-- From the full activity object, grab the description text field -->
         <xsl:variable name="biography" select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-description']/api:text" />
+
+        <!--
+            If we have a value for the biography, output an RDF object for the user, with the overview statement
+            (this will be added to other RDF assertions made elsewhere for the same user (URI))
+        -->
         <xsl:if test="$biography">
-            <xsl:call-template name="_render_rdf_object">
+            <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$userURI" />
                 <xsl:with-param name="rdfNodes">
                     <vivo:overview><xsl:value-of select="$biography" /></vivo:overview>

@@ -23,6 +23,16 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!--
+        Professional activities are a class of object where there can be a wide variation of customisation
+        between each object type.
+        As each type will require it's own mapping, and each could be quite large, they are split down into individual XSLT files.
+        If you add mappings for your own custom objects, you should create additional XSLT files, and add imports below.
+    -->
+
+    <!--
+        Import XSLT to handle each type of professional activity
+    -->
     <xsl:include href="elements-to-vivo-activity-biography.xsl" />
     <xsl:include href="elements-to-vivo-activity-honor-award.xsl" />
 </xsl:stylesheet>

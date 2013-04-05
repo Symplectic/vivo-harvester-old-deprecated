@@ -21,11 +21,17 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp xs"
         >
 
+    <!--
+        Import general utility and configuration XSLT files
+    -->
     <xsl:import href="elements-to-vivo-config.xsl" />
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
     <xsl:import href="elements-to-vivo-identifiers.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
+    <!--
+        Import XSLT for object and relationship transformations
+    -->
     <xsl:import href="elements-to-vivo-activity.xsl" />
     <xsl:import href="elements-to-vivo-publication.xsl" />
     <xsl:import href="elements-to-vivo-relationship.xsl" />
@@ -33,8 +39,11 @@
 
     <xsl:output method="xml" indent="yes" />
 
+    <!--
+        Default template - matches the root, to output an RDF document tag around any RDF objects that are output
+    -->
     <xsl:template match="/">
-        <xsl:call-template name="_render_rdf_document">
+        <xsl:call-template name="render_rdf_document">
             <xsl:with-param name="rdfNodes">
                 <xsl:apply-templates select="*" />
             </xsl:with-param>

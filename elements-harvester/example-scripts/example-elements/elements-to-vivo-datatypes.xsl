@@ -22,7 +22,16 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn xs"
         >
 
+    <!--
+        Main XSLT file for applying Elements field type renderings
+        ==========================================================
+    -->
+
+    <!--
+        Convert an Elements date to a vivo:dateTime statement, with dateTimePrecision
+    -->
     <xsl:template match="api:date">
+        <!-- Determine the date precision -->
         <xsl:variable name="datePrecision" select="svfn:datePrecision(.)" />
 
         <xsl:if test="$datePrecision!='none'">

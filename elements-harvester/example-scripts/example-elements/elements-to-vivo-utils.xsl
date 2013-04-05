@@ -162,7 +162,7 @@
         <xsl:param name="date" />
 
         <xsl:if test="$date">
-            <xsl:call-template name="_render_rdf_object">
+            <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$dateObjectURI" />
                 <xsl:with-param name="rdfNodes">
                     <xsl:call-template name="_concat_nodes_if">
@@ -234,7 +234,7 @@
          ======================================- -->
 
     <!-- _render_rdf_document -->
-    <xsl:template name="_render_rdf_document">
+    <xsl:template name="render_rdf_document">
         <xsl:param name="rdfNodes" />
 
         <xsl:if test="$rdfNodes/*">
@@ -259,7 +259,7 @@
     </xsl:template>
 
     <!-- _render_rdf_object -->
-    <xsl:template name="_render_rdf_object">
+    <xsl:template name="render_rdf_object">
         <xsl:param name="rdfNodes" />
         <xsl:param name="objectURI" />
 

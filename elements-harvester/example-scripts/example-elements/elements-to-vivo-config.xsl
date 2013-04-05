@@ -23,25 +23,41 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo config foaf score ufVivo vitro api svfn symp xs"
         >
 
+    <!-- The base URI you are using for VIVO identifiers -->
     <xsl:param name="baseURI">http://vivo.symplectic.co.uk/individual/</xsl:param>
 
+    <!-- Harvested by statement for the URI (set to blank if not required) -->
     <xsl:param name="harvestedBy">Symplectic-Harvester</xsl:param>
 
+    <!-- DO NOT TOUCH: Read the datasource and journal precedence configuration into variables for processing -->
     <xsl:variable name="datasource-precedence-select-by" select="document('')//config:datasource-precedences/@select-by" />
     <xsl:variable name="datasource-precedence" select="document('')//config:datasource-precedences/config:datasource-precedence" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />
 
-    <!-- Use select-by="field" attribute to choose the field from the highest precedence datasource in which it occurs -->
-    <!-- Otherwise, it will select the highest precedence datasource, regardless of whether field exizts -->
+    <!--
+        Configure precedence for datasources
+        ====================================
+
+        Use select-by="field" attribute to choose the field from the highest precedence datasource in which it occurs.
+
+        Otherwise, it will select the highest precedence datasource, regardless of whether field exizts.
+
+        If a datasource is not listed, it will not be used (except when using the "fallback to first datasource" function).
+    -->
     <config:datasource-precedences select-by="field">
         <config:datasource-precedence>pubmed</config:datasource-precedence>
         <config:datasource-precedence>manual</config:datasource-precedence>
         <config:datasource-precedence>arxiv</config:datasource-precedence>
     </config:datasource-precedences>
 
-    <!-- Configure precedence for retrieving journal names -->
-    <!-- If type="authority", then attempt to use the named authority source included in the publication -->
-    <!-- If type="datasource", then attempt to use the named data source, taking the value from "field" (defaults to "journal") -->
+    <!--
+        Configure precedence for retrieving journal names
+        =================================================
+
+        If type="authority", then attempt to use the named authority source included in the publication
+
+        If type="datasource", then attempt to use the named data source, taking the value from "field" (defaults to "journal")
+    -->
     <config:journal-precedences>
         <config:journal-precedence type="authority">sherpa-romeo</config:journal-precedence>
         <config:journal-precedence type="authority">science-metrix</config:journal-precedence>

@@ -31,14 +31,14 @@
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
         <xsl:variable name="user" select="api:related/api:object[@category='user']" />
 
-        <xsl:call-template name="_render_rdf_object">
+        <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
                 <vivo:editorOf rdf:resource="{svfn:objectURI($publication)}"/>
             </xsl:with-param>
         </xsl:call-template>
 
-        <xsl:call-template name="_render_rdf_object">
+        <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>

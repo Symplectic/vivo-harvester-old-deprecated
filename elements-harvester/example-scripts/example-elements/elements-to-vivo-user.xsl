@@ -26,7 +26,7 @@
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
     <xsl:template match="api:object[@category='user']">
-        <xsl:call-template name="_render_rdf_object">
+        <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI(.)" />
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person" />
