@@ -5,6 +5,20 @@
  | License, v. 2.0. If a copy of the MPL was not distributed with this
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
+<!--
+    This XML file specifies the rdf:type (and vitro:mostSpecificType) statements that you require for each Elements publication type.
+
+    For each <config:publication-type /> element, the "type" attribute is the type name in Elements.
+    The statements within each <config:publication-type /> are the statements that you wish to have output.
+
+    Notes:
+
+    1. Only <rdf:type /> and <vitro:mostSpecificType /> statements are supported.
+    2. If no <vitro:mostSpecificType /> is specified, the FIRST <rdf:type /> for that publication type will be used.
+    3. The following statements are always output, so you do not need to specify them in the configuration:
+        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+-->
 <config:publication-types xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <config:publication-type type="book">
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book" />

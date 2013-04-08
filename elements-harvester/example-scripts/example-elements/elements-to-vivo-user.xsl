@@ -23,23 +23,29 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!--
+        Template for outputting the user object
+    -->
+
+    <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
+    <!-- Match Elements objects of category 'user' -->
     <xsl:template match="api:object[@category='user']">
+        <!-- Ouput the RDF object for a user -->
         <xsl:call-template name="render_rdf_object">
+            <!-- Generate the user URI from the object -->
             <xsl:with-param name="objectURI" select="svfn:userURI(.)" />
+            <!-- Generate the property statements for the user object -->
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person" />
-                <rdfs:label>
-                    <xsl:value-of select="api:last-name" />, <xsl:value-of select="api:first-name" />
-                </rdfs:label>
+                <rdfs:label><xsl:value-of select="api:last-name" />, <xsl:value-of select="api:first-name" /></rdfs:label>
                 <vivo:preferredTitle><xsl:value-of select="api:title" /></vivo:preferredTitle>
                 <vivo:primaryEmail><xsl:value-of select="api:email-address" /></vivo:primaryEmail>
                 <foaf:lastName><xsl:value-of select="api:last-name" /></foaf:lastName>
                 <foaf:firstName><xsl:value-of select="api:first-name" /></foaf:firstName>
                 <rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" />
                 <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#Flag1Value1Thing" />
-                <!-- rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/User" / -->
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

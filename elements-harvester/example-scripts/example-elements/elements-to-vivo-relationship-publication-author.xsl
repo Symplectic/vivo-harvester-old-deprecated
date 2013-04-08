@@ -23,15 +23,25 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!--
+        Template for handling relationships between users and publications as authors
+    -->
+
+    <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
+    <!-- Match relationship of type publication-user authorship association -->
     <xsl:template match="api:relationship[@type='publication-user-authorship']">
+        <!-- Create a URI for the object relating author to publication -->
         <xsl:variable name="authorshipURI" select="svfn:relationshipURI(.,'authorship')" />
-        <!-- xsl:variable name="publication" select="api:related[@direction='from']/api:object" / -->
-        <!-- xsl:variable name="user" select="api:related[@direction='to']/api:object" / -->
+
+        <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
+
+        <!-- Get the user object reference from the relationship -->
         <xsl:variable name="user" select="api:related/api:object[@category='user']" />
 
+        <!-- Add a reference to the authorship object to the user object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
@@ -39,6 +49,7 @@
             </xsl:with-param>
         </xsl:call-template>
 
+        <!-- Add a reference to the authorship object to the publication object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
@@ -47,13 +58,13 @@
             </xsl:with-param>
         </xsl:call-template>
 
+        <!-- Output the authorship object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="$authorshipURI" />
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
-                <ufVivo:harvestedBy>Symplectic-Harvester</ufVivo:harvestedBy>
                 <vivo:linkedAuthor rdf:resource="{svfn:userURI($user)}"/>
                 <vivo:linkedInformationResource rdf:resource="{svfn:objectURI($publication)}"/>
             </xsl:with-param>

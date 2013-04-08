@@ -29,6 +29,9 @@
 
     <!--
         Convert an Elements date to a vivo:dateTime statement, with dateTimePrecision
+
+        Note, unlike the other templates that have a "renderForProprty" mode (as they are outputting a named property element,
+        this template is rendering two specific VIVO ontology properties (for use on a particular class).
     -->
     <xsl:template match="api:date">
         <!-- Determine the date precision -->
@@ -40,6 +43,10 @@
         </xsl:if>
     </xsl:template>
 
+    <!--
+        Render a keyword field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+    -->
     <xsl:template match="api:keyword" mode="renderForProperty">
         <xsl:param name="propertyName" />
         <xsl:param name="fieldName" />
@@ -49,6 +56,10 @@
         </xsl:element>
     </xsl:template>
 
+    <!--
+        Render a pagination field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+    -->
     <xsl:template match="api:pagination" mode="renderForProperty">
         <xsl:param name="propertyName" />
         <xsl:param name="fieldName" />
@@ -60,6 +71,11 @@
         </xsl:choose>
     </xsl:template>
 
+    <!--
+        Render a people list field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+        This template is wrapping the output of the api:person template into a property, in order to create a comma-delimited list
+    -->
     <xsl:template match="api:people" mode="renderForProperty">
         <xsl:param name="propertyName" />
         <xsl:param name="fieldName" />
@@ -72,6 +88,9 @@
         </xsl:element>
     </xsl:template>
 
+    <!--
+        Render a person. This template is designed to create a comma-delimited list.
+    -->
     <xsl:template match="api:person" mode="renderForProperty">
         <xsl:param name="propertyName" />
         <xsl:param name="fieldName" />
@@ -82,6 +101,10 @@
         <xsl:value-of select="api:last-name" /><xsl:text> </xsl:text><xsl:value-of select="api:initials" />
     </xsl:template>
 
+    <!--
+        Render a text field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+    -->
     <xsl:template match="api:text" mode="renderForProperty">
         <xsl:param name="propertyName" />
         <xsl:param name="fieldName" />

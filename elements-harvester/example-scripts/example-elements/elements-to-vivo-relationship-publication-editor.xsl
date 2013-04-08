@@ -23,14 +23,22 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!--
+        Template for handling relationships between users and publications as editors
+    -->
+
+    <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
+    <!-- Match relationship of type publication-user editorship association -->
     <xsl:template match="api:relationship[@type='publication-user-editorship']">
-        <!-- xsl:variable name="publication" select="api:related[@direction='from']/api:object" / -->
-        <!-- xsl:variable name="user" select="api:related[@direction='to']/api:object" / -->
+        <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
+
+        <!-- Get the user object reference from the relationship -->
         <xsl:variable name="user" select="api:related/api:object[@category='user']" />
 
+        <!-- Add an editor of statement to the user object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
@@ -38,6 +46,7 @@
             </xsl:with-param>
         </xsl:call-template>
 
+        <!-- Add an edited by statement to the publication object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">

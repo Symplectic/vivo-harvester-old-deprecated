@@ -23,9 +23,23 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
+    <!--
+        Relationships link object in Elements - i.e. users (as authors) to publications, users to activities, publications to grants, etc.
+
+        We process relationships in order to output the RDF statements that link objects together
+        (even though they are properties of the objects themselves - the statements of the stub objects output here
+        are combined with the statements elsewhere to make the full objects).
+
+        In some cases, we need to add the statements for an activity directly to the user that they are linked to -
+        this is also done from here, by reading the document of the activity and apply templates in a special mode.
+    -->
+
     <!-- Default template - do not output relationship, unless overridden -->
     <xsl:template match="api:relationship" />
 
+    <!--
+        Import XSLT to handle each type of relationship
+    -->
     <xsl:include href="elements-to-vivo-relationship-publication-author.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-editor.xsl" />
     <xsl:include href="elements-to-vivo-relationship-professional-activity.xsl" />

@@ -26,7 +26,6 @@
     -->
     <xsl:import href="elements-to-vivo-config.xsl" />
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
-    <xsl:import href="elements-to-vivo-identifiers.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
     <!--
