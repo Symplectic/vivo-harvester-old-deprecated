@@ -324,6 +324,8 @@ public class ElementsFetch implements RecordStreamOrigin {
                 log.debug("ElementsFetch: Start");
                 new ElementsFetch(parser.parse(args)).execute();
             } catch (IOException e) {
+                System.err.println("Caught IOExcpetion initialising ElementsFetch");
+                e.printStackTrace(System.err);
                 caught = e;
             }
 
@@ -332,14 +334,15 @@ public class ElementsFetch implements RecordStreamOrigin {
             if (parser != null) {
                 log.info("Printing Usage:");
                 System.out.println(parser.getUsage());
+            } else {
+                System.err.println("Caught UsageExcpetion initialising ElementsFetch");
+                e.printStackTrace(System.err);
             }
         } finally {
             log.debug("ElementsFetch: End");
             if (caught != null) {
                 System.exit(1);
             }
-
-//            System.exit(0);
         }
     }
 }
