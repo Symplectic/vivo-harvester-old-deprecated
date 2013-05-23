@@ -30,8 +30,8 @@
     <xsl:param name="harvestedBy">Symplectic-Harvester</xsl:param>
 
     <!-- DO NOT TOUCH: Read the datasource and journal precedence configuration into variables for processing -->
-    <xsl:variable name="datasource-precedence-select-by" select="document('')//config:datasource-precedences/@select-by" />
     <xsl:variable name="datasource-precedence" select="document('')//config:datasource-precedences/config:datasource-precedence" />
+    <xsl:variable name="datasource-precedence-select-by" select="document('')//config:datasource-precedences/@select-by" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />
 
     <!--
