@@ -83,6 +83,7 @@ public class ElementsStoredObject {
                     ElementsObjectInfoCache.put(objectInfo);
                 } catch (FileNotFoundException fileNotFoundException) {
                 } catch (XMLStreamException xmlStreamException) {
+                    throw new IllegalStateException("Catastrophic failure reading files - abandoning", xmlStreamException);
                 } finally {
                     if (inputStream != null) {
                         try { inputStream.close(); } catch (IOException e) {}
