@@ -36,7 +36,7 @@
         <xsl:variable name="publicationDateURI" select="concat(svfn:objectURI(.),'-publicationDate')" />
 
         <!-- Generate the publication date object. Custom XSLT 2 function that takes the current object, the URI for the date, and the field that holds the publication date -->
-        <xsl:variable name="publicationDateObject" select="svfn:renderDateObject(.,$publicationDateURI,svfn:datasourceField(.,'publication-date'))" />
+        <xsl:variable name="publicationDateObject" select="svfn:renderDateObject(.,$publicationDateURI,svfn:getRecordField(.,'publication-date'))" />
 
         <!-- Attempt to get a journal title for the article -->
         <xsl:variable name="publicationVenueTitle" select="svfn:selectJournalTitle(.)" />
