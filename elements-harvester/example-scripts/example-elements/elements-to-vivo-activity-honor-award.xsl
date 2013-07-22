@@ -35,43 +35,40 @@
         Although it is defined in Elements as an authority controlled value, a new 'object' with a copy of the label is created for each user.
     -->
     <xsl:template match="api:object[@category='activity' and @type='c-19']">
-        <xsl:variable name="honorAwardName" select="api:records/api:record/api:native/api:field[@name='c-name']/api:text" />
-        <xsl:if test="$honorAwardName">
-            <!--
-                Create a distinct object (URI) for each award.
-                As the award may contain an award date (i.e. the date it was awarded to an individual),
-                then the entire object with date must be distinct to each individual, even if it is the same award.
-            -->
-            <xsl:variable name="honorAwardURI" select="svfn:objectURI(.)" />
+        <!--
+            Create a distinct object (URI) for each award.
+            As the award may contain an award date (i.e. the date it was awarded to an individual),
+            then the entire object with date must be distinct to each individual, even if it is the same award.
+        -->
+        <xsl:variable name="honorAwardURI" select="svfn:objectURI(.)" />
 
-            <!--
-                If we were associating multiple individuals to the same award, we would use the following URI generator
-                - which would use a URI-safe version of the label to create consistent URLs for the same award.
+        <!--
+            If we were associating multiple individuals to the same award, we would use the following URI generator
+            - which would use a URI-safe version of the label to create consistent URLs for the same award.
 
-                <xsl:variable name="honorAwardURI" select="concat($baseURI, 'award-', svfn:stringToURI($honorAwardName))" />
-            -->
+            <xsl:variable name="honorAwardURI" select="concat($baseURI, 'award-', svfn:stringToURI($honorAwardName))" />
+        -->
 
-            <!-- Create a URI for the associated award date, and create the award date object (if there is one) -->
-            <xsl:variable name="honorAwardBeginDateObjectURI" select="concat($honorAwardURI, '-award-date')" />
-            <xsl:variable name="honorAwardBeginDateObject" select="svfn:renderDateObject(.,$honorAwardBeginDateObjectURI,api:records/api:record/api:native/api:field[@name='c-begin-date'])" />
+        <!-- Create a URI for the associated award date, and create the award date object (if there is one) -->
+        <xsl:variable name="honorAwardBeginDateObjectURI" select="concat($honorAwardURI, '-award-date')" />
+        <xsl:variable name="honorAwardBeginDateObject" select="svfn:renderDateObject(.,$honorAwardBeginDateObjectURI,svfn:getRecordField(.,'c-begin-date'))" />
 
-            <!-- Output the honor award -->
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$honorAwardURI" />
-                <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
-                    <rdfs:label><xsl:value-of select="$honorAwardName" /></rdfs:label>
+        <!-- Output the honor award -->
+        <xsl:call-template name="render_rdf_object">
+            <xsl:with-param name="objectURI" select="$honorAwardURI" />
+            <xsl:with-param name="rdfNodes">
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'rdfs:label','c-name')" />
 
-                    <!-- If the date object exists (check for child nodes), output a reference to it -->
-                    <xsl:if test="$honorAwardBeginDateObject/*" >
-                        <vivo:dateTimeValue rdf:resource="{$honorAwardBeginDateObjectURI}"/>
-                    </xsl:if>
-                </xsl:with-param>
-            </xsl:call-template>
+                <!-- If the date object exists (check for child nodes), output a reference to it -->
+                <xsl:if test="$honorAwardBeginDateObject/*" >
+                    <vivo:dateTimeValue rdf:resource="{$honorAwardBeginDateObjectURI}"/>
+                </xsl:if>
+            </xsl:with-param>
+        </xsl:call-template>
 
-            <!-- Output the award date object (does nothing if empty) -->
-            <xsl:copy-of select="$honorAwardBeginDateObject" />
-        </xsl:if>
+        <!-- Output the award date object (does nothing if empty) -->
+        <xsl:copy-of select="$honorAwardBeginDateObject" />
     </xsl:template>
 </xsl:stylesheet>

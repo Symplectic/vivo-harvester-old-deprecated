@@ -87,7 +87,6 @@
                         <xsl:with-param name="nodesToAdd">
                             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                             <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
-                            <rdf:type rdf:resource="http://www.symplectic.co.uk/vivo/publication-date"/>
                         </xsl:with-param>
                     </xsl:call-template>
                 </xsl:with-param>
@@ -336,7 +335,6 @@
         <xsl:param name="position" as="xs:integer" />
         <xsl:param name="useDefault" as="xs:boolean" />
 
-        <!-- xsl:variable name="current-record" select="api:records/api:record[@source-name = '']" / -->
         <xsl:choose>
             <xsl:when test="$records[$position]">
                 <xsl:choose>

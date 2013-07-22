@@ -40,20 +40,15 @@
         <!-- Retrieve the full object for the current api:object. This maps in the XML previously downloaded and stored in a separate file -->
         <xsl:variable name="fullActivityObj" select="svfn:fullObject(.)" />
 
-        <!-- From the full activity object, grab the description text field -->
-        <xsl:variable name="biography" select="$fullActivityObj//api:records/api:record/api:native/api:field[@name='c-description']/api:text" />
-
         <!--
             If we have a value for the biography, output an RDF object for the user, with the overview statement
             (this will be added to other RDF assertions made elsewhere for the same user (URI))
         -->
-        <xsl:if test="$biography">
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$userURI" />
-                <xsl:with-param name="rdfNodes">
-                    <vivo:overview><xsl:value-of select="$biography" /></vivo:overview>
-                </xsl:with-param>
-            </xsl:call-template>
-        </xsl:if>
+        <xsl:call-template name="render_rdf_object">
+            <xsl:with-param name="objectURI" select="$userURI" />
+            <xsl:with-param name="rdfNodes">
+                <xsl:copy-of select="svfn:renderPropertyFromField($fullActivityObj,'vivo:overview','c-description')" />
+            </xsl:with-param>
+        </xsl:call-template>
     </xsl:template>
 </xsl:stylesheet>
