@@ -18,9 +18,10 @@
                 xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
                 xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
                 xmlns:api="http://www.symplectic.co.uk/publications/api"
+                xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config"
                 xmlns:symp="http://www.symplectic.co.uk/ontology/elements/"
                 xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
-                exclude-result-prefixes="api xs fn svfn"
+                exclude-result-prefixes="api config xs fn svfn"
                 >
 
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
@@ -228,7 +229,20 @@
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, true())" />
+        <xsl:choose>
+            <xsl:when test="$record-precedences[@for=$object/@category]">
+                <xsl:variable name="record-precedence" select="$record-precedences[@for=$object/@category]/config:record-precedence" />
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for=$object/@category]/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, true())" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="record-precedence" select="$record-precedences[@for='default']/config:record-precedence" />
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for='default']/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, true())" />
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <!--
@@ -240,7 +254,20 @@
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, false())" />
+        <xsl:choose>
+            <xsl:when test="$record-precedences[@for=$object/@category]">
+                <xsl:variable name="record-precedence" select="$record-precedences[@for=$object/@category]/config:record-precedence" />
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for=$object/@category]/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, false())" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="record-precedence" select="$record-precedences[@for='default']/config:record-precedence" />
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for='default']/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, false())" />
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <!--
@@ -254,7 +281,19 @@
         <xsl:param name="fieldName" as="xs:string" />
         <xsl:param name="records" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $record-precedence-select-by, 1, false())" />
+        <xsl:choose>
+            <xsl:when test="$record-precedences[@for=$object/@category]">
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for=$object/@category]/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $record-precedence-select-by, 1, false())" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="record-precedence-select-by" select="$record-precedences[@for='default']/@select-by" />
+
+                <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $record-precedence-select-by, 1, false())" />
+            </xsl:otherwise>
+        </xsl:choose>
+
     </xsl:function>
 
     <!--

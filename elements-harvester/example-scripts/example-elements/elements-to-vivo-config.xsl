@@ -30,13 +30,15 @@
     <xsl:param name="harvestedBy">Symplectic-Harvester</xsl:param>
 
     <!-- DO NOT TOUCH: Read the record and journal precedence configuration into variables for processing -->
-    <xsl:variable name="record-precedence" select="document('')//config:record-precedences/config:record-precedence" />
-    <xsl:variable name="record-precedence-select-by" select="document('')//config:record-precedences/@select-by" />
+    <xsl:variable name="record-precedences" select="document('')//config:record-precedences/config:record-precedences" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />
 
     <!--
         Configure precedence for records
         ================================
+
+        The "for" attribute determines which object type that set of precedences applies to. "default" is used for
+        objects where the type does not have it's own configuration.
 
         Use select-by="field" attribute to choose the field from the highest precedence record in which it occurs.
 
@@ -44,10 +46,15 @@
 
         If a record is not listed, it will not be used (except when using the "fallback to first record" function).
     -->
-    <config:record-precedences select-by="field">
-        <config:record-precedence>pubmed</config:record-precedence>
-        <config:record-precedence>manual</config:record-precedence>
-        <config:record-precedence>arxiv</config:record-precedence>
+    <config:record-precedences>
+        <config:record-precedences for="publication" select-by="field">
+            <config:record-precedence>pubmed</config:record-precedence>
+            <config:record-precedence>manual</config:record-precedence>
+            <config:record-precedence>arxiv</config:record-precedence>
+        </config:record-precedences>
+        <config:record-precedences for="default" select-by="field">
+            <config:record-precedence>manual</config:record-precedence>
+        </config:record-precedences>
     </config:record-precedences>
 
     <!--
