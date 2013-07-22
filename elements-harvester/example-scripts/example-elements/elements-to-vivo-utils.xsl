@@ -176,9 +176,9 @@
     <!--
         svfn:renderPropertyFromFieldOrFirst
         ===================================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
         and render it as the RDF property (propertyName)
-        If the field is not present in any preferred datasources, output the value in the first datasource present.
+        If the field is not present in any preferred records, output the value in the first record present.
     -->
     <xsl:function name="svfn:renderPropertyFromFieldOrFirst">
         <xsl:param name="object" />
@@ -191,7 +191,7 @@
     <!--
         svfn:renderPropertyFromField
         ============================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
         and render it as the RDF property (propertyName)
     -->
     <xsl:function name="svfn:renderPropertyFromField">
@@ -205,72 +205,72 @@
     <!--
         svfn:renderPropertyFromField
         ============================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
         and render it as the RDF property (propertyName)
-        Overloaded method that takes a comma delimited list of datasource names to use as the preference order (override the central configuration)
+        Overloaded method that takes a comma delimited list of record names to use as the preference order (override the central configuration)
     -->
     <xsl:function name="svfn:renderPropertyFromField">
         <xsl:param name="object" />
         <xsl:param name="propertyName" as="xs:string" />
         <xsl:param name="fieldName" as="xs:string" />
-        <xsl:param name="datasources" as="xs:string" />
+        <xsl:param name="records" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_renderPropertyFromField($object, $propertyName, $fieldName, svfn:getRecordField($object, $fieldName, $datasources))" />
+        <xsl:copy-of select="svfn:_renderPropertyFromField($object, $propertyName, $fieldName, svfn:getRecordField($object, $fieldName, $records))" />
     </xsl:function>
 
     <!--
         svfn:getRecordFieldOrFirst
-        =======================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
-        If the field is not present in any preferred datasources, output the value in the first datasource present.
+        ==========================
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
+        If the field is not present in any preferred records, output the value in the first record present.
     -->
     <xsl:function name="svfn:getRecordFieldOrFirst">
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $datasource-precedence, $datasource-precedence-select-by, 1, true())" />
+        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, true())" />
     </xsl:function>
 
     <!--
         svfn:getRecordField
         ================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
     -->
     <xsl:function name="svfn:getRecordField">
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $datasource-precedence, $datasource-precedence-select-by, 1, false())" />
+        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, $record-precedence, $record-precedence-select-by, 1, false())" />
     </xsl:function>
 
     <!--
         svfn:getRecordField
         ================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
-        Overloaded method that takes a comma delimited list of datasource names to use as the preference order (override the central configuration)
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
+        Overloaded method that takes a comma delimited list of record names to use as the preference order (override the central configuration)
     -->
     <xsl:function name="svfn:getRecordField">
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
-        <xsl:param name="datasources" as="xs:string" />
+        <xsl:param name="records" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($datasources,','), $datasource-precedence-select-by, 1, false())" />
+        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $record-precedence-select-by, 1, false())" />
     </xsl:function>
 
     <!--
         svfn:getRecordField
         ================
-        Function to retrieve the specified Elements field (fieldName) from the most preferred datasource,
-        Overloaded method that takes a comma delimited list of datasource names to use as the preference order (override the central configuration)
-        and select-by is 'field' (find first occurrence of the field) or 'datasource' (use first preferred datasource, even if the field is not present)
+        Function to retrieve the specified Elements field (fieldName) from the most preferred record,
+        Overloaded method that takes a comma delimited list of record names to use as the preference order (override the central configuration)
+        and select-by is 'field' (find first occurrence of the field) or 'record' (use first preferred record, even if the field is not present)
     -->
     <xsl:function name="svfn:getRecordField">
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
-        <xsl:param name="datasources" as="xs:string" />
+        <xsl:param name="records" as="xs:string" />
         <xsl:param name="select-by" as="xs:string" />
 
-        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($datasources,','), $select-by, 1, false())" />
+        <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $select-by, 1, false())" />
     </xsl:function>
 
     <!--
@@ -292,32 +292,32 @@
     <xsl:function name="svfn:_getRecordField">
         <xsl:param name="object" />
         <xsl:param name="fieldName" as="xs:string" />
-        <xsl:param name="datasources" />
+        <xsl:param name="records" />
         <xsl:param name="select-by" />
         <xsl:param name="position" as="xs:integer" />
         <xsl:param name="useDefault" as="xs:boolean" />
 
         <!-- xsl:variable name="current-record" select="api:records/api:record[@source-name = '']" / -->
         <xsl:choose>
-            <xsl:when test="$datasources[$position]">
+            <xsl:when test="$records[$position]">
                 <xsl:choose>
                     <xsl:when test="$select-by='field'">
                         <xsl:choose>
-                            <xsl:when test="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]">
-                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]" />
+                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]">
+                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$datasources,$select-by,$position+1,$useDefault)" />
+                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:choose>
-                            <xsl:when test="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native">
-                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$datasources[$position]]/api:native/api:field[@name=$fieldName]" />
+                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native">
+                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$datasources,$select-by,$position+1,$useDefault)" />
+                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:otherwise>

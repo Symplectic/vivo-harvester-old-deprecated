@@ -29,26 +29,26 @@
     <!-- Harvested by statement for the URI (set to blank if not required) -->
     <xsl:param name="harvestedBy">Symplectic-Harvester</xsl:param>
 
-    <!-- DO NOT TOUCH: Read the datasource and journal precedence configuration into variables for processing -->
-    <xsl:variable name="datasource-precedence" select="document('')//config:datasource-precedences/config:datasource-precedence" />
-    <xsl:variable name="datasource-precedence-select-by" select="document('')//config:datasource-precedences/@select-by" />
+    <!-- DO NOT TOUCH: Read the record and journal precedence configuration into variables for processing -->
+    <xsl:variable name="record-precedence" select="document('')//config:record-precedences/config:record-precedence" />
+    <xsl:variable name="record-precedence-select-by" select="document('')//config:record-precedences/@select-by" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />
 
     <!--
-        Configure precedence for datasources
-        ====================================
+        Configure precedence for records
+        ================================
 
-        Use select-by="field" attribute to choose the field from the highest precedence datasource in which it occurs.
+        Use select-by="field" attribute to choose the field from the highest precedence record in which it occurs.
 
-        Otherwise, it will select the highest precedence datasource, regardless of whether field exizts.
+        Otherwise, it will select the highest precedence record, regardless of whether field exizts.
 
-        If a datasource is not listed, it will not be used (except when using the "fallback to first datasource" function).
+        If a record is not listed, it will not be used (except when using the "fallback to first record" function).
     -->
-    <config:datasource-precedences select-by="field">
-        <config:datasource-precedence>pubmed</config:datasource-precedence>
-        <config:datasource-precedence>manual</config:datasource-precedence>
-        <config:datasource-precedence>arxiv</config:datasource-precedence>
-    </config:datasource-precedences>
+    <config:record-precedences select-by="field">
+        <config:record-precedence>pubmed</config:record-precedence>
+        <config:record-precedence>manual</config:record-precedence>
+        <config:record-precedence>arxiv</config:record-precedence>
+    </config:record-precedences>
 
     <!--
         Configure precedence for retrieving journal names
@@ -56,13 +56,13 @@
 
         If type="authority", then attempt to use the named authority source included in the publication
 
-        If type="datasource", then attempt to use the named data source, taking the value from "field" (defaults to "journal")
+        If type="record", then attempt to use the named record, taking the value from "field" (defaults to "journal")
     -->
     <config:journal-precedences>
         <config:journal-precedence type="authority">sherpa-romeo</config:journal-precedence>
         <config:journal-precedence type="authority">science-metrix</config:journal-precedence>
-        <config:journal-precedence type="datasource" field="journal">pubmed</config:journal-precedence>
-        <config:journal-precedence type="datasource" field="journal">manual</config:journal-precedence>
-        <config:journal-precedence type="datasource" field="journal">arxiv</config:journal-precedence>
+        <config:journal-precedence type="record" field="journal">pubmed</config:journal-precedence>
+        <config:journal-precedence type="record" field="journal">manual</config:journal-precedence>
+        <config:journal-precedence type="record" field="journal">arxiv</config:journal-precedence>
     </config:journal-precedences>
 </xsl:stylesheet>

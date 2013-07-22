@@ -54,12 +54,12 @@
             <!--
                 Generate the RDF property statements for the publication object.
                 Uses the getTypesForPublication custom XSLT function to retrieve all the type statements (including mostSpecificType)
-                The renderPropertyFromField function creates a property from the specified Elements data field, restricted to your configured preferred datasources
+                The renderPropertyFromField function creates a property from the specified Elements data field, restricted to your configured preferred records
                 - it takes the full namespace/element name for the resulting property, and the field name in Elements
                   The resulting property comes from an apply-templates on the selected field, so you can override how the data is rendered
                   by overloading those templates
-                The renderPropertyFromFieldOrFirst operates the same way, except if none of you preferred data sources are present, it takes the field from the first datasource
-                - this is used only for the title, so that there will always be some information about the items that could not be transferred fully, because of the datasources available
+                The renderPropertyFromFieldOrFirst operates the same way, except if none of you preferred data sources are present, it takes the field from the first record
+                - this is used only for the title, so that there will always be some information about the items that could not be transferred fully, because of the records available
                 Also, the properties to reference the publication date and venue are output, if the objects have been created (test for child nodes)
             -->
             <xsl:with-param name="rdfNodes">
@@ -145,12 +145,12 @@
                 <xsl:when test="$journal-precedence[$position]/@type='authority' and $object/api:journal/api:records/api:record[@source-name=$journal-precedence[$position]]/api:title">
                     <xsl:value-of select="$object/api:journal/api:records/api:record[@source-name=$journal-precedence[$position]]/api:title" />
                 </xsl:when>
-                <!-- If the precedence if for a datasource value from a specific field, use that value if it exists -->
-                <xsl:when test="$journal-precedence[$position]/@type='datasource' and $object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name=$journal-precedence[$position]/@field]/api:text">
+                <!-- If the precedence if for a record value from a specific field, use that value if it exists -->
+                <xsl:when test="$journal-precedence[$position]/@type='record' and $object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name=$journal-precedence[$position]/@field]/api:text">
                     <xsl:value-of select="$object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name=$journal-precedence[$position]/@field]/api:text" />
                 </xsl:when>
-                <!-- If the precedence if for a datasource value from a field called 'journal', use that value if it exists -->
-                <xsl:when test="$journal-precedence[$position]/@type='datasource' and $object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name='journal']/api:text">
+                <!-- If the precedence if for a record value from a field called 'journal', use that value if it exists -->
+                <xsl:when test="$journal-precedence[$position]/@type='record' and $object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name='journal']/api:text">
                     <xsl:value-of select="$object/api:records/api:record[@source-name=$journal-precedence[$position]]/api:native/api:field[@name='journal']/api:text" />
                 </xsl:when>
                 <!-- No title found for the current precedence setting, try again with the next entry -->
