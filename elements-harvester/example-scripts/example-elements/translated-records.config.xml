@@ -7,6 +7,6 @@
  -->
 <RecordHandler>
     <!-- Param name="rhClass">org.vivoweb.harvester.util.repo.TextFileRecordHandler</Param -->
-    <Param name="rhClass">org.vivoweb.harvester.util.repo.ElementsRecordHandler</Param>
+    <Param name="rhClass">uk.co.symplectic.vivoweb.harvester.store.ElementsRecordHandler</Param>
     <Param name="fileDir">data/translated-records</Param>
 </RecordHandler>

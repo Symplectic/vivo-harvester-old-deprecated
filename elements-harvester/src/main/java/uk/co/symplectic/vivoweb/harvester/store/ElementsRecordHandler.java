@@ -4,12 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package org.vivoweb.harvester.util.repo;
+package uk.co.symplectic.vivoweb.harvester.store;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.FileAide;
+import org.vivoweb.harvester.util.repo.Record;
+import org.vivoweb.harvester.util.repo.RecordHandler;
+import org.vivoweb.harvester.util.repo.RecordMetaData;
 import org.vivoweb.harvester.util.repo.RecordMetaData.RecordMetaDataType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
