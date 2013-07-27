@@ -102,8 +102,6 @@ public class ElementsFetchAndTranslate {
                 InitLog.initLogger(args, parser);
                 log.debug("ElementsFetchAndTranslate: Start");
 
-                new ElementsFetch(parser.parse(args)).execute();
-
                 ArgList parsedArgs = parser.parse(args);
 
                 setExecutorServiceMaxThreadsForPool("TranslationService",   parsedArgs.get(ARG_MAX_XSL_THREADS));
