@@ -35,7 +35,7 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
         this.objectStore = objectStore;
     }
 
-    public void addObjectObserver(ElementsObjectObserver newObserver) {
+    public void addObserver(ElementsObjectObserver newObserver) {
         objectObservers.add(newObserver);
     }
 

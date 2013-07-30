@@ -12,6 +12,9 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,15 +110,23 @@ public class ElementsFetchAndTranslate {
                 setExecutorServiceMaxThreadsForPool("TranslationService",   parsedArgs.get(ARG_MAX_XSL_THREADS));
                 setExecutorServiceMaxThreadsForPool("ResourceFetchService", parsedArgs.get(ARG_MAX_RESOURCE_THREADS));
 
-                ElementsFetch fetcher = new ElementsFetch(ElementsFetchAndTranslate.getElementsAPI(parsedArgs));
+                ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI(parsedArgs);
+                ElementsFetch fetcher = new ElementsFetch(elementsAPI);
+
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
-                fetcher.setVivoImageDir(ElementsFetchAndTranslate.getVivoImageDir(parsedArgs));
-                fetcher.setXslFilename(ElementsFetchAndTranslate.getXslFilename(parsedArgs));
                 fetcher.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
                 fetcher.setVisibleLinksOnly(ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
                 fetcher.setRelationshipsPerPage(ElementsFetchAndTranslate.getRelationshipsPerPage(parsedArgs));
+
+                // TODO Move translation of relationship out of fetch package, remove this set
+                fetcher.setXslFilename(ElementsFetchAndTranslate.getXslFilename(parsedArgs));
+
+                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getXslFilename(parsedArgs));
+                objectObserver.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
+                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, ElementsStoreFactory.getObjectStore(), ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getVivoImageDir(parsedArgs)));
+                fetcher.addObserver(objectObserver);
 
                 fetcher.execute();
 

@@ -26,7 +26,7 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
 
     private ElementsAPI elementsApi;
 
-    ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, File vivoImageDir) {
+    public ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, File vivoImageDir) {
         this.elementsApi  = elementsApi;
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;

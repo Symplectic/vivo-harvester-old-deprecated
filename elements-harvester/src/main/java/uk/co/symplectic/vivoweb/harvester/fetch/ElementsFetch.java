@@ -9,7 +9,6 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vivoweb.harvester.util.args.ArgList;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
@@ -17,16 +16,15 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ElementsFetch {
-    // These should really be pulled from configuration
-    private static final String RAW_RECORD_STORE = "data/raw-records";
-    private static final String RDF_RECORD_STORE = "data/translated-records";
-
     /**
      * SLF4J Logger
      */
@@ -41,10 +39,7 @@ public class ElementsFetch {
     private int objectsPerPage = 100;
     private int relationshipsPerPage = 100;
 
-    private File vivoImageDir = null;
-
-    private String rawRecordStoreDir = RAW_RECORD_STORE;
-    private String rdfRecordStoreDir = RDF_RECORD_STORE;
+    private List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
 
     private ElementsAPI elementsAPI = null;
 
@@ -56,6 +51,10 @@ public class ElementsFetch {
         this.elementsAPI = api;
     }
 
+    public void addObserver(ElementsObjectObserver newObserver) {
+        objectObservers.add(newObserver);
+    }
+
     public void setGroupsToHarvest(String groupsToHarvest) {
         this.groupsToHarvest = groupsToHarvest;
     }
@@ -63,11 +62,6 @@ public class ElementsFetch {
     public void setObjectsToHarvest(String objectsToHarvest) {
         this.objectsToHarvest = objectsToHarvest;
     }
-
-    public void setVivoImageDir(File vivoImageDir) {
-        this.vivoImageDir = vivoImageDir;
-    }
-
 
     public void setXslFilename(String xslFilename) {
         this.xslFilename = xslFilename;
@@ -94,8 +88,8 @@ public class ElementsFetch {
      * @throws IOException error processing search
      */
     public void execute() throws IOException {
-        ElementsObjectStore objectStore = new ElementsObjectStore(rawRecordStoreDir);
-        ElementsRdfStore rdfStore = new ElementsRdfStore(rdfRecordStoreDir);
+        ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
+        ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
 
         ElementsAPIFeedObjectQuery feedQuery = new ElementsAPIFeedObjectQuery();
 
@@ -119,10 +113,11 @@ public class ElementsFetch {
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
                 ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
-                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
-                objectObserver.setCurrentStaffOnly(currentStaffOnly);
-                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir));
-                objectHandler.addObjectObserver(objectObserver);
+
+                for (ElementsObjectObserver objectObserver : objectObservers) {
+                    objectHandler.addObserver(objectObserver);
+                }
+
                 elementsAPI.execute(feedQuery, objectHandler);
             }
         }
