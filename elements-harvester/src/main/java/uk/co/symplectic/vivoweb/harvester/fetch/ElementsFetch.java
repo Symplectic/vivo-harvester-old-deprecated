@@ -40,6 +40,7 @@ public class ElementsFetch {
     private int relationshipsPerPage = 100;
 
     private List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
+    private List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
 
     private ElementsAPI elementsAPI = null;
 
@@ -51,8 +52,12 @@ public class ElementsFetch {
         this.elementsAPI = api;
     }
 
-    public void addObserver(ElementsObjectObserver newObserver) {
+    public void addObjectObserver(ElementsObjectObserver newObserver) {
         objectObservers.add(newObserver);
+    }
+
+    public void addRelationshipObserver(ElementsRelationshipObserver newObserver) {
+        relationshipObservers.add(newObserver);
     }
 
     public void setGroupsToHarvest(String groupsToHarvest) {
@@ -127,9 +132,11 @@ public class ElementsFetch {
         relationshipFeedQuery.setPerPage(relationshipsPerPage);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
-        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, rdfStore, xslFilename, objectsInRelationships);
-        relationshipHandler.setCurrentStaffOnly(currentStaffOnly);
-        relationshipHandler.setVisibleLinksOnly(visibleLinksOnly);
+        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, rdfStore, objectsInRelationships);
+        for (ElementsRelationshipObserver relationshipObserver : relationshipObservers) {
+            relationshipHandler.addObserver(relationshipObserver);
+        }
+
         elementsAPI.execute(relationshipFeedQuery, relationshipHandler);
 
         TranslationService.shutdown();

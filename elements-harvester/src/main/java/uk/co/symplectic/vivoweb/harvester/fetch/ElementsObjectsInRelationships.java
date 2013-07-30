@@ -13,22 +13,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-class ElementsObjectsInRelationships {
-    private Map<ElementsObjectCategory, Set<String>> objectCategoryIdMap = new HashMap<ElementsObjectCategory, Set<String>>();
+public class ElementsObjectsInRelationships {
+    private Map<ElementsObjectCategory, Set<String>> objectCategoryIdMap = new ConcurrentHashMap<ElementsObjectCategory, Set<String>>();
 
-    void add(ElementsObjectCategory category, String id) {
+    public synchronized void add(ElementsObjectCategory category, String id) {
         Set<String> idSet = getIdSet(category);
         if (idSet != null) {
             idSet.add(id);
         }
     }
 
-    Set<String> get(ElementsObjectCategory category) {
+    public Set<String> get(ElementsObjectCategory category) {
         return Collections.unmodifiableSet(getIdSet(category));
     }
 
-    private synchronized Set<String> getIdSet(ElementsObjectCategory category) {
+    private Set<String> getIdSet(ElementsObjectCategory category) {
         Set<String> idSet = objectCategoryIdMap.get(category);
         if (idSet == null) {
             idSet = new HashSet<String>();

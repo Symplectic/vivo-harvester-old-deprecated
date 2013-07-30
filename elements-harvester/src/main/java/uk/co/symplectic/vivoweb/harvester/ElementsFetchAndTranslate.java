@@ -12,9 +12,12 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
+import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,7 +129,12 @@ public class ElementsFetchAndTranslate {
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getXslFilename(parsedArgs));
                 objectObserver.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
                 objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, ElementsStoreFactory.getObjectStore(), ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getVivoImageDir(parsedArgs)));
-                fetcher.addObserver(objectObserver);
+                fetcher.addObjectObserver(objectObserver);
+
+                ElementsRelationshipTranslateObserver relationshipObserver = new ElementsRelationshipTranslateObserver(ElementsStoreFactory.getObjectStore(), ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getXslFilename(parsedArgs));
+                relationshipObserver.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
+                relationshipObserver.setVisibleLinksOnly(ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs));
+                fetcher.addRelationshipObserver(relationshipObserver);
 
                 fetcher.execute();
 

@@ -22,66 +22,36 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipStreamHandler {
+    private List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
+
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
 
-    private TranslationService translationService = new TranslationService();
-    private Templates template = null;
-
     private ElementsAPI elementsApi;
 
-    private boolean currentStaffOnly = true;
-    private boolean visibleLinksOnly = true;
-
-    ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, String xslFilename, ElementsObjectsInRelationships objectsInRelationships) {
+    ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, ElementsObjectsInRelationships objectsInRelationships) {
         this.elementsApi = elementsApi;
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         this.objectsInRelationships = objectsInRelationships;
-        if (!StringUtils.isEmpty(xslFilename)) {
-            try {
-                template = translationService.compileSource(new BufferedInputStream(new FileInputStream(xslFilename)));
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("XSL Translation file not found", e);
-            }
-        }
     }
 
-    void setCurrentStaffOnly(boolean currentStaffOnly) {
-        this.currentStaffOnly = currentStaffOnly;
-    }
-
-    void setVisibleLinksOnly(boolean visibleLinksOnly) {
-        this.visibleLinksOnly = visibleLinksOnly;
+    public void addObserver(ElementsRelationshipObserver newObserver) {
+        relationshipObservers.add(newObserver);
     }
 
     @Override
     public void handle(List<XMLAttribute> attributes, XMLStreamFragmentReader objectReader, String docEncoding, String docVersion) throws XMLStreamException {
         ElementsStoredRelationship relationship = objectStore.storeRelationship(attributes, objectReader, docEncoding, docVersion);
 
-        File outFile = rdfStore.getRelationshipFile(attributes);
-
-        /**
-         * Note that the translation service is designed to be asynchronous. Which means, when the translate() method
-         * call returns, we are not guaranteed that the translation will have completed (in fact, we can be almost certain
-         * that is WON'T have finished translating by the time that the method call returns.
-         *
-         * As a result, we can't do anything that relies on the translation having been completed by coding it after the
-         * method call. For example, cleaning up empty files output from the translation.
-         *
-         * In order to get round this, a callback object can be supplied, which will execute after the translation code
-         * has completed.
-         *
-         * In this case, we supply an object that will clean up any empty translation output.
-         */
-        ElementsRelationshipTranslationCallback callback = new ElementsRelationshipTranslationCallback(relationship, outFile, objectsInRelationships, objectStore);
-        callback.setCurrentStaffOnly(currentStaffOnly);
-        callback.setVisibleLinksOnly(visibleLinksOnly);
-        translationService.translate(relationship.getFile(), outFile, template, callback);
+        for (ElementsRelationshipObserver relationshipObserver : relationshipObservers) {
+            relationshipObserver.observe(relationship, objectsInRelationships);
+        }
     }
 }

@@ -28,18 +28,18 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
 
-    ElementsRelationshipTranslationCallback(ElementsStoredRelationship relationship, File outputFile, ElementsObjectsInRelationships objectsInRelationships, ElementsObjectStore objectStore) {
+    public ElementsRelationshipTranslationCallback(ElementsStoredRelationship relationship, File outputFile, ElementsObjectsInRelationships objectsInRelationships, ElementsObjectStore objectStore) {
         this.relationship = relationship;
         this.outputFile = outputFile;
         this.objectsInRelationships = objectsInRelationships;
         this.objectStore = objectStore;
     }
 
-    void setCurrentStaffOnly(boolean currentStaffOnly) {
+    public void setCurrentStaffOnly(boolean currentStaffOnly) {
         this.currentStaffOnly = currentStaffOnly;
     }
 
-    void setVisibleLinksOnly(boolean visibleLinksOnly) {
+    public void setVisibleLinksOnly(boolean visibleLinksOnly) {
         this.visibleLinksOnly = visibleLinksOnly;
     }
 
