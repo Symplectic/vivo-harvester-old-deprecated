@@ -4,12 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.fetch.model;
+package uk.co.symplectic.vivoweb.harvester.translate;
 
-import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 
-public class ElementsUnknownObjectInfo extends ElementsObjectInfo {
-    ElementsUnknownObjectInfo(ElementsObjectCategory category, String id) {
-        super(category, id);
-    }
+public interface ElementsObjectTranslateStagesObserver {
+    void beingTranslated(ElementsObjectInfo info);
 }

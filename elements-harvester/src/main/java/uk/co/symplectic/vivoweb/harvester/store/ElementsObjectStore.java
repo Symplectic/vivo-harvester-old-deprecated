@@ -7,8 +7,8 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfoCache;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfoCache;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLNamespace;
 import uk.co.symplectic.xml.XMLStreamCopyToWriterObserver;

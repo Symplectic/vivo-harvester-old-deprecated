@@ -7,7 +7,7 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import uk.co.symplectic.utils.ImageUtils;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 

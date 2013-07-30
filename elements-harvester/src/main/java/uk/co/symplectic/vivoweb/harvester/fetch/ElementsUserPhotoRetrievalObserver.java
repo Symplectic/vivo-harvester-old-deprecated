@@ -8,16 +8,17 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsAPI;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsUserInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateStagesObserver;
 
 import java.io.File;
 import java.net.MalformedURLException;
 
-public class ElementsUserPhotoRetrievalObserver implements ElementsObjectObserver {
+public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTranslateStagesObserver {
     private ResourceFetchService fetchService = new ResourceFetchService();
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;

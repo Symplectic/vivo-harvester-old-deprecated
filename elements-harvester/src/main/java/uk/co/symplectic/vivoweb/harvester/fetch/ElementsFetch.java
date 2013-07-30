@@ -17,6 +17,7 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,9 +118,11 @@ public class ElementsFetch {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
-                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore, rdfStore, xslFilename);
-                objectHandler.setCurrentStaffOnly(currentStaffOnly);
-                objectHandler.addObjectObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir));
+                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
+                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
+                objectObserver.setCurrentStaffOnly(currentStaffOnly);
+                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir));
+                objectHandler.addObjectObserver(objectObserver);
                 elementsAPI.execute(feedQuery, objectHandler);
             }
         }

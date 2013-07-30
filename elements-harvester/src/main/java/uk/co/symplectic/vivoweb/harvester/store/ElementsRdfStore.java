@@ -8,7 +8,8 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.fetch.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLUtils;
 
@@ -82,6 +83,10 @@ public class ElementsRdfStore {
         return layoutStrategy.getObjectFile(dir, category, id);
     }
 
+    public File getObjectFile(ElementsObjectInfo objectInfo) {
+        return layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId());
+    }
+
     public File getRelationshipFile(List<XMLAttribute> attributeList) {
         return layoutStrategy.getRelationshipFile(dir, XMLUtils.getId(attributeList));
 
@@ -89,6 +94,10 @@ public class ElementsRdfStore {
 
     public File getRelationshipFile(String id) {
         return layoutStrategy.getRelationshipFile(dir, id);
+    }
+
+    public File getRelationshipFile(ElementsRelationshipInfo relationshipInfo) {
+        return layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId());
     }
 
     public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, String rdf) {
