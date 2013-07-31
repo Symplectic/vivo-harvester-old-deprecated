@@ -16,7 +16,7 @@ import java.util.Map;
  * For now, just a simple map, and only caching "user" info
  */
 public class ElementsObjectInfoCache {
-    private static Map<String, ElementsObjectInfo> userInfoMap = new HashMap<String, ElementsObjectInfo>();
+    private static final Map<String, ElementsObjectInfo> userInfoMap = new HashMap<String, ElementsObjectInfo>();
 
     private ElementsObjectInfoCache() {}
 

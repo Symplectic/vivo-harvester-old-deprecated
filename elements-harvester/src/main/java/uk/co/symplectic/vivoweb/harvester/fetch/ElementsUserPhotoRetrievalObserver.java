@@ -19,7 +19,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTranslateStagesObserver {
-    private ResourceFetchService fetchService = new ResourceFetchService();
+    private final ResourceFetchService fetchService = new ResourceFetchService();
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
     private File vivoImageDir = null;

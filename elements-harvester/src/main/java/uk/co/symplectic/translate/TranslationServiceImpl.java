@@ -38,9 +38,9 @@ import java.util.concurrent.Future;
  * Users should access via the TranslationService() object.
  */
 final class TranslationServiceImpl {
-    private static Logger log = LoggerFactory.getLogger(TranslationServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
-    private static ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("TranslationService");
+    private static final ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("TranslationService");
 
     private TranslationServiceImpl() {}
 

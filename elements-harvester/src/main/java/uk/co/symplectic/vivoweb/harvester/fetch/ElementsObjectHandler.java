@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler {
-    private List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
+    private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
     private ElementsObjectStore objectStore = null;
 
     ElementsObjectHandler(ElementsObjectStore objectStore) {

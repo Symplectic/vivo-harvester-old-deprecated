@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
-    private List<ElementsObjectTranslateStagesObserver> objectObservers = new ArrayList<ElementsObjectTranslateStagesObserver>();
+    private final List<ElementsObjectTranslateStagesObserver> objectObservers = new ArrayList<ElementsObjectTranslateStagesObserver>();
     private ElementsRdfStore rdfStore = null;
 
     private boolean currentStaffOnly = true;
 
-    private TranslationService translationService = new TranslationService();
+    private final TranslationService translationService = new TranslationService();
     private Templates template = null;
 
     public ElementsObjectTranslateObserver(ElementsRdfStore rdfStore, String xslFilename) {

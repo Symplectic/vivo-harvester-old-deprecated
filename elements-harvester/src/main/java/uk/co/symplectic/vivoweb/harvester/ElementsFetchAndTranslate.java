@@ -14,6 +14,8 @@ import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
@@ -54,7 +56,7 @@ public class ElementsFetchAndTranslate {
     /**
      * SLF4J Logger
      */
-    private static Logger log = LoggerFactory.getLogger(ElementsFetchAndTranslate.class);
+    private static final Logger log = LoggerFactory.getLogger(ElementsFetchAndTranslate.class);
 
     /**
      * Get the ArgParser for this task
@@ -118,22 +120,26 @@ public class ElementsFetchAndTranslate {
 
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
-                fetcher.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
-                fetcher.setVisibleLinksOnly(ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
                 fetcher.setRelationshipsPerPage(ElementsFetchAndTranslate.getRelationshipsPerPage(parsedArgs));
 
-                // TODO Move translation of relationship out of fetch package, remove this set
-                fetcher.setXslFilename(ElementsFetchAndTranslate.getXslFilename(parsedArgs));
+                ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
+                ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
 
-                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getXslFilename(parsedArgs));
-                objectObserver.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
-                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, ElementsStoreFactory.getObjectStore(), ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getVivoImageDir(parsedArgs)));
+                boolean currentStaffOnly = ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs);
+                boolean visibleLinksOnly = ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs);
+
+                String xslFilename = ElementsFetchAndTranslate.getXslFilename(parsedArgs);
+                File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(parsedArgs);
+
+                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
+                objectObserver.setCurrentStaffOnly(currentStaffOnly);
+                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir));
                 fetcher.addObjectObserver(objectObserver);
 
-                ElementsRelationshipTranslateObserver relationshipObserver = new ElementsRelationshipTranslateObserver(ElementsStoreFactory.getObjectStore(), ElementsStoreFactory.getRdfStore(), ElementsFetchAndTranslate.getXslFilename(parsedArgs));
-                relationshipObserver.setCurrentStaffOnly(ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs));
-                relationshipObserver.setVisibleLinksOnly(ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs));
+                ElementsRelationshipTranslateObserver relationshipObserver = new ElementsRelationshipTranslateObserver(objectStore, rdfStore, xslFilename);
+                relationshipObserver.setCurrentStaffOnly(currentStaffOnly);
+                relationshipObserver.setVisibleLinksOnly(visibleLinksOnly);
                 fetcher.addRelationshipObserver(relationshipObserver);
 
                 fetcher.execute();

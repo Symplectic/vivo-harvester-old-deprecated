@@ -16,7 +16,7 @@ public class ElementsRelationshipInfo {
     private String id = null;
     private boolean isVisible = true;
     private String userId = null;
-    private List<ElementsObjectId> objectIds = new ArrayList<ElementsObjectId>();
+    private final List<ElementsObjectId> objectIds = new ArrayList<ElementsObjectId>();
 
     public ElementsRelationshipInfo() {}
 

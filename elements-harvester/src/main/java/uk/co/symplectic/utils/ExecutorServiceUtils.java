@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class ExecutorServiceUtils {
-    private static Map<String, Integer> maxProcessorsPerPool = new HashMap<String, Integer>();
+    private static final Map<String, Integer> maxProcessorsPerPool = new HashMap<String, Integer>();
 
     private ExecutorServiceUtils() {
     }

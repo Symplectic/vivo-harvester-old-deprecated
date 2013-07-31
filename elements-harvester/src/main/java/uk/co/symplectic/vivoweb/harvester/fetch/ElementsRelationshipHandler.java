@@ -26,19 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipStreamHandler {
-    private List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
+    private final List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
 
     private ElementsObjectStore objectStore = null;
-    private ElementsRdfStore rdfStore = null;
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
 
     private ElementsAPI elementsApi;
 
-    ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, ElementsObjectsInRelationships objectsInRelationships) {
+    ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsObjectsInRelationships objectsInRelationships) {
         this.elementsApi = elementsApi;
         this.objectStore = objectStore;
-        this.rdfStore = rdfStore;
         this.objectsInRelationships = objectsInRelationships;
     }
 

@@ -4,11 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.fetch;
+package uk.co.symplectic.vivoweb.harvester.translate;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.PostTranslateCallback;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectId;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectsInRelationships;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;

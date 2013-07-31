@@ -42,7 +42,7 @@ public class ElementsRecordHandler extends RecordHandler {
 	/**
 	 * SLF4J Logger
 	 */
-	private static Logger log = LoggerFactory.getLogger(ElementsRecordHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(ElementsRecordHandler.class);
 
 	/**
 	 * The directory to store record files in

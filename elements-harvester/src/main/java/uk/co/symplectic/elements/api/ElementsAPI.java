@@ -32,7 +32,7 @@ public class ElementsAPI {
     /**
      * SLF4J Logger
      */
-    private static Logger log = LoggerFactory.getLogger(ElementsAPI.class);
+    private static final Logger log = LoggerFactory.getLogger(ElementsAPI.class);
 
     // The API version URL builder (needs to be turned into an template to handle multiple categories).
     private ElementsAPIURLBuilder urlBuilder = null;

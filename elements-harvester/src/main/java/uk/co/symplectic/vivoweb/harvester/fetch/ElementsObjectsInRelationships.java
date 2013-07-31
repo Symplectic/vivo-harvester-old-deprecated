@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ElementsObjectsInRelationships {
-    private Map<ElementsObjectCategory, Set<String>> objectCategoryIdMap = new ConcurrentHashMap<ElementsObjectCategory, Set<String>>();
+    private final Map<ElementsObjectCategory, Set<String>> objectCategoryIdMap = new ConcurrentHashMap<ElementsObjectCategory, Set<String>>();
 
     public synchronized void add(ElementsObjectCategory category, String id) {
         Set<String> idSet = getIdSet(category);

@@ -13,7 +13,7 @@ import java.io.File;
 public class ElementsDeleteEmptyTranslationCallback implements PostTranslateCallback {
     private File outputFile;
 
-    ElementsDeleteEmptyTranslationCallback(File outputFile) {
+    public ElementsDeleteEmptyTranslationCallback(File outputFile) {
         this.outputFile = outputFile;
     }
 

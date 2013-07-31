@@ -22,7 +22,7 @@ public class XMLStreamCopyToWriterObserver implements XMLStreamObserver {
     /**
      * SLF4J Logger
      */
-    private static Logger log = LoggerFactory.getLogger(XMLStreamCopyToWriterObserver.class);
+    private static final Logger log = LoggerFactory.getLogger(XMLStreamCopyToWriterObserver.class);
 
     private Writer writer = null;
     private XMLStreamWriter xsw = null;

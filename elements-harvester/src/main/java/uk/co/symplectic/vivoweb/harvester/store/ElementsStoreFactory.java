@@ -18,7 +18,7 @@ public class ElementsStoreFactory {
         if (objectStore != null) {
             return objectStore;
         } else {
-            synchronized (objectStore) {
+            synchronized (ElementsStoreFactory.class) {
                 return objectStore != null ? objectStore : (objectStore = new ElementsObjectStore(RAW_RECORD_STORE));
             }
         }
@@ -28,7 +28,7 @@ public class ElementsStoreFactory {
         if (rdfStore != null) {
             return rdfStore;
         } else {
-            synchronized (rdfStore) {
+            synchronized (ElementsStoreFactory.class) {
                 return rdfStore != null ? rdfStore : (rdfStore = new ElementsRdfStore(RDF_RECORD_STORE));
             }
         }

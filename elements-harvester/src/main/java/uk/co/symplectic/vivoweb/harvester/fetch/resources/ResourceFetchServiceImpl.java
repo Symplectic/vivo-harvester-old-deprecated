@@ -21,9 +21,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public final class ResourceFetchServiceImpl {
-    private static Logger log = LoggerFactory.getLogger(ResourceFetchServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceFetchServiceImpl.class);
 
-    private static ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("ResourceFetchService");
+    private static final ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("ResourceFetchService");
 
     private ResourceFetchServiceImpl() {}
 

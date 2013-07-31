@@ -31,16 +31,13 @@ public class ElementsFetch {
     private static Logger log = LoggerFactory.getLogger(ElementsFetch.class);
 
     private String objectsToHarvest;
-    private String xslFilename;
     private String groupsToHarvest;
-    private boolean currentStaffOnly = true;
-    private boolean visibleLinksOnly = true;
 
     private int objectsPerPage = 100;
     private int relationshipsPerPage = 100;
 
-    private List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
-    private List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
+    private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
+    private final List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
 
     private ElementsAPI elementsAPI = null;
 
@@ -66,18 +63,6 @@ public class ElementsFetch {
 
     public void setObjectsToHarvest(String objectsToHarvest) {
         this.objectsToHarvest = objectsToHarvest;
-    }
-
-    public void setXslFilename(String xslFilename) {
-        this.xslFilename = xslFilename;
-    }
-
-    public void setCurrentStaffOnly(boolean currentStaffOnly) {
-        this.currentStaffOnly = currentStaffOnly;
-    }
-
-    public void setVisibleLinksOnly(boolean visibleLinksOnly) {
-        this.visibleLinksOnly = visibleLinksOnly;
     }
 
     public void setObjectsPerPage(int objectsPerPage) {
@@ -132,7 +117,7 @@ public class ElementsFetch {
         relationshipFeedQuery.setPerPage(relationshipsPerPage);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
-        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, rdfStore, objectsInRelationships);
+        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships);
         for (ElementsRelationshipObserver relationshipObserver : relationshipObservers) {
             relationshipHandler.addObserver(relationshipObserver);
         }

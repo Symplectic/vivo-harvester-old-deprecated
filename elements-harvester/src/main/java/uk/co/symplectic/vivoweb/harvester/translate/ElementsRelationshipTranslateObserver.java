@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectsInRelationships;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
-import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipTranslationCallback;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
@@ -22,7 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class ElementsRelationshipTranslateObserver implements ElementsRelationshipObserver {
-    private TranslationService translationService = new TranslationService();
+    private final TranslationService translationService = new TranslationService();
     private Templates template = null;
 
     private ElementsObjectStore objectStore = null;

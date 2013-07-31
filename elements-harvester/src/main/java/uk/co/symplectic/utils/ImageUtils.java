@@ -115,7 +115,7 @@ public final class ImageUtils {
     }
 
     public static int getTargetWidth(int currentWidth, int currentHeight, int targetHeight) {
-        return calculateSecondaryDimension(currentHeight, currentWidth, targetHeight);
+        return calculateSecondaryDimension(currentWidth, currentHeight, targetHeight);
     }
 
     private static int calculateSecondaryDimension(int currentX, int currentY, int targetX) {
