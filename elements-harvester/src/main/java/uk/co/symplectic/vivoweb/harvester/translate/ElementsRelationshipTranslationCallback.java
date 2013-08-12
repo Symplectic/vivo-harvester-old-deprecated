@@ -9,6 +9,7 @@ package uk.co.symplectic.vivoweb.harvester.translate;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.PostTranslateCallback;
+import uk.co.symplectic.utils.DeletionService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectId;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectsInRelationships;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
@@ -29,6 +30,8 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
     private boolean visibleLinksOnly = true;
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
+
+    private DeletionService deletionService = new DeletionService();
 
     public ElementsRelationshipTranslationCallback(ElementsStoredRelationship relationship, File outputFile, ElementsObjectsInRelationships objectsInRelationships, ElementsObjectStore objectStore) {
         this.relationship = relationship;
@@ -90,7 +93,7 @@ public class ElementsRelationshipTranslationCallback implements PostTranslateCal
         }
 
         if (deleteOutputFile) {
-            outputFile.delete();
+            deletionService.deleteOnExit(outputFile);
         }
     }
 }

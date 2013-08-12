@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.utils.DeletionService;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.xml.XMLAttribute;
@@ -25,6 +26,7 @@ public class ElementsRdfStore {
     private File dir = null;
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
+    private DeletionService deletionService = new DeletionService();
 
     public ElementsRdfStore(String dir) {
         this.dir = new File(dir);
@@ -57,7 +59,7 @@ public class ElementsRdfStore {
                     pruneIn(file, idsToKeep, prefix);
                 } else if (StringUtils.isEmpty(prefix)) {
                     if (!idsToKeep.contains(file.getName())) {
-                        file.delete();
+                        deletionService.deleteOnExit(file);
                     }
                 } else if (file.getName().startsWith(prefix)) {
                     boolean keepFile = false;
@@ -68,7 +70,7 @@ public class ElementsRdfStore {
                     }
 
                     if (!keepFile) {
-                        file.delete();
+                        deletionService.deleteOnExit(file);
                     }
                 }
             }
