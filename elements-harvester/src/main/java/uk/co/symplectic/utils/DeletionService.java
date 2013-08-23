@@ -25,6 +25,10 @@ public class DeletionService {
         DeletionServiceImpl.deleteOnExit(toDelete);
     }
 
+    public void keep(File toKeep) {
+        DeletionServiceImpl.keep(toKeep);
+    }
+
     public void shutdown() {
         DeletionServiceImpl.shutdown();
     }
@@ -33,6 +37,7 @@ public class DeletionService {
 final class DeletionServiceImpl {
     private static final Logger log = LoggerFactory.getLogger(DeletionServiceImpl.class);
     private static Set<File> filesToDelete = new HashSet<File>();
+    private static Set<File> filesToKeep = new HashSet<File>();
 
     static {
         Runtime.getRuntime().addShutdownHook(new ShutdownHook());
@@ -40,25 +45,67 @@ final class DeletionServiceImpl {
 
     private DeletionServiceImpl() {}
 
-    static synchronized void delete(File toDelete) {
+    static private String getCanonicalPath(File file) {
         try {
-            log.debug("Deleting file: " + toDelete.getCanonicalPath());
+            return file.getCanonicalPath();
         } catch (IOException e) {
-            log.debug("Failed to get path of file to delete", e);
+            log.debug("Failed to get path of file", e);
+            return "unknown file";
         }
-        try {
+    }
+
+    static synchronized void delete(File toDelete) {
+        if (filesToKeep.contains(toDelete)) {
+            log.debug("Attempting delete on kept file - ignoring: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
+        } else {
+            log.debug("Deleting file: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             if (toDelete.delete()) {
-                log.trace("Deleted " + toDelete.getCanonicalPath());
+                log.trace("Deleted " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             } else {
-                log.trace("Failed to delete " + toDelete.getCanonicalPath());
+                log.debug("Failed to delete " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             }
-        } catch (IOException e) {
-            log.debug("Exception deleting file", e);
         }
     }
 
     static synchronized void deleteOnExit(File toDelete) {
-        filesToDelete.add(toDelete);
+        if (filesToKeep.contains(toDelete)) {
+            log.trace("Requesting delete on kept file - ignoring: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
+        } else {
+            filesToDelete.add(toDelete);
+        }
+    }
+
+    static synchronized void keep(File toKeep) {
+        if (toKeep.exists()) {
+            if (filesToDelete.contains(toKeep)) {
+                log.trace("Keeping file previously requested for delete: " + getCanonicalPath(toKeep) + " " + getCallingMethod());
+                filesToDelete.remove(toKeep);
+                filesToKeep.add(toKeep);
+            } else {
+                filesToKeep.add(toKeep);
+            }
+        } else {
+            log.error("File to keep not found: " + getCanonicalPath(toKeep) + " " + getCallingMethod());
+        }
+    }
+
+    private static String getCallingMethod() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        // Calling method that we're interested in should be the 5th element
+        if (stackTrace.length < 5) {
+            return "";
+        }
+
+        // If the 5th element is one of our classes, ignore it
+        if (stackTrace[4].getClassName().equals(ShutdownHook.class.getName()) ||
+            stackTrace[4].getClassName().equals(DeletionServiceImpl.class.getName()) ||
+            stackTrace[4].getClassName().equals(DeletionService.class.getName())
+                ) {
+            return "";
+        }
+
+        return "[" + stackTrace[4].getClassName() + "." + stackTrace[4].getMethodName() + "()]";
     }
 
     static synchronized void shutdown() {
@@ -69,6 +116,8 @@ final class DeletionServiceImpl {
             for (File toDelete : myDeleteSet) {
                 delete(toDelete);
             }
+
+            filesToKeep = new HashSet<File>();
         }
     }
 

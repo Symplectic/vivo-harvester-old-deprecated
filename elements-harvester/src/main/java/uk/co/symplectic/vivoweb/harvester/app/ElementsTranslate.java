@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.translate;
+package uk.co.symplectic.vivoweb.harvester.app;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,6 +18,7 @@ import org.vivoweb.harvester.util.repo.RecordStreamOrigin;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.translate.ElementsDeleteEmptyTranslationCallback;
 
 import javax.xml.transform.Templates;
 import java.io.BufferedInputStream;
@@ -30,6 +31,7 @@ public class ElementsTranslate implements RecordStreamOrigin {
     private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
     private static final String ARG_RDF_OUTPUT_DIRECTORY = "rdfOutput";
 
+    private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
     private static final String ARG_OUTPUT_LEGACY         = "legacyLayout";
@@ -44,31 +46,27 @@ public class ElementsTranslate implements RecordStreamOrigin {
      */
     private static final Logger log = LoggerFactory.getLogger(ElementsTranslate.class);
 
-    private String  xslFilename;
+    private String xslFilename;
+    private String queryObjects;
 
     private String rawRecordStoreDir = RAW_RECORD_STORE;
     private String rdfRecordStoreDir = RDF_RECORD_STORE;
 
     private final TranslationService translationService = new TranslationService();
     private Templates template = null;
-    private void processDir(File dir) {
+    private void processDir(ElementsObjectCategory category, File dir) {
         ElementsRdfStore rdfStore = new ElementsRdfStore(rdfRecordStoreDir);
 
         for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                processDir(file);
+            File outFile;
+            if (category != null) {
+                outFile = rdfStore.getObjectFile(category, file.getName());
             } else {
-                ElementsObjectCategory category = ElementsObjectCategory.valueOf(file.getParentFile().getName());
-                File outFile;
-                if (category != null) {
-                    outFile = rdfStore.getObjectFile(category, file.getName());
-                } else {
-                    outFile = rdfStore.getRelationshipFile(file.getName());
-                }
+                outFile = rdfStore.getRelationshipFile(file.getName());
+            }
 
-                if (outFile != null) {
-                    translationService.translate(file, outFile, template, new ElementsDeleteEmptyTranslationCallback(outFile));
-                }
+            if (outFile != null) {
+                translationService.translate(file, outFile, template, new ElementsDeleteEmptyTranslationCallback(outFile));
             }
         }
     }
@@ -84,11 +82,26 @@ public class ElementsTranslate implements RecordStreamOrigin {
             } catch (FileNotFoundException e) {
                 throw new IllegalStateException("XSL Translation file not found", e);
             }
+
+            translationService.setIgnoreFileNotFound(true);
         }
 
         File rawRecordStore = new File(rawRecordStoreDir);
         if (rawRecordStore.exists() && rawRecordStore.isDirectory()) {
-            processDir(rawRecordStore);
+            for (String category : queryObjects.split("\\s*,\\s*")) {
+                ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
+                if (eoCategory != null) {
+                    File categoryDir = new File(rawRecordStore, eoCategory.getSingular());
+                    if (categoryDir.exists() && categoryDir.isDirectory()) {
+                        processDir(eoCategory, categoryDir);
+                    }
+                }
+            }
+        }
+
+        File relationshipDir = new File(rawRecordStore, "relationship");
+        if (relationshipDir.exists() && relationshipDir.isDirectory()) {
+            processDir(null, relationshipDir);
         }
 
         TranslationService.shutdown();
@@ -105,6 +118,7 @@ public class ElementsTranslate implements RecordStreamOrigin {
      */
     private ElementsTranslate(ArgList argList) {
         xslFilename = argList.get(ARG_XSL_TEMPLATE);
+        queryObjects = argList.get(ARG_API_QUERY_OBJECTS);
     }
 
     /**
@@ -117,6 +131,8 @@ public class ElementsTranslate implements RecordStreamOrigin {
         ArgParser parser = new ArgParser(appName);
         parser.addArgument(new ArgDef().setShortOption('r').setLongOpt(ARG_RAW_OUTPUT_DIRECTORY).setDescription("Raw RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setShortOption('c').setLongOpt(ARG_API_QUERY_OBJECTS).setDescription("Elements API object categories").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('l').setLongOpt(ARG_OUTPUT_LEGACY).setDescription("Legacy layout").withParameter(true, "CONFIG_FILE"));
 

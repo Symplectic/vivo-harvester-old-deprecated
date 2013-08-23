@@ -1,4 +1,4 @@
-package uk.co.symplectic.vivoweb.harvester;
+package uk.co.symplectic.vivoweb.harvester.app;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -12,12 +12,10 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
-import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
 

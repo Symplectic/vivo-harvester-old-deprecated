@@ -169,8 +169,11 @@
     -->
     <xsl:function name="svfn:fullObject">
         <xsl:param name="object" />
+        <xsl:variable name="filename" select="concat('data/raw-records/',$object/@category,'/',$object/@id)" />
 
-        <xsl:copy-of select="document(concat('data/raw-records/',$object/@category,'/',$object/@id))" />
+        <xsl:if test="fn:doc-available($filename)">
+            <xsl:copy-of select="document($filename)" />
+        </xsl:if>
     </xsl:function>
 
     <!--

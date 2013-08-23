@@ -39,6 +39,8 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
             } catch (FileNotFoundException e) {
                 throw new IllegalStateException("XSL Translation file not found", e);
             }
+
+            translationService.setIgnoreFileNotFound(true);
         }
     }
 

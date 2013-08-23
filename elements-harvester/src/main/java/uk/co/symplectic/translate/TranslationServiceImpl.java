@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -23,6 +25,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,12 +75,12 @@ final class TranslationServiceImpl {
         return factory;
     }
 
-    static void translate(File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.service().submit(new TranslateTask(input, output, translationTemplates, callback));
+    static void translate(TranslationServiceConfig config, File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+        Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, input, output, translationTemplates, callback));
     }
 
-    static void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.service().submit(new TranslateTask(inputStream, outputStream, translationTemplates, callback));
+    static void translate(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+        Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, inputStream, outputStream, translationTemplates, callback));
     }
 
     static class TranslateTask implements Callable<Boolean> {
@@ -91,7 +94,10 @@ final class TranslationServiceImpl {
 
         private PostTranslateCallback postTranslateCallback;
 
-        TranslateTask(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+        private TranslationServiceConfig config;
+
+        TranslateTask(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+            this.config = config == null ? new TranslationServiceConfig() : config;
             this.inputFile = null;
             this.outputFile = null;
             this.inputStream  = inputStream;
@@ -100,7 +106,8 @@ final class TranslationServiceImpl {
             this.postTranslateCallback = callback;
         }
 
-        TranslateTask(File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+        TranslateTask(TranslationServiceConfig config, File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+            this.config = config == null ? new TranslationServiceConfig() : config;
             this.inputFile = input;
             this.outputFile = output;
             this.templates = translationTemplates;
@@ -116,7 +123,10 @@ final class TranslationServiceImpl {
             Result outputResult = new StreamResult(getOutputStream());
 
             try {
-                templates.newTransformer().transform(xmlSource, outputResult);
+                Transformer transformer = templates.newTransformer();
+                transformer.setErrorListener(new TranslateTaskErrorListener(config));
+                transformer.transform(xmlSource, outputResult);
+
                 if (outputStream != null) {
                     outputStream.flush();
                 }
@@ -197,4 +207,33 @@ final class TranslationServiceImpl {
     static void shutdown() {
         wrapper.shutdown();
     }
+
+    private static class TranslateTaskErrorListener implements ErrorListener {
+        TranslationServiceConfig config;
+
+        TranslateTaskErrorListener(TranslationServiceConfig config) {
+            this.config = config == null ? new TranslationServiceConfig() : config;
+        }
+
+        @Override
+        public void warning(TransformerException exception) throws TransformerException {
+            throw exception;
+        }
+
+        @Override
+        public void error(TransformerException exception) throws TransformerException {
+            Throwable cause = exception.getCause();
+            if (config.getIgnoreFileNotFound() && cause instanceof FileNotFoundException) {
+                log.trace("Ignoring file not found in transform");
+            } else {
+                log.error("Transformer Exception", exception);
+                throw exception;
+            }
+        }
+
+        @Override
+        public void fatalError(TransformerException exception) throws TransformerException {
+            throw exception;
+        }
+    };
 }

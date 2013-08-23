@@ -39,6 +39,8 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
             } catch (FileNotFoundException e) {
                 throw new IllegalStateException("XSL Translation file not found", e);
             }
+
+            translationService.setIgnoreFileNotFound(true);
         }
     }
 

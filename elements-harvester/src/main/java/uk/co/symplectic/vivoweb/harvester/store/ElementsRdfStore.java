@@ -58,7 +58,9 @@ public class ElementsRdfStore {
                 if (file.isDirectory()) {
                     pruneIn(file, idsToKeep, prefix);
                 } else if (StringUtils.isEmpty(prefix)) {
-                    if (!idsToKeep.contains(file.getName())) {
+                    if (idsToKeep.contains(file.getName())) {
+                        deletionService.keep(file);
+                    } else {
                         deletionService.deleteOnExit(file);
                     }
                 } else if (file.getName().startsWith(prefix)) {
@@ -69,7 +71,9 @@ public class ElementsRdfStore {
                         }
                     }
 
-                    if (!keepFile) {
+                    if (keepFile) {
+                        deletionService.keep(file);
+                    } else {
                         deletionService.deleteOnExit(file);
                     }
                 }

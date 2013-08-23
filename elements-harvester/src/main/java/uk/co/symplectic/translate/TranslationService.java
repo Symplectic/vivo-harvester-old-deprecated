@@ -28,7 +28,13 @@ import java.io.OutputStream;
 public final class TranslationService {
     private static Logger log = LoggerFactory.getLogger(TranslationService.class);
 
+    private TranslationServiceConfig config = new TranslationServiceConfig();
+
     public TranslationService() {}
+
+    public void setIgnoreFileNotFound(boolean ignoreFlag) {
+        config.setIgnoreFileNotFound(ignoreFlag);
+    }
 
     public Templates compileSource(Node domNode) {
         return TranslationServiceImpl.compileSource(new DOMSource(domNode));
@@ -43,19 +49,19 @@ public final class TranslationService {
     }
 
     public void translate(File input, File output, Templates translationTemplates) {
-        TranslationServiceImpl.translate(input, output, translationTemplates, null);
+        TranslationServiceImpl.translate(config, input, output, translationTemplates, null);
     }
 
     public void translate(File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
-        TranslationServiceImpl.translate(input, output, translationTemplates, callback);
+        TranslationServiceImpl.translate(config, input, output, translationTemplates, callback);
     }
 
     public void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates) {
-        TranslationServiceImpl.translate(inputStream, outputStream, translationTemplates, null);
+        TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, null);
     }
 
     public void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
-        TranslationServiceImpl.translate(inputStream, outputStream, translationTemplates, callback);
+        TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, callback);
     }
 
     public static void shutdown() {

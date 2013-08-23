@@ -140,7 +140,14 @@ public class ElementsAPI {
         ElementsFeedPagination pagination = executeQuery(queryUrl, parser);
         if (pagination != null && feedQuery.getProcessAllPages()) {
             while (pagination.getNextURL() != null) {
-                pagination = executeQuery(pagination.getNextURL(), parser);
+                // Some versions of Elements incorrectly return the pagination information
+                // Check that the next URL is valid before continuing
+                if (pagination.getNextURL().equals(queryUrl)) {
+                    throw new IllegalStateException("Error in the pagination response from Elements - unable to continue processing");
+                }
+
+                queryUrl = pagination.getNextURL();
+                pagination = executeQuery(queryUrl, parser);
             }
         }
 
