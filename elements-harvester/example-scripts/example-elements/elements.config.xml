@@ -6,14 +6,14 @@
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
 <Task>
-    <Param name="apiEndpoint">http://touch.symplectic.co.uk:8391/publications-api/insecure/v3.7.16</Param>
+    <Param name="apiEndpoint">http://carbon.symplectic.co.uk:8779/vivo-api</Param>
     <Param name="apiVersion">3.7.16</Param>
     <Param name="apiIsSecure">false</Param>
 
     <Param name="vivoImageDir">/vivo/example-elements/data/images</Param>
 
     <Param name="queryObjects">users,publications,activities</Param><!-- ,grants -->
-    <!-- Param name="paramGroups">3</Param -->
+    <Param name="paramGroups">11,14</Param>
     <Param name="currentStaffOnly">true</Param>
     <Param name="visibleLinksOnly">true</Param>
 

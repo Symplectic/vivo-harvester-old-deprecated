@@ -71,4 +71,40 @@
         <!-- Output the award date object (does nothing if empty) -->
         <xsl:copy-of select="$honorAwardBeginDateObject" />
     </xsl:template>
+
+    <!--
+        Honor Award Relationship
+        ========================
+        The honor award is created as an object, so we need to create a relationship between it and the user.
+    -->
+    <xsl:template match="api:object[@category='activity' and @type='c-19']" mode="processRelationship">
+        <xsl:param name="userURI" />
+
+        <!--
+            Create a distinct object (URI) for each award.
+            As the award may contain an award date (i.e. the date it was awarded to an individual),
+            then the entire object with date must be distinct to each individual, even if it is the same award.
+        -->
+        <xsl:variable name="honorAwardURI" select="svfn:objectURI(.)" />
+
+        <!--
+            Add relationship information to the user object
+        -->
+        <xsl:call-template name="render_rdf_object">
+            <xsl:with-param name="objectURI" select="$userURI" />
+            <xsl:with-param name="rdfNodes">
+                <vivo:awardOrHonor rdf:resource="{$honorAwardURI}"/>
+            </xsl:with-param>
+        </xsl:call-template>
+
+        <!--
+            Add relationship information to the honor award object
+        -->
+        <xsl:call-template name="render_rdf_object">
+            <xsl:with-param name="objectURI" select="$honorAwardURI" />
+            <xsl:with-param name="rdfNodes">
+                <vivo:awardOrHonorFor rdf:resource="{$userURI}"/>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
 </xsl:stylesheet>
