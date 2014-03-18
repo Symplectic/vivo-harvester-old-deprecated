@@ -35,4 +35,5 @@
     -->
     <xsl:include href="elements-to-vivo-activity-biography.xsl" />
     <xsl:include href="elements-to-vivo-activity-honor-award.xsl" />
+    <xsl:include href="elements-to-vivo-activity-education.xsl" />
 </xsl:stylesheet>

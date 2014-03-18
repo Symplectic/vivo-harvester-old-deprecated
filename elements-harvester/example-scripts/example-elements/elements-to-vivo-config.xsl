@@ -24,7 +24,7 @@
         >
 
     <!-- The base URI you are using for VIVO identifiers -->
-    <xsl:param name="baseURI">http://vivo.symplectic.co.uk/individual/</xsl:param>
+    <xsl:param name="baseURI">http://localhost:8080/vivo/individual/</xsl:param>
 
     <!-- Harvested by statement for the URI (set to blank if not required) -->
     <xsl:param name="harvestedBy">Symplectic-Harvester</xsl:param>
