@@ -16,6 +16,7 @@ import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import org.vivoweb.harvester.util.repo.RecordStreamOrigin;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.translate.TemplatesHolder;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsDeleteEmptyTranslationCallback;
@@ -53,7 +54,7 @@ public class ElementsTranslate implements RecordStreamOrigin {
     private String rdfRecordStoreDir = RDF_RECORD_STORE;
 
     private final TranslationService translationService = new TranslationService();
-    private Templates template = null;
+    private TemplatesHolder template = null;
     private void processDir(ElementsObjectCategory category, File dir) {
         ElementsRdfStore rdfStore = new ElementsRdfStore(rdfRecordStoreDir);
 
@@ -77,12 +78,7 @@ public class ElementsTranslate implements RecordStreamOrigin {
      */
     public void execute() throws IOException {
         if (!StringUtils.isEmpty(xslFilename)) {
-            try {
-                template = translationService.compileSource(new BufferedInputStream(new FileInputStream(xslFilename)));
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("XSL Translation file not found", e);
-            }
-
+            template = new TemplatesHolder(xslFilename);
             translationService.setIgnoreFileNotFound(true);
         }
 

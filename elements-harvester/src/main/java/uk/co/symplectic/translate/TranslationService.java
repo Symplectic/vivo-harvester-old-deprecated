@@ -48,19 +48,19 @@ public final class TranslationService {
         return TranslationServiceImpl.compileSource(new StreamSource(new BufferedInputStream(new FileInputStream(file))));
     }
 
-    public void translate(File input, File output, Templates translationTemplates) {
+    public void translate(File input, File output, TemplatesHolder translationTemplates) {
         TranslationServiceImpl.translate(config, input, output, translationTemplates, null);
     }
 
-    public void translate(File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+    public void translate(File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
         TranslationServiceImpl.translate(config, input, output, translationTemplates, callback);
     }
 
-    public void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates) {
+    public void translate(InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates) {
         TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, null);
     }
 
-    public void translate(InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+    public void translate(InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
         TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, callback);
     }
 

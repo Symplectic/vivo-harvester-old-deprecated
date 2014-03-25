@@ -7,6 +7,7 @@
 package uk.co.symplectic.vivoweb.harvester.translate;
 
 import org.apache.commons.lang.StringUtils;
+import uk.co.symplectic.translate.TemplatesHolder;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectsInRelationships;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
@@ -22,7 +23,7 @@ import java.io.FileNotFoundException;
 
 public class ElementsRelationshipTranslateObserver implements ElementsRelationshipObserver {
     private final TranslationService translationService = new TranslationService();
-    private Templates template = null;
+    private TemplatesHolder templatesHolder = null;
 
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
@@ -34,12 +35,7 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         if (!StringUtils.isEmpty(xslFilename)) {
-            try {
-                template = translationService.compileSource(new BufferedInputStream(new FileInputStream(xslFilename)));
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("XSL Translation file not found", e);
-            }
-
+            templatesHolder = new TemplatesHolder(xslFilename);
             translationService.setIgnoreFileNotFound(true);
         }
     }
@@ -71,6 +67,6 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
         ElementsRelationshipTranslationCallback callback = new ElementsRelationshipTranslationCallback(relationship, outFile, objectsInRelationships, objectStore);
         callback.setCurrentStaffOnly(currentStaffOnly);
         callback.setVisibleLinksOnly(visibleLinksOnly);
-        translationService.translate(relationship.getFile(), outFile, template, callback);
+        translationService.translate(relationship.getFile(), outFile, templatesHolder, callback);
     }
 }

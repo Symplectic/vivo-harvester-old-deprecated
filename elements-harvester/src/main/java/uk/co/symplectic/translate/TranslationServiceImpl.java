@@ -75,11 +75,11 @@ final class TranslationServiceImpl {
         return factory;
     }
 
-    static void translate(TranslationServiceConfig config, File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+    static void translate(TranslationServiceConfig config, File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
         Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, input, output, translationTemplates, callback));
     }
 
-    static void translate(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+    static void translate(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
         Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, inputStream, outputStream, translationTemplates, callback));
     }
 
@@ -90,13 +90,13 @@ final class TranslationServiceImpl {
         private InputStream inputStream = null;
         private OutputStream outputStream = null;
 
-        private Templates templates;
+        private TemplatesHolder templates;
 
         private PostTranslateCallback postTranslateCallback;
 
         private TranslationServiceConfig config;
 
-        TranslateTask(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, Templates translationTemplates, PostTranslateCallback callback) {
+        TranslateTask(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
             this.config = config == null ? new TranslationServiceConfig() : config;
             this.inputFile = null;
             this.outputFile = null;
@@ -106,7 +106,7 @@ final class TranslationServiceImpl {
             this.postTranslateCallback = callback;
         }
 
-        TranslateTask(TranslationServiceConfig config, File input, File output, Templates translationTemplates, PostTranslateCallback callback) {
+        TranslateTask(TranslationServiceConfig config, File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
             this.config = config == null ? new TranslationServiceConfig() : config;
             this.inputFile = input;
             this.outputFile = output;
@@ -123,7 +123,7 @@ final class TranslationServiceImpl {
             Result outputResult = new StreamResult(getOutputStream());
 
             try {
-                Transformer transformer = templates.newTransformer();
+                Transformer transformer = templates.getTemplates().newTransformer();
                 transformer.setErrorListener(new TranslateTaskErrorListener(config));
                 transformer.transform(xmlSource, outputResult);
 

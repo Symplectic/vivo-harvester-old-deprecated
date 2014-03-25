@@ -8,17 +8,14 @@ package uk.co.symplectic.vivoweb.harvester.translate;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.translate.TemplatesHolder;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 
-import javax.xml.transform.Templates;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +26,12 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private boolean currentStaffOnly = true;
 
     private final TranslationService translationService = new TranslationService();
-    private Templates template = null;
+    private TemplatesHolder templatesHolder = null;
 
     public ElementsObjectTranslateObserver(ElementsRdfStore rdfStore, String xslFilename) {
         this.rdfStore = rdfStore;
         if (!StringUtils.isEmpty(xslFilename)) {
-            try {
-                template = translationService.compileSource(new BufferedInputStream(new FileInputStream(xslFilename)));
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("XSL Translation file not found", e);
-            }
-
+            templatesHolder = new TemplatesHolder(xslFilename);
             translationService.setIgnoreFileNotFound(true);
         }
     }
@@ -78,7 +70,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
              *
              * In this case, we supply an object that will clean up any empty translation output.
              */
-            translationService.translate(object.getFile(), outFile, template, new ElementsDeleteEmptyTranslationCallback(outFile));
+            translationService.translate(object.getFile(), outFile, templatesHolder, new ElementsDeleteEmptyTranslationCallback(outFile));
 
             for (ElementsObjectTranslateStagesObserver objectObserver : objectObservers) {
                 objectObserver.beingTranslated(object.getObjectInfo());
