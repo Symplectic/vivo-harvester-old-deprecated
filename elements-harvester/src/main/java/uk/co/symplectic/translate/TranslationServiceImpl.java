@@ -76,11 +76,11 @@ final class TranslationServiceImpl {
     }
 
     static void translate(TranslationServiceConfig config, File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, input, output, translationTemplates, callback));
+        Future<Boolean> result = wrapper.submit(new TranslateTask(config, input, output, translationTemplates, callback));
     }
 
     static void translate(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.service().submit(new TranslateTask(config, inputStream, outputStream, translationTemplates, callback));
+        Future<Boolean> result = wrapper.submit(new TranslateTask(config, inputStream, outputStream, translationTemplates, callback));
     }
 
     static class TranslateTask implements Callable<Boolean> {

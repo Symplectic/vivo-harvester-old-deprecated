@@ -7,14 +7,11 @@
 package uk.co.symplectic.utils;
 
 import org.apache.commons.lang.StringUtils;
+import sun.nio.ch.ThreadPool;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public final class ExecutorServiceUtils {
     private static final Map<String, Integer> maxProcessorsPerPool = new HashMap<String, Integer>();
@@ -29,6 +26,16 @@ public final class ExecutorServiceUtils {
     public static long getCompletedTaskCount(ExecutorService service) {
         if (service instanceof ThreadPoolExecutor) {
             return ((ThreadPoolExecutor)service).getCompletedTaskCount();
+        }
+
+        return -1;
+    }
+
+    public static long getQueueSize(ExecutorService service) {
+        if (service instanceof ThreadPoolExecutor){
+            ThreadPoolExecutor tpe = (ThreadPoolExecutor)service;
+//            return tpe.getTaskCount() - tpe.getCompletedTaskCount()
+            return tpe.getQueue().size();
         }
 
         return -1;
@@ -80,7 +87,7 @@ public final class ExecutorServiceUtils {
         });
 
         if (service != null) {
-            ExecutorServiceWrapper wrapper = new ExecutorServiceWrapper(service);
+            ExecutorServiceWrapper wrapper = new ExecutorServiceWrapper(service, poolName);
 
             /**
              * Shutdown hook to gracefully terminate the ExecutorService. Gives any existing tasks a chance to
@@ -94,7 +101,10 @@ public final class ExecutorServiceUtils {
         return null;
     }
 
-    static void shutdown(ExecutorService service, ExecutorShutdownParams params) {
+    static void shutdown(ExecutorServiceWrapper wrapper) {
+        ExecutorService service = wrapper.service;
+        ExecutorShutdownParams params = wrapper.shutdownParams;
+
         if (params == null) {
             params = new ExecutorShutdownParams();
         }
@@ -124,6 +134,8 @@ public final class ExecutorServiceUtils {
 
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("[" + wrapper.poolName + "] Queue had max size of: " + wrapper.maxQueueCount);
         }
     }
 
@@ -144,13 +156,20 @@ public final class ExecutorServiceUtils {
         private ExecutorService service;
         private ExecutorShutdownParams shutdownParams = new ExecutorShutdownParams();
         private boolean shutdownCalled = false;
+        private long maxQueueCount = -1;
+        private String poolName = null;
 
-        ExecutorServiceWrapper(ExecutorService service) {
+        ExecutorServiceWrapper(ExecutorService service, String poolName) {
             this.service = service;
+            this.poolName = poolName;
         }
 
-        public ExecutorService service() {
-            return service;
+        public <T> Future<T> submit(Callable<T> task) {
+            try {
+                return service.submit(task);
+            } finally {
+                maxQueueCount = Math.max(maxQueueCount, ExecutorServiceUtils.getQueueSize(service));
+            }
         }
 
         public ExecutorShutdownParams shutdownParams() {
@@ -160,7 +179,7 @@ public final class ExecutorServiceUtils {
         public void shutdown() {
             if (!shutdownCalled) {
                 shutdownCalled = true;
-                ExecutorServiceUtils.shutdown(service, shutdownParams);
+                ExecutorServiceUtils.shutdown(this);
             }
         }
     }

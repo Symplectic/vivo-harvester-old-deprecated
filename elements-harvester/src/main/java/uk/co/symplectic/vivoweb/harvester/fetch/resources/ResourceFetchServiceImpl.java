@@ -32,11 +32,11 @@ public final class ResourceFetchServiceImpl {
         // (This is just to throw a MalformedURLException - we don't need the url object)
         URL validateUrl = new URL(url);
 
-        Future<Boolean> result = wrapper.service().submit(new ElementsFetchTask(api, url, outputFile, callback));
+        Future<Boolean> result = wrapper.submit(new ElementsFetchTask(api, url, outputFile, callback));
     }
 
     static void fetchExternal(String url, File outputFile, PostFetchCallback callback) throws MalformedURLException {
-        Future<Boolean> result = wrapper.service().submit(new ExternalFetchTask(new URL(url), outputFile, callback));
+        Future<Boolean> result = wrapper.submit(new ExternalFetchTask(new URL(url), outputFile, callback));
     }
 
     static class ElementsFetchTask implements Callable<Boolean> {
