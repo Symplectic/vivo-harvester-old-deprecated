@@ -6,6 +6,7 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
+import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.utils.ImageUtils;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
@@ -23,15 +24,18 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private File vivoImageDir;
     private String imageUrlBase = "/harvestedImages/";
 
-    private static String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
+    private String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
 
     private static int VIVO_THUMBNAIL_WIDTH = 200;
     private static int VIVO_THUMBNAIL_HEIGHT = 200;
 
-    public ElementsUserPhotosFetchCallback(ElementsUserInfo userInfo, ElementsRdfStore rdfStore, File vivoImageDir, String imageUrlBase) {
+    public ElementsUserPhotosFetchCallback(ElementsUserInfo userInfo, ElementsRdfStore rdfStore, File vivoImageDir, String vivoBaseURI, String imageUrlBase) {
         this.userInfo = userInfo;
         this.rdfStore = rdfStore;
         this.vivoImageDir = vivoImageDir;
+        if (!StringUtils.isEmpty(vivoBaseURI)) {
+            this.baseUrl = vivoBaseURI;
+        }
         if (imageUrlBase != null) {
             this.imageUrlBase = imageUrlBase;
         }

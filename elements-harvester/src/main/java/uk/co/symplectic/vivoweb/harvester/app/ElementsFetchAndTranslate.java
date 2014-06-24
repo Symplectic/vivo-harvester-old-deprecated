@@ -38,6 +38,7 @@ public class ElementsFetchAndTranslate {
     private static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
 
     private static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
+    private static final String ARG_VIVO_BASE_URI         = "vivoBaseURI";
 
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
@@ -81,6 +82,7 @@ public class ElementsFetchAndTranslate {
         parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_BASE_URI).setDescription("Vivo Base URI").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_API_OBJECTS_PER_PAGE).setDescription("Objects Per Page").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_API_RELS_PER_PAGE).setDescription("Relationships Per Page").withParameter(true, "CONFIG_FILE"));
@@ -129,10 +131,11 @@ public class ElementsFetchAndTranslate {
 
                 String xslFilename = ElementsFetchAndTranslate.getXslFilename(parsedArgs);
                 File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(parsedArgs);
+                String vivoBaseURI = ElementsFetchAndTranslate.getBaseURI(parsedArgs);
 
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
                 objectObserver.setCurrentStaffOnly(currentStaffOnly);
-                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir));
+                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir, vivoBaseURI));
                 fetcher.addObjectObserver(objectObserver);
 
                 ElementsRelationshipTranslateObserver relationshipObserver = new ElementsRelationshipTranslateObserver(objectStore, rdfStore, xslFilename);
@@ -236,6 +239,15 @@ public class ElementsFetchAndTranslate {
 
     private static String getXslFilename(ArgList argList) {
         return argList.get(ARG_XSL_TEMPLATE);
+    }
+
+    private static String getBaseURI(ArgList argList) {
+        String uri = argList.get(ARG_VIVO_BASE_URI);
+        if (StringUtils.isEmpty(uri)) {
+            return "http://vivo.symplectic.co.uk/";
+        }
+
+        return uri;
     }
 
     private static boolean getCurrentStaffOnly(ArgList argList) {

@@ -11,6 +11,7 @@
     <Param name="apiIsSecure">false</Param>
 
     <Param name="vivoImageDir">/vivo/example-elements/data/images</Param>
+    <Param name="vivoBaseURI">http://vivo.symplectic.co.uk/individual/</Param>
 
     <Param name="queryObjects">users,publications,activities</Param><!-- ,grants -->
     <Param name="paramGroups">11,14</Param>

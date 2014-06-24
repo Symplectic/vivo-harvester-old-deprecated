@@ -23,14 +23,16 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
     private File vivoImageDir = null;
+    private String vivoBaseURI = null;
 
     private ElementsAPI elementsApi;
 
-    public ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, File vivoImageDir) {
+    public ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, File vivoImageDir, String vivoBaseURI) {
         this.elementsApi  = elementsApi;
         this.objectStore = objectStore;
         this.rdfStore = rdfStore;
         this.vivoImageDir = vivoImageDir;
+        this.vivoBaseURI = vivoBaseURI;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
                 if (elementsApi != null) {
                     try {
                         fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(objectInfo, "photo"),
-                                new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, null)
+                                new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, vivoBaseURI, null)
                         );
                     } catch (MalformedURLException mue) {
                         // Log error
