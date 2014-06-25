@@ -78,7 +78,7 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:notes','notes')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:pii','pii')" />
                 <xsl:if test="$publicationDateObject/*"><vivo:dateTimeValue rdf:resource="{$publicationDateURI}" /></xsl:if>
-                <xsl:if test="$publicationVenueObject/*"><vivo:hasPublicationVenue rdf:resource="${$publicationVenueURI}" /></xsl:if>
+                <xsl:if test="$publicationVenueObject/*"><vivo:hasPublicationVenue rdf:resource="{$publicationVenueURI}" /></xsl:if>
             </xsl:with-param>
         </xsl:call-template>
 
