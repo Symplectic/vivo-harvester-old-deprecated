@@ -10,6 +10,7 @@ public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
     private ElementsObjectCategory category = null;
     private String groups = null;
     private String modifiedSince = null;
+    private String pages = null;
 
     public ElementsAPIFeedObjectQuery() {
         super();
@@ -23,6 +24,8 @@ public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
         return groups;
     }
 
+    public String getPages() { return pages; }
+
     public String getModifiedSince() {
         return modifiedSince;
     }
@@ -34,6 +37,8 @@ public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
     public void setGroups(String groups) {
         this.groups = groups;
     }
+
+    public void setPages(String pages) { this.pages = pages; }
 
     public void setModifiedSince(String modifiedSince) {
         this.modifiedSince = modifiedSince;

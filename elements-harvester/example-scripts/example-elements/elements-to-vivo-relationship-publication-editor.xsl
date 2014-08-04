@@ -42,7 +42,7 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
-                <vivo:editorOf rdf:resource="{svfn:objectURI($publication)}"/>
+                <vivo:relatedBy rdf:resource="{svfn:objectURI($publication)}"/>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -50,8 +50,8 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
-                <vivo:editor rdf:resource="{svfn:userURI($user)}"/>
+                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
+                <vivo:relatedBy rdf:resource="{svfn:userURI($user)}"/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

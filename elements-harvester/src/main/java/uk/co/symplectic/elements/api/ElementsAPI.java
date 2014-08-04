@@ -28,6 +28,7 @@ public class ElementsAPI {
     // IF you add any value here, you must update getAPI()
     public static final String VERSION_3_7    = "3.7";
     public static final String VERSION_3_7_16 = "3.7.16";
+    public static final String VERSION_4_6 = "4.6";
 
     /**
      * SLF4J Logger
@@ -137,6 +138,18 @@ public class ElementsAPI {
 
         String queryUrl = urlBuilder.buildObjectFeedQuery(url, feedQuery);
 
+        if (queryUrl.contains("/publications")) {
+            queryUrl += "&ever-approved=true";
+        }
+        if (queryUrl.contains("/activities")) {
+            queryUrl += "&query=type%3D%22c-education%22%20OR%20%22distinction%22%20OR%20%22c-professional-work-experience%22";
+        }
+        if (queryUrl.contains("/teaching-activities")) {
+            queryUrl += "&query=type%3D%22course-taught%22";
+        }
+
+        System.out.println(queryUrl);
+
         ElementsFeedPagination pagination = executeQuery(queryUrl, parser);
         if (pagination != null && feedQuery.getProcessAllPages()) {
             while (pagination.getNextURL() != null) {
@@ -166,6 +179,10 @@ public class ElementsAPI {
         ElementsAPIFeedEntryRelationshipParser parser = new ElementsAPIFeedEntryRelationshipParser(handler);
 
         String queryUrl = urlBuilder.buildRelationshipFeedQuery(url, relationshipFeedQuery);
+
+        queryUrl += "&types=8,23,83";
+
+        System.out.println(queryUrl);
 
         ElementsFeedPagination pagination = executeQuery(queryUrl, parser);
         if (pagination != null && relationshipFeedQuery.getProcessAllPages()) {
@@ -311,7 +328,11 @@ public class ElementsAPI {
             urlBuilder = new ElementsAPIv3_7_16URLBuilder();
         } else if (VERSION_3_7.equals(version)) {
             urlBuilder = new ElementsAPIv3_7URLBuilder();
-        } else {
+        }
+          else if (VERSION_4_6.equals(version)) {
+            urlBuilder = new ElementsAPIv3_7_16URLBuilder();
+        }
+        else {
             throw new IllegalArgumentException("Unsupported version");
         }
     }

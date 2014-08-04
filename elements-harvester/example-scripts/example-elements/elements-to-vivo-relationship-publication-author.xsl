@@ -45,7 +45,7 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
-                <vivo:authorInAuthorship rdf:resource="{$authorshipURI}"/>
+                <vivo:relatedBy rdf:resource="{$authorshipURI}"/>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -53,8 +53,8 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
-                <vivo:informationResourceInAuthorship rdf:resource="{$authorshipURI}"/>
+                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
+                <vivo:relatedBy rdf:resource="{$authorshipURI}"/>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -65,8 +65,8 @@
                 <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
-                <vivo:linkedAuthor rdf:resource="{svfn:userURI($user)}"/>
-                <vivo:linkedInformationResource rdf:resource="{svfn:objectURI($publication)}"/>
+                <vivo:relates rdf:resource="{svfn:userURI($user)}"/>
+                <vivo:relates rdf:resource="{svfn:objectURI($publication)}"/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

@@ -32,9 +32,10 @@ public class ElementsFetch {
 
     private String objectsToHarvest;
     private String groupsToHarvest;
+    private String pageToHarvest;
 
-    private int objectsPerPage = 100;
-    private int relationshipsPerPage = 100;
+    private int objectsPerPage = 25;
+    private int relationshipsPerPage = 25;
 
     private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
     private final List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
@@ -58,7 +59,12 @@ public class ElementsFetch {
     }
 
     public void setGroupsToHarvest(String groupsToHarvest) {
+
         this.groupsToHarvest = groupsToHarvest;
+    }
+
+    public void setPageToHarvest(String pageToHarvest) {
+        this.pageToHarvest = pageToHarvest;
     }
 
     public void setObjectsToHarvest(String objectsToHarvest) {
@@ -96,6 +102,10 @@ public class ElementsFetch {
             feedQuery.setGroups(groupsToHarvest);
         }
 
+        if (!StringUtils.isEmpty(pageToHarvest)) {
+            feedQuery.setPages(pageToHarvest);
+        }
+
         // objectsToHarvest is a comma delimited list of object categories that we wish to pull
         // As the API requires that we handle each category separately, we split the string and loop over the contents
         for (String category : objectsToHarvest.split("\\s*,\\s*")) {
@@ -115,6 +125,7 @@ public class ElementsFetch {
         ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
         relationshipFeedQuery.setProcessAllPages(true);
         relationshipFeedQuery.setPerPage(relationshipsPerPage);
+        relationshipFeedQuery.setFullDetails(true);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
         ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships);

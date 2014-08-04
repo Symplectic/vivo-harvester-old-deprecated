@@ -15,12 +15,14 @@
                 xmlns:vivo="http://vivoweb.org/ontology/core#"
                 xmlns:foaf="http://xmlns.com/foaf/0.1/"
                 xmlns:score="http://vivoweb.org/ontology/score#"
+                xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
                 xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
                 xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
                 xmlns:api="http://www.symplectic.co.uk/publications/api"
                 xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config"
                 xmlns:symp="http://www.symplectic.co.uk/ontology/elements/"
                 xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
+                xmlns:obo="http://purl.obolibrary.org/obo/"
                 exclude-result-prefixes="api config xs fn svfn"
                 >
 
@@ -411,6 +413,10 @@
                 </xsl:if>
             </rdf:Description>
         </xsl:if>
+    </xsl:template>
+
+    <xsl:template name="render_empty_rdf">
+        <rdf:RDF></rdf:RDF>
     </xsl:template>
 
     <xsl:template name="_concat_nodes_if">

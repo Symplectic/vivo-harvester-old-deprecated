@@ -58,9 +58,9 @@ final class DeletionServiceImpl {
         if (filesToKeep.contains(toDelete)) {
             log.debug("Attempting delete on kept file - ignoring: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
         } else {
-            log.debug("Deleting file: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
+//            log.debug("Deleting file: " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             if (toDelete.delete()) {
-                log.trace("Deleted " + getCanonicalPath(toDelete) + " " + getCallingMethod());
+//                log.trace("Deleted " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             } else {
                 log.debug("Failed to delete " + getCanonicalPath(toDelete) + " " + getCallingMethod());
             }

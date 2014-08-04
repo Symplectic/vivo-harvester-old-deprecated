@@ -23,6 +23,7 @@ public class ElementsObjectCategory {
     public static final ElementsObjectCategory PROJECT        = new ElementsObjectCategory("project", "projects");
     public static final ElementsObjectCategory PUBLICATION    = new ElementsObjectCategory("publication", "publications");
     public static final ElementsObjectCategory USER           = new ElementsObjectCategory("user", "users");
+    public static final ElementsObjectCategory TEACHING_ACTIVITY           = new ElementsObjectCategory("teaching-activity", "teaching-activities");
 
     private final String singular;
     private final String plural;

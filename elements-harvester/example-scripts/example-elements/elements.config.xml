@@ -7,12 +7,14 @@
  -->
 <Task>
     <Param name="apiEndpoint">http://carbon.symplectic.co.uk:8779/vivo-api</Param>
-    <Param name="apiVersion">3.7.16</Param>
+    <Param name="apiVersion">4.6</Param>
     <Param name="apiIsSecure">false</Param>
+    <!-- <Param name="apiUsername">userName</Param>
+    <Param name="apiPassword">password</Param> -->
 
     <Param name="vivoImageDir">/vivo/example-elements/data/images</Param>
 
-    <Param name="queryObjects">users,publications,activities</Param><!-- ,grants -->
+    <Param name="queryObjects">users,publications,teaching-activities,activities</Param><!-- ,grants -->
     <Param name="paramGroups">11,14</Param>
     <Param name="currentStaffOnly">true</Param>
     <Param name="visibleLinksOnly">true</Param>

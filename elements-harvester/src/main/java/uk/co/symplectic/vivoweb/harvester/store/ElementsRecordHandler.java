@@ -57,7 +57,7 @@ public class ElementsRecordHandler extends RecordHandler {
 	/**
 	 * Default Constructor
 	 */
-	protected ElementsRecordHandler() {
+	public ElementsRecordHandler() {
 		// Nothing to do here
 		// Used by config construction
 		// Should only be used in conjunction with setParams()
