@@ -29,7 +29,6 @@ public class ElementsAPI {
     public static final String VERSION_3_7    = "3.7";
     public static final String VERSION_3_7_16 = "3.7.16";
     public static final String VERSION_4_6 = "4.6";
-    public static final String VERSION_4_9 = "4.9";
 
     /**
      * SLF4J Logger
@@ -139,6 +138,19 @@ public class ElementsAPI {
 
         String queryUrl = urlBuilder.buildObjectFeedQuery(url, feedQuery);
 
+        if (queryUrl.contains("users")) {
+            queryUrl += "&ids=12,19";
+        }
+
+        if (queryUrl.contains("/activities")) {
+            queryUrl += "&query=type%3D%22c-education%22%20OR%20%22distinction%22%20OR%20%22c-professional-work-experience%22";
+//            queryUrl += "&query=type=\"c-education\" OR \"distinction\" OR \"c-professional-work-experience\"";
+        }
+        if (queryUrl.contains("/teaching-activities")) {
+            queryUrl += "&query=type=\"course-taught\"";
+//            queryUrl += "&query=type=\"c-education\" OR \"distinction\" OR \"c-professional-work-experience\"";
+        }
+
         System.out.println(queryUrl);
 
         ElementsFeedPagination pagination = executeQuery(queryUrl, parser);
@@ -170,6 +182,8 @@ public class ElementsAPI {
         ElementsAPIFeedEntryRelationshipParser parser = new ElementsAPIFeedEntryRelationshipParser(handler);
 
         String queryUrl = urlBuilder.buildRelationshipFeedQuery(url, relationshipFeedQuery);
+
+        queryUrl += "&types=23,83";
 
         System.out.println(queryUrl);
 
@@ -315,15 +329,11 @@ public class ElementsAPI {
     private ElementsAPI(String version) {
         if (VERSION_3_7_16.equals(version)) {
             urlBuilder = new ElementsAPIv3_7_16URLBuilder();
-        }
-        else if (VERSION_3_7.equals(version)) {
+        } else if (VERSION_3_7.equals(version)) {
             urlBuilder = new ElementsAPIv3_7URLBuilder();
         }
-        else if (VERSION_4_6.equals(version)) {
-            urlBuilder = new ElementsAPIv4_XURLBuilder();
-        }
-        else if (VERSION_4_9.equals(version)) {
-            urlBuilder = new ElementsAPIv4_XURLBuilder();
+          else if (VERSION_4_6.equals(version)) {
+            urlBuilder = new ElementsAPIv3_7_16URLBuilder();
         }
         else {
             throw new IllegalArgumentException("Unsupported version");
