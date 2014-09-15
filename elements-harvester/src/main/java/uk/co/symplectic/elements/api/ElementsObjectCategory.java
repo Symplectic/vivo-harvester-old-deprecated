@@ -15,14 +15,15 @@ public class ElementsObjectCategory {
 
 //    private static final List<ElementsObjectCategory> availableCategories = new ArrayList<ElementsObjectCategory>();
 
-    public static final ElementsObjectCategory ACTIVITY       = new ElementsObjectCategory("activity", "activities");
-    public static final ElementsObjectCategory CONCEPT        = new ElementsObjectCategory("concept", "concepts");
-    public static final ElementsObjectCategory EQUIPMENT      = new ElementsObjectCategory("equipment", "equipment");
-    public static final ElementsObjectCategory GRANT          = new ElementsObjectCategory("grant", "grants");
-    public static final ElementsObjectCategory ORG_STRUCTURE  = new ElementsObjectCategory("org-structure", "org-structures");
-    public static final ElementsObjectCategory PROJECT        = new ElementsObjectCategory("project", "projects");
-    public static final ElementsObjectCategory PUBLICATION    = new ElementsObjectCategory("publication", "publications");
-    public static final ElementsObjectCategory USER           = new ElementsObjectCategory("user", "users");
+    public static final ElementsObjectCategory ACTIVITY          = new ElementsObjectCategory("activity", "activities");
+    public static final ElementsObjectCategory CONCEPT           = new ElementsObjectCategory("concept", "concepts");
+    public static final ElementsObjectCategory EQUIPMENT         = new ElementsObjectCategory("equipment", "equipment");
+    public static final ElementsObjectCategory GRANT             = new ElementsObjectCategory("grant", "grants");
+    public static final ElementsObjectCategory ORG_STRUCTURE     = new ElementsObjectCategory("org-structure", "org-structures");
+    public static final ElementsObjectCategory PROJECT           = new ElementsObjectCategory("project", "projects");
+    public static final ElementsObjectCategory PUBLICATION       = new ElementsObjectCategory("publication", "publications");
+    public static final ElementsObjectCategory USER              = new ElementsObjectCategory("user", "users");
+    public static final ElementsObjectCategory TEACHING_ACTIVITY = new ElementsObjectCategory("teaching-activity", "teaching-activities");
 
     private final String singular;
     private final String plural;

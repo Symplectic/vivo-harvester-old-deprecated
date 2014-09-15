@@ -28,6 +28,8 @@ public class ElementsObjectInfo {
             return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.ORG_STRUCTURE == category) {
             return new ElementsUnknownObjectInfo(category, id);
+        } else if (ElementsObjectCategory.TEACHING_ACTIVITY == category) {
+            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.PROJECT == category) {
             return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.PUBLICATION == category) {

@@ -28,6 +28,8 @@ public class ElementsAPI {
     // IF you add any value here, you must update getAPI()
     public static final String VERSION_3_7    = "3.7";
     public static final String VERSION_3_7_16 = "3.7.16";
+    public static final String VERSION_4_6 = "4.6";
+    public static final String VERSION_4_9 = "4.9";
 
     /**
      * SLF4J Logger
@@ -311,6 +313,10 @@ public class ElementsAPI {
             urlBuilder = new ElementsAPIv3_7_16URLBuilder();
         } else if (VERSION_3_7.equals(version)) {
             urlBuilder = new ElementsAPIv3_7URLBuilder();
+        } else if (VERSION_4_6.equals(version)) {
+            urlBuilder = new ElementsAPIv4_XURLBuilder();
+        } else if (VERSION_4_9.equals(version)) {
+            urlBuilder = new ElementsAPIv4_XURLBuilder();
         } else {
             throw new IllegalArgumentException("Unsupported version");
         }

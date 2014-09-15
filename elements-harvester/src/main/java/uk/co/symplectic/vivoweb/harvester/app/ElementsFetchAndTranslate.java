@@ -42,6 +42,7 @@ public class ElementsFetchAndTranslate {
 
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
+    private static final String ARG_API_PAGE              = "page";
 
     private static final String ARG_API_OBJECTS_PER_PAGE  = "objectsPerPage";
     private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
@@ -69,6 +70,7 @@ public class ElementsFetchAndTranslate {
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setShortOption('d').setLongOpt(ARG_API_PAGE).setDescription("Restrict Page #").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('e').setLongOpt(ARG_ELEMENTS_API_ENDPOINT).setDescription("Elements API endpoint url").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setShortOption('s').setLongOpt(ARG_ELEMENTS_API_SECURE).setDescription("Is Elements API secure").withParameter(true, "CONFIG_FILE"));
@@ -122,6 +124,7 @@ public class ElementsFetchAndTranslate {
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
                 fetcher.setRelationshipsPerPage(ElementsFetchAndTranslate.getRelationshipsPerPage(parsedArgs));
+                fetcher.setPageToHarvest(ElementsFetchAndTranslate.getPage(parsedArgs));
 
                 ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
                 ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
@@ -220,6 +223,10 @@ public class ElementsFetchAndTranslate {
         return argList.get(ARG_API_QUERY_OBJECTS);
     }
 
+    private static String getPage(ArgList argList) {
+        return argList.get(ARG_API_PAGE);
+    }
+
     private static File getVivoImageDir(ArgList argList) {
         File vivoImageDir = null;
         String vivoImageDirArg = argList.get(ARG_VIVO_IMAGE_DIR);
@@ -272,12 +279,12 @@ public class ElementsFetchAndTranslate {
         String strObjectsPerPage = argList.get(ARG_API_OBJECTS_PER_PAGE);
         if (!StringUtils.isEmpty(strObjectsPerPage)) {
             int tmpObjectsPerPage = Integer.parseInt(strObjectsPerPage, 10);
-            if (tmpObjectsPerPage > 0 && tmpObjectsPerPage < 501) {
+            if (tmpObjectsPerPage > 0 && tmpObjectsPerPage < 1001) {
                 return tmpObjectsPerPage;
             }
         }
 
-        return 100;
+        return 25;
     }
 
     private static int getRelationshipsPerPage(ArgList argList) {
@@ -289,7 +296,7 @@ public class ElementsFetchAndTranslate {
             }
         }
 
-        return 100;
+        return 25;
     }
 
     private static void setExecutorServiceMaxThreadsForPool(String poolName, String maxThreads) {

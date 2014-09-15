@@ -24,6 +24,10 @@ class ElementsAPIv3_7_16URLBuilder implements ElementsAPIURLBuilder {
             queryUrl.addParam("groups", feedQuery.getGroups());
         }
 
+        if (!StringUtils.isEmpty(feedQuery.getPages())) {
+            queryUrl.addParam("page", feedQuery.getPages());
+        }
+
         if (feedQuery.getFullDetails()) {
             queryUrl.addParam("detail", "full");
         }
