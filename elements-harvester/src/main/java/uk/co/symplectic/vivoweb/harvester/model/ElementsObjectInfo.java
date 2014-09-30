@@ -20,8 +20,6 @@ public class ElementsObjectInfo {
     public static ElementsObjectInfo create(ElementsObjectCategory category, String id) {
         if (ElementsObjectCategory.ACTIVITY == category) {
             return new ElementsUnknownObjectInfo(category, id);
-        } else if (ElementsObjectCategory.CONCEPT == category) {
-            return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.EQUIPMENT == category) {
             return new ElementsUnknownObjectInfo(category, id);
         } else if (ElementsObjectCategory.GRANT == category) {

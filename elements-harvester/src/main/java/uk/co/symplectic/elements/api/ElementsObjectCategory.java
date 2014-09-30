@@ -16,7 +16,6 @@ public class ElementsObjectCategory {
 //    private static final List<ElementsObjectCategory> availableCategories = new ArrayList<ElementsObjectCategory>();
 
     public static final ElementsObjectCategory ACTIVITY          = new ElementsObjectCategory("activity", "activities");
-    public static final ElementsObjectCategory CONCEPT           = new ElementsObjectCategory("concept", "concepts");
     public static final ElementsObjectCategory EQUIPMENT         = new ElementsObjectCategory("equipment", "equipment");
     public static final ElementsObjectCategory GRANT             = new ElementsObjectCategory("grant", "grants");
     public static final ElementsObjectCategory ORG_STRUCTURE     = new ElementsObjectCategory("org-structure", "org-structures");
