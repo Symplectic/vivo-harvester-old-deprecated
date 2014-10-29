@@ -1,48 +1,38 @@
----
-layout: page
-title: Symplectic Elements Harvester Extensions for VIVO by Symplectic
-template: home
-tagline: 
----
-<div class="home-hero">
-	<div id="home-news-slides">
-		<ul>
-			{% for post in site.categories.mainstage %}
-			<li>
-				<div class="news-item">
-					<h2><a href="{{ post.link }}">{{ post.title }}</a></h2>
-					{{ post.content }}
-				</div>
-			</li>
-			{% endfor %}
-		</ul>
-	</div>
-	<div id="home-news-slides-nav">
-		<a class="arrow prev">&lt;</a>
-		<a class="arrow next">&gt;</a>
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
 
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Symplectic Elements Harvester Extensions for VIVO : ">
 
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
+    <title>Symplectic Elements Harvester Extensions for VIVO</title>
+  </head>
 
-    <div class="wrapper">
-      <header>
-        <h1 class="header">Symplectic Elements Harvester Extensions for VIVO</h1>
-        <p class="header"></p>
+  <body>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/Symplectic/vivo/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/Symplectic/vivo/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/Symplectic/vivo">View On GitHub</a></li>
-        </ul>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Symplectic/vivo">View on GitHub</a>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/Symplectic">Symplectic</a></p>
+          <h1 id="project_title">Symplectic Elements Harvester Extensions for VIVO</h1>
+          <h2 id="project_tagline"></h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Symplectic/vivo/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Symplectic/vivo/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-      </header>
-      <section>
-        <h1>Symplectic Elements Harvester Extensions for VIVO</h1>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="symplectic-elements-harvester-extensions-for-vivo" class="anchor" href="#symplectic-elements-harvester-extensions-for-vivo"><span class="octicon octicon-link"></span></a>Symplectic Elements Harvester Extensions for VIVO</h1>
 
 <p>This is the second release of the VIVO Harvester extensions that enables the use of Symplectic Elements as a data source for VIVO.</p>
 
@@ -53,11 +43,15 @@ tagline:
 <li>Faster transformation of Elements data to VIVO model</li>
 <li>Improved handling of object relationships</li>
 <li>Supports differential updates to a running VIVO instance</li>
-</ul><h2>Prerequisites</h2>
+</ul>
+
+<h2>
+<a name="prerequisites" class="anchor" href="#prerequisites"><span class="octicon octicon-link"></span></a>Prerequisites</h2>
 
 <p>You must have the Java Development Kit and Maven 2+ installed.</p>
 
-<h2>Usage</h2>
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>Once you have cloned this repository, start a command line / terminal, and navigate to the 'dependencies' directory. From here, run the following command:</p>
 
@@ -66,13 +60,15 @@ tagline:
 
 <p>This will configure your local Maven with all of the dependencies that are not in the central Maven repository, along with the core code from the VIVO harvester project.</p>
 
-<h2>Development Environment</h2>
+<h2>
+<a name="development-environment" class="anchor" href="#development-environment"><span class="octicon octicon-link"></span></a>Development Environment</h2>
 
 <p>Typically, I use IntelliJ IDEA for development (there is a free community edition as well as the commercial release).
 Among the many nice features, is direct support for Maven projects. So, once you have installed the dependencies (above), all you need to do is open the pom.xml file from the elements-harvester directory.
 This will create a project, providing access to all of the extension code, and setting up all of the dependencies as external libraries.</p>
 
-<h3>Running the Harvest from IntelliJ IDEA.</h3>
+<h3>
+<a name="running-the-harvest-from-intellij-idea" class="anchor" href="#running-the-harvest-from-intellij-idea"><span class="octicon octicon-link"></span></a>Running the Harvest from IntelliJ IDEA.</h3>
 
 <p>The harvest script (run-elements.sh) breaks down into a number of components - harvesting Elements, loading a temporary triple-store, creating changesets and applying those changes to VIVO.</p>
 
@@ -91,13 +87,16 @@ This will create a project, providing access to all of the extension code, and s
 <li>Set program arguemnts to: -X elements.config.xml</li>
 <li>Set working directory to: /example-scripts/example-elements</li>
 <li>Save this configuration (click OK).</li>
-</ol><p>You should now be able to run and/or debug the Elements harvester. You will need to ensure that the "elements.config.xml" file inside example-scripts/example-elements has been configured correctly,
+</ol>
+
+<p>You should now be able to run and/or debug the Elements harvester. You will need to ensure that the "elements.config.xml" file inside example-scripts/example-elements has been configured correctly,
 and that you have an Elements instance with a running API endpoint that has been configured for you to access.</p>
 
 <p>When you run this configuration, it will create a 'data' subdirectory within 'example-scripts/example-elements'. Inside the 'data' directory will be 'raw-records' (containing the data as it is retrieved from the API),
 and 'translated-records' (containing the VIVO model RDF).</p>
 
-<h3>Developing Translations of Elements to VIVO model</h3>
+<h3>
+<a name="developing-translations-of-elements-to-vivo-model" class="anchor" href="#developing-translations-of-elements-to-vivo-model"><span class="octicon octicon-link"></span></a>Developing Translations of Elements to VIVO model</h3>
 
 <p>As each installation of Elements will capture data in slightly different ways, the key customization for anyone wanting to implement a VIVO instance with Symplectic Elements will be the translation of the Elements data to the VIVO model.</p>
 
@@ -115,9 +114,12 @@ With IntelliJ IDEA, it is possible to run the XSLT translations directly within 
 <li>Set Choose XML input file to: /example-scripts/example-elements/data/raw-records/.... (choose a user / publication / relationship file, depending on the translation you are working on)</li>
 <li>Uncheck the 'Make' checkbox (you don't need to rebuild the code when running the XSLT translation).</li>
 <li>Save this configuration (click OK).</li>
-</ol><p>You will now be able to run this translation, and the results will appear in a 'console' tab.</p>
+</ol>
 
-<h2>Packaging and Deployment</h2>
+<p>You will now be able to run this translation, and the results will appear in a 'console' tab.</p>
+
+<h2>
+<a name="packaging-and-deployment" class="anchor" href="#packaging-and-deployment"><span class="octicon octicon-link"></span></a>Packaging and Deployment</h2>
 
 <p>When you are ready to move from your workstation to a server (either test or production), then you will need to package up the Elements harvester extensions, and install them on the server.</p>
 
@@ -145,12 +147,22 @@ If the 'previous-harvest' directory gets removed, then you should start again wi
 
 <p>If you wish to clear down your VIVO instance and start again from scratch, you will need to remove the 'previous-harvest' directory.</p>
 
-<h2>Acknowledgements</h2>
+<h2>
+<a name="acknowledgements" class="anchor" href="#acknowledgements"><span class="octicon octicon-link"></span></a>Acknowledgements</h2>
 
 <p>The first release of the Elements-VIVO Harvester extensions was developed by Ian Boston, and can be found at: <a href="https://github.com/ieb/symplectic-harvester">https://github.com/ieb/symplectic-harvester</a></p>
       </section>
-      <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Symplectic Elements Harvester Extensions for VIVO maintained by <a href="https://github.com/Symplectic">Symplectic</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
+    
+
+  </body>
+</html>
