@@ -34,8 +34,11 @@ public class ElementsFetch {
     private String groupsToHarvest;
     private String pageToHarvest;
 
+    // Default of 25 is required by 4.6 API since we request full detail for objects
     private int objectsPerPage = 25;
-    private int relationshipsPerPage = 25;
+
+    // Default of 100 for optimal performance
+    private int relationshipsPerPage = 100;
 
     private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
     private final List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
@@ -124,7 +127,6 @@ public class ElementsFetch {
         ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
         relationshipFeedQuery.setProcessAllPages(true);
         relationshipFeedQuery.setPerPage(relationshipsPerPage);
-        relationshipFeedQuery.setFullDetails(true);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
         ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships);
