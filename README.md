@@ -61,7 +61,7 @@ and 'translated-records' (containing the VIVO model RDF).
 As each installation of Elements will capture data in slightly different ways, the key customization for anyone wanting to implement a VIVO instance with Symplectic Elements will be the translation of the Elements data to the VIVO model.
 
 The Elements API returns records in an XML format, and XSLT is used to convert that to the RDF model.
-With IntelliJ IDEA, it is possible to run the XSLT translations directly within the IDE, and even use a step-by-step debugger on the translation (if you have the commercial version).
+With IntelliJ IDEA and its XSLT-Debugger plugin, it is possible to run the XSLT translations directly within the IDE, and even use a step-by-step debugger on the translation (if you have the commercial version).
 
 In order to do so, you should first run an ElementsFetch (to obtain the data/raw-records directory) and then:
 
@@ -72,6 +72,7 @@ In order to do so, you should first run an ElementsFetch (to obtain the data/raw
 5. Set XSLT script file to: <project dir>/example-scripts/example-elements/symplectic-to-vivo.datamap.xsl
 6. Set Choose XML input file to: <project dir>/example-scripts/example-elements/data/raw-records/.... (choose a user / publication / relationship file, depending on the translation you are working on)
 7. Uncheck the 'Make' checkbox (you don't need to rebuild the code when running the XSLT translation).
+8. If there is an Advanced tab, select it and input "_-Dxslt.transformer.type=saxon9_" in the VM Arguments field to force use of the XSLT 2.0 compatible SAXON 9.x XSLT processor. IntelliJ may default to using Xalan or an earlier version of SAXON which only support XSLT 1.0.
 8. Save this configuration (click OK).
 
 You will now be able to run this translation, and the results will appear in a 'console' tab.
@@ -110,3 +111,5 @@ If you wish to clear down your VIVO instance and start again from scratch, you w
 ## Acknowledgements
 
 The first release of the Elements-VIVO Harvester extensions was developed by Ian Boston, and can be found at: https://github.com/ieb/symplectic-harvester
+
+Additional thanks to Daniel Grant from Emory University for his contribution of 4.6 API code and teaching activity XSLT via pull request.
