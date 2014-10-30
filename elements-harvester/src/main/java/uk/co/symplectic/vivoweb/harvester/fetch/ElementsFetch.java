@@ -32,7 +32,6 @@ public class ElementsFetch {
 
     private String objectsToHarvest;
     private String groupsToHarvest;
-    private String pageToHarvest;
 
     // Default of 25 is required by 4.6 API since we request full detail for objects
     private int objectsPerPage = 25;
@@ -63,10 +62,6 @@ public class ElementsFetch {
 
     public void setGroupsToHarvest(String groupsToHarvest) {
         this.groupsToHarvest = groupsToHarvest;
-    }
-
-    public void setPageToHarvest(String pageToHarvest) {
-        this.pageToHarvest = pageToHarvest;
     }
 
     public void setObjectsToHarvest(String objectsToHarvest) {
@@ -102,10 +97,6 @@ public class ElementsFetch {
 
         if (!StringUtils.isEmpty(groupsToHarvest)) {
             feedQuery.setGroups(groupsToHarvest);
-        }
-
-        if (!StringUtils.isEmpty(pageToHarvest)) {
-            feedQuery.setPages(pageToHarvest);
         }
 
         // objectsToHarvest is a comma delimited list of object categories that we wish to pull

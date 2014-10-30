@@ -24,10 +24,6 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
             queryUrl.addParam("groups", feedQuery.getGroups());
         }
 
-        if (!StringUtils.isEmpty(feedQuery.getPages())) {
-            queryUrl.addParam("page", feedQuery.getPages());
-        }
-
         if (feedQuery.getFullDetails()) {
             queryUrl.addParam("detail", "full");
         }
