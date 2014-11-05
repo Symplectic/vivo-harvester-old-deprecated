@@ -52,6 +52,12 @@ public class ElementsFetchAndTranslate {
     private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
     private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
 
+    // Maximum of 25 is mandated by 4.6 and newer APIs since we request full detail for objects
+    private static final int OBJECTS_PER_PAGE = 25;
+
+    // Default of 100 for optimal performance
+    private static final int RELATIONSHIPS_PER_PAGE = 100;
+
     /**
      * SLF4J Logger
      */
@@ -277,7 +283,7 @@ public class ElementsFetchAndTranslate {
             }
         }
 
-        return 100;
+        return OBJECTS_PER_PAGE;
     }
 
     private static int getRelationshipsPerPage(ArgList argList) {
@@ -289,7 +295,7 @@ public class ElementsFetchAndTranslate {
             }
         }
 
-        return 100;
+        return RELATIONSHIPS_PER_PAGE;
     }
 
     private static void setExecutorServiceMaxThreadsForPool(String poolName, String maxThreads) {

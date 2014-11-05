@@ -46,7 +46,7 @@ In IntelliJ IDEA, what you should do is:
 3. In the dialog, click the + icon at the top of the tree on the left. Choose 'Application'
 4. On the right, change the name to 'ElementsFetch'
 5. Set the main class to: uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch
-6. Set program arguemnts to: -X elements.config.xml
+6. Set program arguments to: -X elements.config.xml
 7. Set working directory to: <project dir>/example-scripts/example-elements
 8. Save this configuration (click OK).
 
@@ -61,7 +61,7 @@ and 'translated-records' (containing the VIVO model RDF).
 As each installation of Elements will capture data in slightly different ways, the key customization for anyone wanting to implement a VIVO instance with Symplectic Elements will be the translation of the Elements data to the VIVO model.
 
 The Elements API returns records in an XML format, and XSLT is used to convert that to the RDF model.
-With IntelliJ IDEA, it is possible to run the XSLT translations directly within the IDE, and even use a step-by-step debugger on the translation (if you have the commercial version).
+With IntelliJ IDEA and its XSLT-Debugger plugin, it is possible to run the XSLT translations directly within the IDE, and even use a step-by-step debugger on the translation (if you have the commercial version).
 
 In order to do so, you should first run an ElementsFetch (to obtain the data/raw-records directory) and then:
 
@@ -72,6 +72,7 @@ In order to do so, you should first run an ElementsFetch (to obtain the data/raw
 5. Set XSLT script file to: <project dir>/example-scripts/example-elements/symplectic-to-vivo.datamap.xsl
 6. Set Choose XML input file to: <project dir>/example-scripts/example-elements/data/raw-records/.... (choose a user / publication / relationship file, depending on the translation you are working on)
 7. Uncheck the 'Make' checkbox (you don't need to rebuild the code when running the XSLT translation).
+8. If there is an Advanced tab, select it and input "_-Dxslt.transformer.type=saxon9_" in the VM Arguments field to force use of the XSLT 2.0 compatible SAXON 9.x XSLT processor. IntelliJ may default to using Xalan or an earlier version of SAXON which only support XSLT 1.0.
 8. Save this configuration (click OK).
 
 You will now be able to run this translation, and the results will appear in a 'console' tab.
@@ -88,16 +89,21 @@ Once it finishes executing, a .tar.gz file will be created in the 'target' direc
 
 To install the Elements harvester on a server, first download the full VIVO Harvester 1.5 release package, from: http://sourceforge.net/projects/vivo/files/VIVO%20Harvester/
 
-Extract this package to a directory on your server. Next, extract the elements-harvester .tar.gz, and copy the 'bin' and 'example-scripts' directories into the location where you extracted the VIVO Harvester pacakage.
-You want to merge these with the existing directories, so the content of the elements-harvester 'bin' directory is added to the contents of the VIVO harvester 'bin' directory, etc.
+Extract this package to a directory on your server. Next, extract the elements-harvester.tar.gz, and copy the 'bin' and 'example-scripts' directories into the location where you extracted the VIVO Harvester package.
 
-Then, go to the example-scripts/example-elements directory. Checking that your elements.config.xml is correctly configured for your Elements instance, and vivo.model.xml is correctly configured for your VIVO instance, you can run:
+You want to merge these with the existing directories, so the contents of the elements-harvester 'bin' directory is added to the contents of the VIVO harvester 'bin' directory, etc.
+
+### TODO: Provide examples of correct configuration for files noted below?
+
+### TODO: Indicate how to specify target version of VIVO ontology, e.g. VIVO 1.5 vs VIVO (VIVO-ISF) 1.6/1.7?
+
+Then, go to the example-scripts/example-elements directory. You'll need to edit the run-elements.sh script to ensure that the HARVESTER_INSTALL_DIR variable is correctly configured. Also verify that your elements.config.xml is correctly configured for your Elements instance, and vivo.model.xml and elements-to-vivo-config.xsl are correctly configured for your VIVO instance. You can then run:
 
 	./run-elements.sh
 	
 To perform the harvest, and apply the data to your VIVO instance. For the first run, your VIVO instance should be empty before you start.
 
-Subsequent exections of ./run-elements.sh will perform differential updates - but ONLY if you retain the 'previous-harvest' directory that is created.
+Subsequent executions of ./run-elements.sh will perform differential updates - but ONLY if you retain the 'previous-harvest' directory that is created.
 If the 'previous-harvest' directory gets removed, then you should start again with a clean VIVO instance.
 
 If you wish to clear down your VIVO instance and start again from scratch, you will need to remove the 'previous-harvest' directory.
@@ -105,3 +111,5 @@ If you wish to clear down your VIVO instance and start again from scratch, you w
 ## Acknowledgements
 
 The first release of the Elements-VIVO Harvester extensions was developed by Ian Boston, and can be found at: https://github.com/ieb/symplectic-harvester
+
+Additional thanks to Daniel Grant from Emory University for his contribution of 4.6 API code and teaching activity XSLT via pull request.
