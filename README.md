@@ -45,9 +45,9 @@ In IntelliJ IDEA, what you should do is:
 2. Select 'edit configurations'
 3. In the dialog, click the + icon at the top of the tree on the left. Choose 'Application'
 4. On the right, change the name to 'ElementsFetch'
-5. Set the main class to: uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch
+5. Set the main class to: uk.co.symplectic.vivoweb.harvester.app.ElementsFetchAndTranslate
 6. Set program arguments to: -X elements.config.xml
-7. Set working directory to: <project dir>/example-scripts/example-elements
+7. Set working directory to: <project dir>/elements-harvester/example-scripts/example-elements/vivo-1.6
 8. Save this configuration (click OK).
 
 You should now be able to run and/or debug the Elements harvester. You will need to ensure that the "elements.config.xml" file inside example-scripts/example-elements has been configured correctly,
@@ -76,6 +76,8 @@ In order to do so, you should first run an ElementsFetch (to obtain the data/raw
 8. Save this configuration (click OK).
 
 You will now be able to run this translation, and the results will appear in a 'console' tab.
+
+### TODO: Could provide alternative instructions on running individual XSL transforms from a command line prompt?
 
 ## Packaging and Deployment
 

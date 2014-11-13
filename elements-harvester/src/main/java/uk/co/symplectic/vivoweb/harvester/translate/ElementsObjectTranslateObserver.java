@@ -11,6 +11,7 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TemplatesHolder;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
@@ -24,6 +25,8 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private ElementsRdfStore rdfStore = null;
 
     private boolean currentStaffOnly = true;
+
+    private ElementsExcludedUsers excludedUsers;
 
     private final TranslationService translationService = new TranslationService();
     private TemplatesHolder templatesHolder = null;
@@ -44,13 +47,21 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
         this.currentStaffOnly = currentStaffOnly;
     }
 
+    public void setExcludedUsers(ElementsExcludedUsers excludedUsers) {
+        this.excludedUsers = excludedUsers;
+    }
+
     public void observe(ElementsStoredObject object) {
         boolean translateObject = true;
 
+        // TODO: This block with two conditions should be replaced with two interceptor objects...
         if (object.getCategory() == ElementsObjectCategory.USER) {
+            ElementsUserInfo userInfo = (ElementsUserInfo)object.getObjectInfo();
             if (currentStaffOnly) {
-                ElementsUserInfo userInfo = (ElementsUserInfo)object.getObjectInfo();
                 translateObject = userInfo.getIsCurrentStaff();
+            }
+            if (excludedUsers.contains(userInfo.getId())) {
+                translateObject = false;  //override if user is in an excluded group
             }
         }
 

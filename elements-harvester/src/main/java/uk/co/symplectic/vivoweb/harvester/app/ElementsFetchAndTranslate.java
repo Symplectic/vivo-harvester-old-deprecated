@@ -13,6 +13,7 @@ import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
@@ -42,6 +43,7 @@ public class ElementsFetchAndTranslate {
 
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
+    private static final String ARG_API_EXCLUDE_GROUPS    = "excludeGroups";
 
     private static final String ARG_API_OBJECTS_PER_PAGE  = "objectsPerPage";
     private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
@@ -75,6 +77,8 @@ public class ElementsFetchAndTranslate {
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_EXCLUDE_GROUPS).setDescription("Groups to exclude users from").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('e').setLongOpt(ARG_ELEMENTS_API_ENDPOINT).setDescription("Elements API endpoint url").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setShortOption('s').setLongOpt(ARG_ELEMENTS_API_SECURE).setDescription("Is Elements API secure").withParameter(true, "CONFIG_FILE"));
@@ -122,8 +126,12 @@ public class ElementsFetchAndTranslate {
                 setExecutorServiceMaxThreadsForPool("ResourceFetchService", parsedArgs.get(ARG_MAX_RESOURCE_THREADS));
 
                 ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI(parsedArgs);
-                ElementsFetch fetcher = new ElementsFetch(elementsAPI);
 
+                ElementsExcludedUsers excludedUsers = new ElementsExcludedUsers(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
+
+                ElementsFetch fetcher = new ElementsFetch(elementsAPI);
+                // TODO: Should we even fetch excluded objects?
+                fetcher.setExcludedUsers(excludedUsers);
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
@@ -141,6 +149,8 @@ public class ElementsFetchAndTranslate {
 
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
                 objectObserver.setCurrentStaffOnly(currentStaffOnly);
+                // TODO: Is this useful as a fail safe? Should we share a global list of excluded user IDs here?
+                objectObserver.setExcludedUsers(excludedUsers);
                 objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir, vivoBaseURI));
                 fetcher.addObjectObserver(objectObserver);
 
@@ -220,6 +230,10 @@ public class ElementsFetchAndTranslate {
 
     private static String getGroupsToHarvest(ArgList argList) {
         return argList.get(ARG_API_PARAMS_GROUPS);
+    }
+
+    private static String getGroupsToExclude(ArgList argList) {
+        return argList.get(ARG_API_EXCLUDE_GROUPS);
     }
 
     private static String getObjectsToHarvest(ArgList argList) {
