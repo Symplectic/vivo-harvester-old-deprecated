@@ -1,0 +1,68 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Symplectic Ltd. All rights reserved.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ ******************************************************************************/
+package uk.co.symplectic.vivoweb.harvester.fetch;
+
+import org.apache.commons.lang.StringUtils;
+import uk.co.symplectic.elements.api.ElementsAPI;
+import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
+import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+
+import java.io.IOException;
+
+public class ElementsExcludedUsersFetch {
+    private ElementsAPI elementsAPI = null;
+    private String groupsToExclude;
+    private ElementsExcludedUsers excludedUsers;
+
+    public ElementsExcludedUsersFetch(ElementsAPI api) {
+        if (api == null) {
+            throw new IllegalStateException();
+        }
+
+        this.elementsAPI = api;
+        this.excludedUsers = new ElementsExcludedUsers();
+    }
+
+    public boolean isConfigured() {
+        return !StringUtils.isEmpty(groupsToExclude);
+    }
+
+    public void setGroupsToExclude(String groupsToExclude) {
+        this.groupsToExclude = groupsToExclude;
+    }
+
+    public ElementsExcludedUsers getExcludedUsers() {
+        return this.excludedUsers;
+    }
+
+    public String getGroupsToExclude() {
+        return groupsToExclude;
+    }
+
+    public void execute() throws IOException {
+        if (this.isConfigured()) {
+            ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
+            ElementsAPIFeedObjectQuery excludedUsersQuery = new ElementsAPIFeedObjectQuery();
+
+            excludedUsersQuery.setFullDetails(false);
+            excludedUsersQuery.setPerPage(100);
+            excludedUsersQuery.setProcessAllPages(true);
+            excludedUsersQuery.setGroups(this.getGroupsToExclude());
+            excludedUsersQuery.setCategory(ElementsObjectCategory.USER);
+
+            ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
+            ElementsObjectExcludeObserver objectObserver = new ElementsObjectExcludeObserver();
+            objectObserver.setExcludedUsers(this.excludedUsers);
+            objectHandler.addObserver(objectObserver);
+
+            elementsAPI.execute(excludedUsersQuery, objectHandler);
+        }
+    }
+}

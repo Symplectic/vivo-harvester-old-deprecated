@@ -11,6 +11,7 @@ import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
@@ -127,11 +128,12 @@ public class ElementsFetchAndTranslate {
 
                 ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI(parsedArgs);
 
-                ElementsExcludedUsers excludedUsers = new ElementsExcludedUsers(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
+                ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
+                excludedUserFetcher.setGroupsToExclude(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
+                excludedUserFetcher.execute();
+                ElementsExcludedUsers excludedUsers = excludedUserFetcher.getExcludedUsers();
 
                 ElementsFetch fetcher = new ElementsFetch(elementsAPI);
-                // TODO: Should we even fetch excluded objects?
-                fetcher.setExcludedUsers(excludedUsers);
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
@@ -149,7 +151,6 @@ public class ElementsFetchAndTranslate {
 
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
                 objectObserver.setCurrentStaffOnly(currentStaffOnly);
-                // TODO: Is this useful as a fail safe? Should we share a global list of excluded user IDs here?
                 objectObserver.setExcludedUsers(excludedUsers);
                 objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir, vivoBaseURI));
                 fetcher.addObjectObserver(objectObserver);

@@ -89,24 +89,6 @@ public class ElementsFetch {
         ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
         ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
 
-        // TODO: Encapsulate this block in the ElementsExcludedUsers object
-        if (excludedUsers.isConfigured()) {
-            ElementsAPIFeedObjectQuery excludedUsersQuery = new ElementsAPIFeedObjectQuery();
-
-            excludedUsersQuery.setFullDetails(false);
-            excludedUsersQuery.setPerPage(objectsPerPage);
-            excludedUsersQuery.setProcessAllPages(true);
-            excludedUsersQuery.setGroups(excludedUsers.getGroupsToExclude());
-            excludedUsersQuery.setCategory(ElementsObjectCategory.USER);
-
-            ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
-            ElementsObjectExcludeObserver objectObserver = new ElementsObjectExcludeObserver();
-            objectObserver.setExcludedUsers(excludedUsers);
-            objectHandler.addObserver(objectObserver);
-
-            elementsAPI.execute(excludedUsersQuery, objectHandler);
-        }
-
         ElementsAPIFeedObjectQuery feedQuery = new ElementsAPIFeedObjectQuery();
 
         // When retrieving objects, always get the full record

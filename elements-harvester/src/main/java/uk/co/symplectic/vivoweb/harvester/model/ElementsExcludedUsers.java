@@ -6,26 +6,11 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.model;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class ElementsExcludedUsers {
-    private String groupsToExclude;
     private final Set<String> excludedUserIds = new LinkedHashSet<String>();
-
-    public ElementsExcludedUsers(String groupsToExclude) {
-        this.groupsToExclude = groupsToExclude;
-    }
-
-    public String getGroupsToExclude() {
-        return groupsToExclude;
-    }
-
-    public boolean isConfigured() {
-        return !StringUtils.isEmpty(groupsToExclude);
-    }
 
     public boolean contains(String userId) {
         return excludedUserIds.contains(userId);
