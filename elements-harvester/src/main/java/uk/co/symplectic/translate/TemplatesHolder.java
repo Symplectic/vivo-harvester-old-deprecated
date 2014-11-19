@@ -8,6 +8,7 @@ package uk.co.symplectic.translate;
 
 import javax.xml.transform.Templates;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -23,11 +24,12 @@ public class TemplatesHolder {
 
     public Templates getTemplates() {
         if (myTemplates.get() == null) {
-            try {
-                Templates template = translationService.compileSource(new BufferedInputStream(new FileInputStream(xslFilename)));
+            File xslFile = new File(xslFilename);
+            if (xslFile.exists()) {
+                Templates template = translationService.compileSource(xslFile);
                 myTemplates.set(template);
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException("XSL Translation file not found", e);
+            } else {
+                throw new IllegalStateException("XSL Translation file not found: " + xslFilename);
             }
         }
 

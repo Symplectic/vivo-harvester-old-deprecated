@@ -44,8 +44,8 @@ public final class TranslationService {
         return TranslationServiceImpl.compileSource(new StreamSource(stream));
     }
 
-    public Templates compileSource(File file) throws FileNotFoundException {
-        return TranslationServiceImpl.compileSource(new StreamSource(new BufferedInputStream(new FileInputStream(file))));
+    public Templates compileSource(File file) {
+        return TranslationServiceImpl.compileSource(new StreamSource(file));
     }
 
     public void translate(File input, File output, TemplatesHolder translationTemplates) {
