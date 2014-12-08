@@ -10,16 +10,16 @@ import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class ElementsExcludedUsersFetch {
     private ElementsAPI elementsAPI = null;
     private String groupsToExclude;
-    private ElementsExcludedUsers excludedUsers;
+    private Set<String> excludedUserIds;
 
     public ElementsExcludedUsersFetch(ElementsAPI api) {
         if (api == null) {
@@ -27,7 +27,6 @@ public class ElementsExcludedUsersFetch {
         }
 
         this.elementsAPI = api;
-        this.excludedUsers = new ElementsExcludedUsers();
     }
 
     public boolean isConfigured() {
@@ -38,8 +37,8 @@ public class ElementsExcludedUsersFetch {
         this.groupsToExclude = groupsToExclude;
     }
 
-    public ElementsExcludedUsers getExcludedUsers() {
-        return this.excludedUsers;
+    public Set<String> getExcludedUsers() {
+        return this.excludedUserIds;
     }
 
     public String getGroupsToExclude() {
@@ -59,10 +58,11 @@ public class ElementsExcludedUsersFetch {
 
             ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
             ElementsObjectExcludeObserver objectObserver = new ElementsObjectExcludeObserver();
-            objectObserver.setExcludedUsers(this.excludedUsers);
             objectHandler.addObserver(objectObserver);
 
             elementsAPI.execute(excludedUsersQuery, objectHandler);
+
+            this.excludedUserIds = objectObserver.getExcludedUsers();
         }
     }
 }

@@ -7,22 +7,25 @@
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 // TODO: This would preferably be an interceptor
 public class ElementsObjectExcludeObserver implements ElementsObjectObserver {
-    private ElementsExcludedUsers excludedUsers;
+    private final Set<String> excludedUserIds = new LinkedHashSet<String>();
 
-    public void setExcludedUsers(ElementsExcludedUsers excludedUsers) {
-        this.excludedUsers = excludedUsers;
+    public Set<String> getExcludedUsers() {
+        return Collections.unmodifiableSet(this.excludedUserIds);
     }
 
     public void observe(ElementsStoredObject object) {
         if (object.getCategory() == ElementsObjectCategory.USER) {
             ElementsUserInfo userInfo = (ElementsUserInfo)object.getObjectInfo();
-            excludedUsers.addUserId(userInfo.getId());
+            excludedUserIds.add(userInfo.getId());
         }
     }
 }

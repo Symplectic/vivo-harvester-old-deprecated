@@ -11,7 +11,6 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TemplatesHolder;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
@@ -19,6 +18,7 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private final List<ElementsObjectTranslateStagesObserver> objectObservers = new ArrayList<ElementsObjectTranslateStagesObserver>();
@@ -26,7 +26,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
 
     private boolean currentStaffOnly = true;
 
-    private ElementsExcludedUsers excludedUsers;
+    private Set<String> excludedUsers;
 
     private final TranslationService translationService = new TranslationService();
     private TemplatesHolder templatesHolder = null;
@@ -47,7 +47,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
         this.currentStaffOnly = currentStaffOnly;
     }
 
-    public void setExcludedUsers(ElementsExcludedUsers excludedUsers) {
+    public void setExcludedUsers(Set<String> excludedUsers) {
         this.excludedUsers = excludedUsers;
     }
 

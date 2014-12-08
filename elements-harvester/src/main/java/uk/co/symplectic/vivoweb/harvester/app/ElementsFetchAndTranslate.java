@@ -14,7 +14,6 @@ import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
@@ -23,6 +22,7 @@ import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslat
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public class ElementsFetchAndTranslate {
     private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
@@ -131,7 +131,7 @@ public class ElementsFetchAndTranslate {
                 ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
                 excludedUserFetcher.setGroupsToExclude(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
                 excludedUserFetcher.execute();
-                ElementsExcludedUsers excludedUsers = excludedUserFetcher.getExcludedUsers();
+                Set<String> excludedUsers = excludedUserFetcher.getExcludedUsers();
 
                 ElementsFetch fetcher = new ElementsFetch(elementsAPI);
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
@@ -265,6 +265,7 @@ public class ElementsFetchAndTranslate {
     private static String getBaseURI(ArgList argList) {
         String uri = argList.get(ARG_VIVO_BASE_URI);
         if (StringUtils.isEmpty(uri)) {
+            // TODO: Is there a better way? This causes problems...
             return "http://vivo.symplectic.co.uk/";
         }
 

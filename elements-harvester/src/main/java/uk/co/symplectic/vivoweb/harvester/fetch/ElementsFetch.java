@@ -14,7 +14,6 @@ import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.translate.TranslationService;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsExcludedUsers;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
@@ -31,8 +30,6 @@ public class ElementsFetch {
 
     private String objectsToHarvest;
     private String groupsToHarvest;
-
-    private ElementsExcludedUsers excludedUsers;
 
     // Default of 25 is required by 4.6 API since we request full detail for objects
     private int objectsPerPage = 25;
@@ -63,10 +60,6 @@ public class ElementsFetch {
 
     public void setGroupsToHarvest(String groupsToHarvest) {
         this.groupsToHarvest = groupsToHarvest;
-    }
-
-    public void setExcludedUsers(ElementsExcludedUsers excludedUsers) {
-        this.excludedUsers = excludedUsers;
     }
 
     public void setObjectsToHarvest(String objectsToHarvest) {

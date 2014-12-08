@@ -24,6 +24,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private File vivoImageDir;
     private String imageUrlBase = "/harvestedImages/";
 
+    // TODO: Is there a better way? This causes problems...
     private String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
 
     private static int VIVO_THUMBNAIL_WIDTH = 200;
