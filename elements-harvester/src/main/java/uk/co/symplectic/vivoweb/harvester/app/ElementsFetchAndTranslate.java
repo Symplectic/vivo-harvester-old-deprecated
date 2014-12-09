@@ -243,6 +243,7 @@ public class ElementsFetchAndTranslate {
 
     private static File getVivoImageDir(ArgList argList) {
         File vivoImageDir = null;
+        // TODO: This should be a required configuration parameter that specifies a path accessible by the VIVO web container
         String vivoImageDirArg = argList.get(ARG_VIVO_IMAGE_DIR);
         if (!StringUtils.isEmpty(vivoImageDirArg)) {
             vivoImageDir = new File(vivoImageDirArg);
@@ -265,7 +266,7 @@ public class ElementsFetchAndTranslate {
     private static String getBaseURI(ArgList argList) {
         String uri = argList.get(ARG_VIVO_BASE_URI);
         if (StringUtils.isEmpty(uri)) {
-            // TODO: Is there a better way? This causes problems...
+            // TODO: This should be a required configuration parameter, and not optional with a default value
             return "http://vivo.symplectic.co.uk/";
         }
 
