@@ -11,12 +11,12 @@ import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 // TODO: This would preferably be an interceptor
 public class ElementsObjectExcludeObserver implements ElementsObjectObserver {
-    private final Set<String> excludedUserIds = new LinkedHashSet<String>();
+    private final Set<String> excludedUserIds = new HashSet<String>();
 
     public Set<String> getExcludedUsers() {
         return Collections.unmodifiableSet(this.excludedUserIds);
