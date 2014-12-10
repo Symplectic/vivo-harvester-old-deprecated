@@ -17,9 +17,7 @@ import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
-import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

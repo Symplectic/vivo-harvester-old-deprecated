@@ -11,6 +11,7 @@ import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
@@ -21,6 +22,7 @@ import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslat
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public class ElementsFetchAndTranslate {
     private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
@@ -42,6 +44,7 @@ public class ElementsFetchAndTranslate {
 
     private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
     private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
+    private static final String ARG_API_EXCLUDE_GROUPS    = "excludeGroups";
 
     private static final String ARG_API_OBJECTS_PER_PAGE  = "objectsPerPage";
     private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
@@ -75,6 +78,8 @@ public class ElementsFetchAndTranslate {
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_EXCLUDE_GROUPS).setDescription("Groups to exclude users from").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('e').setLongOpt(ARG_ELEMENTS_API_ENDPOINT).setDescription("Elements API endpoint url").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setShortOption('s').setLongOpt(ARG_ELEMENTS_API_SECURE).setDescription("Is Elements API secure").withParameter(true, "CONFIG_FILE"));
@@ -122,8 +127,13 @@ public class ElementsFetchAndTranslate {
                 setExecutorServiceMaxThreadsForPool("ResourceFetchService", parsedArgs.get(ARG_MAX_RESOURCE_THREADS));
 
                 ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI(parsedArgs);
-                ElementsFetch fetcher = new ElementsFetch(elementsAPI);
 
+                ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
+                excludedUserFetcher.setGroupsToExclude(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
+                excludedUserFetcher.execute();
+                Set<String> excludedUsers = excludedUserFetcher.getExcludedUsers();
+
+                ElementsFetch fetcher = new ElementsFetch(elementsAPI);
                 fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
                 fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
                 fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
@@ -141,6 +151,7 @@ public class ElementsFetchAndTranslate {
 
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
                 objectObserver.setCurrentStaffOnly(currentStaffOnly);
+                objectObserver.setExcludedUsers(excludedUsers);
                 objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir, vivoBaseURI));
                 fetcher.addObjectObserver(objectObserver);
 
@@ -222,12 +233,17 @@ public class ElementsFetchAndTranslate {
         return argList.get(ARG_API_PARAMS_GROUPS);
     }
 
+    private static String getGroupsToExclude(ArgList argList) {
+        return argList.get(ARG_API_EXCLUDE_GROUPS);
+    }
+
     private static String getObjectsToHarvest(ArgList argList) {
         return argList.get(ARG_API_QUERY_OBJECTS);
     }
 
     private static File getVivoImageDir(ArgList argList) {
         File vivoImageDir = null;
+        // TODO: This should be a required configuration parameter that specifies a path accessible by the VIVO web container
         String vivoImageDirArg = argList.get(ARG_VIVO_IMAGE_DIR);
         if (!StringUtils.isEmpty(vivoImageDirArg)) {
             vivoImageDir = new File(vivoImageDirArg);
@@ -250,6 +266,7 @@ public class ElementsFetchAndTranslate {
     private static String getBaseURI(ArgList argList) {
         String uri = argList.get(ARG_VIVO_BASE_URI);
         if (StringUtils.isEmpty(uri)) {
+            // TODO: This should be a required configuration parameter, and not optional with a default value
             return "http://vivo.symplectic.co.uk/";
         }
 

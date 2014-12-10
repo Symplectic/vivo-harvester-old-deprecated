@@ -24,6 +24,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private File vivoImageDir;
     private String imageUrlBase = "/harvestedImages/";
 
+    // TODO: This should be a required configuration parameter, and not optional with a default value
     private String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
 
     private static int VIVO_THUMBNAIL_WIDTH = 200;
@@ -36,6 +37,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
         if (!StringUtils.isEmpty(vivoBaseURI)) {
             this.baseUrl = vivoBaseURI;
         }
+        // TODO: The only caller of this method hard-codes this parameter to a null value
         if (imageUrlBase != null) {
             this.imageUrlBase = imageUrlBase;
         }
