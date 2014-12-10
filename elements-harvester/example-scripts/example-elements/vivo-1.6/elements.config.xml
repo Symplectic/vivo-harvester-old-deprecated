@@ -6,19 +6,22 @@
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
 <Task>
-    <Param name="apiEndpoint">https://symappdev1.cc.emory.edu:8091/elements-api/v4.6/</Param>
-    <Param name="apiVersion">4.6</Param>
+    <Param name="apiEndpoint">https://elementshost:8091/standard/v4.9</Param>
+    <Param name="apiVersion">4.9</Param>
     <Param name="apiIsSecure">true</Param>
-    <Param name="apiUsername">apitest</Param>
-    <Param name="apiPassword">apitest</Param>
+    <Param name="apiUsername">apiuser</Param>
+    <Param name="apiPassword">apipassword</Param>
 
-    <Param name="vivoImageDir">/vivo/example-elements/data/images</Param>
-    <Param name="objectsPerPage">25</Param>
-    <Param name="relationshipsPerPage">25</Param>
-    <Param name="queryObjects">users,publications</Param><!-- ,grants -->
-    <!--<Param name="paramGroups">11,14</Param>-->
+    <Param name="vivoImageDir">/Library/Tomcat/webapps/vivo</Param>
+    <Param name="vivoBaseURI">http://localhost:8080/vivo/individual/</Param>
+
+    <Param name="queryObjects">users,publications</Param>
     <Param name="currentStaffOnly">true</Param>
     <Param name="visibleLinksOnly">true</Param>
+
+    <!-- Defaults to fetching users in all groups, but can specify group IDs to include or exclude
+    <Param name="paramGroups">3</Param>
+    <Param name="excludeGroups">5</Param> -->
 
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
