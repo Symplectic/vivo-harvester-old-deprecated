@@ -10,7 +10,7 @@
 
 	<groupId>uk.co.symplectic</groupId>
 	<artifactId>elements-vivo-harvester</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 	
 	<name>Symplectic Elements VIVO Harvester</name>

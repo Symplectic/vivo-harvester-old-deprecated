@@ -17,9 +17,7 @@ import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
-import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,10 @@ public class ElementsFetch {
     private String objectsToHarvest;
     private String groupsToHarvest;
 
-    private int objectsPerPage = 100;
+    // Default of 25 is required by 4.6 API since we request full detail for objects
+    private int objectsPerPage = 25;
+
+    // Default of 100 for optimal performance
     private int relationshipsPerPage = 100;
 
     private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
