@@ -25,6 +25,10 @@
                 exclude-result-prefixes="xsl xs rdf rdfs bibo vivo vcard foaf score ufVivo vitro api symp svfn config obo"
         >
 
+    <!-- TODO: added here to support debugging/testing, and should be removed prior to committing changes
+    <xsl:import href="elements-to-vivo-config.xsl" />
+    -->
+
     <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
@@ -36,35 +40,44 @@
         <xsl:variable name="isAcademic"><xsl:value-of select="api:is-academic" /></xsl:variable>
         <xsl:variable name="firstName"><xsl:value-of select="api:first-name" /></xsl:variable>
         <xsl:variable name="lastName"><xsl:value-of select="api:last-name" /></xsl:variable>
+        <xsl:variable name="overview"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='overview']/api:text" /></xsl:variable>
+
         <xsl:variable name="vcardEmail"><xsl:value-of select="api:email-address" /></xsl:variable>
+        <xsl:variable name="vcardOtherEmails"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='email-addresses']" /></xsl:variable>
+        <xsl:variable name="vcardAddresses"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='addresses']" /></xsl:variable>
+        <xsl:variable name="vcardPhoneNumbers"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='phone-numbers']" /></xsl:variable>
+        <xsl:variable name="vcardWebSites"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='personal-websites']" /></xsl:variable>
 
         <!-- XXX: XSL from Emory pull request and is not generalized. Included as an example of
                   referencing organisation-defined data via API, with related XSL commented out below
-        <xsl:variable name="employeeType"><xsl:value-of select="api:organisation-defined-data[@field-name='Employee Type']" /></xsl:variable>
         <xsl:variable name="vcardPhone"><xsl:value-of select="api:organisation-defined-data[@field-name='Work Telephone']" /></xsl:variable>
+        <xsl:variable name="employeeType"><xsl:value-of select="api:organisation-defined-data[@field-name='Employee Type']" /></xsl:variable>
         -->
-
-        <xsl:variable name="preferredTitle"><xsl:value-of select="api:title" /></xsl:variable>
-        <xsl:variable name="overview"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='overview']/api:text" /></xsl:variable>
 
         <xsl:variable name="degrees"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='degrees']" /></xsl:variable>
         <xsl:variable name="academic-appointments"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='academic-appointments']" /></xsl:variable>
         <xsl:variable name="non-academic-employments"><xsl:value-of select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='non-academic-employments']" /></xsl:variable>
 
         <xsl:variable name="userURI" select="svfn:userURI(.)" />
-
         <xsl:variable name="vcardURI" select="concat($baseURI, 'vcard-', $userId)" />
-        <xsl:variable name="vcardEmailURI" select="concat($baseURI, 'vcardEmail-', $userId)" />
         <xsl:variable name="vcardNameURI" select="concat($baseURI, 'vcardName-', $userId)" />
-        <!-- XXX: Example of using organisation-defined data from API
-        <xsl:variable name="vcardPhoneURI" select="concat($baseURI, 'vcardTelephone-', $userId)" /> -->
+        <xsl:variable name="vcardEmailURI" select="concat($baseURI, 'vcardEmail-', $userId)" />
+
+        <!-- XXX: Some values may come through in different fields depending on your version of Elements,
+                  your institutional data sources, or your custom HR ingest
+        <xsl:variable name="preferredTitle"><xsl:value-of select="api:title" /></xsl:variable>
+        -->
+        <xsl:variable name="titlePosition"><xsl:value-of select="api:position" /></xsl:variable>
+        <xsl:variable name="titleDepartment"><xsl:value-of select="api:department" /></xsl:variable>
+        <xsl:variable name="preferredTitle" select="concat($titlePosition, ', ', $titleDepartment)" />
+        <xsl:variable name="vcardTitleURI" select="concat($baseURI, 'vcardTitle-', $userId)" />
 
         <!-- Output RDF for individual representing the user -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="$userURI" />
             <xsl:with-param name="rdfNodes">
                 <xsl:choose>
-                    <!-- TODO: should this be only presented as a custom field? -->
+                    <!-- XXX: should this be only presented as a custom field? -->
                     <xsl:when test="$isAcademic = 'true'">
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FacultyMember" />
                     </xsl:when>
@@ -82,18 +95,8 @@
                 <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
                 <rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" />
 
-                <!-- TODO: is this in the right place??? Should this be an asserted property of the vCard??? -->
-                <xsl:if test="$vcardEmail">
-                    <rdf:type rdf:resource="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#Flag1Value1Thing" />
-                </xsl:if>
-
                 <rdfs:label><xsl:value-of select="$lastName" />, <xsl:value-of select="$firstName" /></rdfs:label>
                 <obo:ARG_2000028 rdf:resource="{$vcardURI}" />
-
-                <!-- TODO: this has been moved into the vCard, but also seeing an empty string "" property in v1.7 -->
-                <xsl:if test="$preferredTitle">
-                    <vivo:preferredTitle><xsl:value-of select="$preferredTitle" /></vivo:preferredTitle>
-                </xsl:if>
 
                 <xsl:if test="$overview">
                     <vivo:overview><xsl:value-of select="$overview" /></vivo:overview>
@@ -107,13 +110,6 @@
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Individual" />
                 <vcard:hasName rdf:resource="{$vcardNameURI}" />
-                <xsl:if test="$vcardEmail">
-                    <vcard:hasEmail rdf:resource="{$vcardEmailURI}" />
-                </xsl:if>
-                <!-- XXX: Example of using organisation-defined data from API
-                <xsl:if test="$vcardPhone">
-                    <vcard:hasTelephone rdf:resource="{$vcardPhoneURI}" />
-                </xsl:if> -->
                 <obo:ARG_2000029 rdf:resource="{svfn:userURI(.)}" />
             </xsl:with-param>
         </xsl:call-template>
@@ -128,7 +124,25 @@
             </xsl:with-param>
         </xsl:call-template>
 
-        <!-- Output RDF for work vcard:Email individual -->
+        <!-- Output RDF for vcard:Title individual -->
+        <xsl:if test="$preferredTitle">
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$vcardTitleURI" />
+                <xsl:with-param name="rdfNodes">
+                    <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Title" />
+                    <vcard:title><xsl:value-of select="$preferredTitle" /></vcard:title>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$vcardURI" />
+                <xsl:with-param name="rdfNodes">
+                    <vcard:hasTitle rdf:resource="{$vcardTitleURI}" />
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+
+        <!-- Output RDF for primary (work) vcard:Email individual -->
         <xsl:if test="$vcardEmail">
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$vcardEmailURI" />
@@ -139,26 +153,118 @@
                     <vcard:email><xsl:value-of select="$vcardEmail" /></vcard:email>
                 </xsl:with-param>
             </xsl:call-template>
-        </xsl:if>
 
-        <!-- Output RDF for vcard:Telephone individual -->
-        <!-- XXX: Example of using organisation-defined data from API
-        <xsl:if test="$vcardPhone">
             <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$vcardPhoneURI" />
+                <xsl:with-param name="objectURI" select="$vcardURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Telephone" />
-                    <vcard:telephone>
-                        <xsl:text>(</xsl:text>
-                        <xsl:value-of select="substring($vcardPhone,1,3)" />
-                        <xsl:text>)</xsl:text>
-                        <xsl:value-of select="substring($vcardPhone,4,3)" />
-                        <xsl:text>-</xsl:text>
-                        <xsl:value-of select="substring($vcardPhone,7,4)" />
-                    </vcard:telephone>
+                    <vcard:hasEmail rdf:resource="{$vcardEmailURI}" />
                 </xsl:with-param>
             </xsl:call-template>
-        </xsl:if> -->
+        </xsl:if>
+
+        <!-- Output RDF for additional vcard:Email individuals -->
+        <xsl:if test="$vcardOtherEmails">
+            <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='email-addresses']/api:email-addresses/api:email-address[@privacy='public']">
+                <xsl:variable name="vcardOtherEmail" select="api:address" />
+                <xsl:variable name="vcardOtherEmailURI" select="concat($baseURI, 'vcardOtherEmail-', $userId, '-', translate($vcardOtherEmail, ' ', ''))" />
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardOtherEmailURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Email" />
+                        <vcard:email><xsl:value-of select="$vcardOtherEmail" /></vcard:email>
+                    </xsl:with-param>
+                </xsl:call-template>
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <vcard:hasEmail rdf:resource="{$vcardOtherEmailURI}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
+
+        <!-- Output RDF for vcard:Address individuals -->
+        <xsl:if test="$vcardAddresses">
+            <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='addresses']/api:addresses/api:address[@privacy='public']">
+                <xsl:variable name="vcardAddressOrganisation" select="if (api:line[@type='organisation']) then concat(api:line[@type='organisation'], '; ') else ''" />
+                <xsl:variable name="vcardAddressDepartment" select="if (api:line[@type='suborganisation']) then concat(api:line[@type='suborganisation'], '; ') else ''" />
+                <xsl:variable name="vcardAddressStreet" select="api:line[@type='street-address']" />
+                <xsl:variable name="vcardAddressCity" select="api:line[@type='city']" />
+                <xsl:variable name="vcardAddressState" select="api:line[@type='state']" />
+                <xsl:variable name="vcardAddressZip" select="api:line[@type='zip-code']" />
+                <xsl:variable name="vcardAddressCountry" select="api:line[@type='country']" />
+                <xsl:variable name="vcardAddressURI" select="concat($baseURI, 'vcardAddress-', $userId, '-', translate($vcardAddressStreet, ' ', ''))" />
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardAddressURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Address" />
+                        <vcard:streetAddress><xsl:value-of select="concat($vcardAddressOrganisation, $vcardAddressDepartment, $vcardAddressStreet)" /></vcard:streetAddress>
+                        <vcard:locality><xsl:value-of select="$vcardAddressCity" /></vcard:locality>
+                        <vcard:postalCode><xsl:value-of select="$vcardAddressZip" /></vcard:postalCode>
+                        <vcard:region><xsl:value-of select="$vcardAddressState" /></vcard:region>
+                        <vcard:country><xsl:value-of select="$vcardAddressCountry" /></vcard:country>
+                    </xsl:with-param>
+                </xsl:call-template>
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <vcard:hasAddress rdf:resource="{$vcardAddressURI}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
+
+        <!-- Output RDF for vcard:Telephone individuals -->
+        <xsl:if test="$vcardPhoneNumbers">
+            <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='phone-numbers']/api:phone-numbers/api:phone-number[@privacy='public']">
+                <xsl:variable name="vcardPhoneNumber" select="api:number" />
+                <xsl:variable name="vcardPhoneNumberURI" select="concat($baseURI, 'vcardPhoneNumber-', $userId, '-', translate($vcardPhoneNumber, ' ', ''))" />
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardPhoneNumberURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Telephone" />
+                        <vcard:telephone><xsl:value-of select="$vcardPhoneNumber" /></vcard:telephone>
+                    </xsl:with-param>
+                </xsl:call-template>
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <vcard:hasTelephone rdf:resource="{$vcardPhoneNumberURI}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
+
+        <!-- Output RDF for vcard:URL individuals -->
+        <xsl:if test="$vcardWebSites">
+            <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='personal-websites']/api:web-addresses/api:web-address[@privacy='public']">
+                <xsl:variable name="vcardUrl" select="api:url" />
+                <xsl:variable name="vcardUrlLabel" select="api:label" />
+                <xsl:variable name="vcardUrlURI" select="concat($baseURI, 'vcardUrl-', $userId, '-', translate($vcardUrl, ' ', ''))" />
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardUrlURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
+                        <vcard:url><xsl:value-of select="$vcardUrl" /></vcard:url>
+                        <rdfs:label><xsl:value-of select="$vcardUrlLabel" /></rdfs:label>
+                    </xsl:with-param>
+                </xsl:call-template>
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$vcardURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <vcard:hasURL rdf:resource="{$vcardUrlURI}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
 
         <xsl:if test="$degrees">
             <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='degrees']/api:degrees/api:degree[@privacy='public']">
@@ -183,12 +289,12 @@
                         <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
                         <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
+                        <!-- XXX: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
                     </xsl:with-param>
                 </xsl:call-template>
 
                 <!-- Output RDF for vivo:AcademicDegree individual -->
-                <!-- TODO: Might be possible to map to pre-defined VIVO 1.7 degrees, e.g. http://vivoweb.org/ontology/degree/academicDegree33 (B.S. Bachelor of Science) -->
+                <!-- XXX: Consider future mapping to existing VIVO-ISF degree individuals, e.g. http://vivoweb.org/ontology/degree/academicDegree33 (B.S. Bachelor of Science) -->
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="$degreeURI" />
                     <xsl:with-param name="rdfNodes">
@@ -297,7 +403,7 @@
 
         <xsl:if test="$academic-appointments">
             <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='academic-appointments']/api:academic-appointments/api:academic-appointment[@privacy='public']">
-                <xsl:variable name="appointmentURI" select="concat($baseURI, 'appointment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
+                <xsl:variable name="appointmentURI" select="concat($baseURI, 'appointment-', $userId, '-', position())" />  <!-- XXX: consider alternatives to using position() as a counter -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
                 <xsl:variable name="orgName" select="api:institution/api:line[@type='organisation']" />
@@ -311,7 +417,7 @@
                         <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
                         <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
+                        <!-- XXX: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
                     </xsl:with-param>
                 </xsl:call-template>
 
@@ -404,7 +510,7 @@
 
         <xsl:if test="$non-academic-employments">
             <xsl:for-each select="api:records/api:record[@source-name='manual']/api:native/api:field[@name='non-academic-employments']/api:non-academic-employments/api:non-academic-employment[@privacy='public']">
-                <xsl:variable name="appointmentURI" select="concat($baseURI, 'employment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
+                <xsl:variable name="appointmentURI" select="concat($baseURI, 'employment-', $userId, '-', position())" />  <!-- XXX: consider alternatives to using position() as a counter -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
                 <xsl:variable name="orgName" select="api:employer/api:line[@type='organisation']" />
@@ -418,7 +524,7 @@
                         <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
                         <vitro:mostSpecificType rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
                         <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
+                        <!-- XXX: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
                     </xsl:with-param>
                 </xsl:call-template>
 
