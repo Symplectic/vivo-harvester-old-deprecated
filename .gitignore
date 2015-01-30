@@ -1,7 +1,7 @@
 # Compiled files
 *.class
 
-# Package Files
+# Package files
 elements-harvester/*.jar
 elements-harvester/*.war
 elements-harvester/*.ear
@@ -11,12 +11,16 @@ elements-harvester/*.ear
 *.iml
 target/
 
-# Logs
-*.log
-
 # Subversion
 .svn*
 
-# Generated file during execution
-elements-harvester/example-scripts/example-elements/data/
-elements-harvester/example-scripts/example-elements/logs/
+# Generated data and log files
+test-data
+*.n3
+added-data
+raw-records
+translated-records
+matched-data
+subtracted-data
+previous-harvest
+*.log
