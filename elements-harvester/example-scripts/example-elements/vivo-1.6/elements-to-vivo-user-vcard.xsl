@@ -192,7 +192,7 @@
         <xsl:param name="object" />
         <xsl:param name="vcardTitleURI" as="xs:string" />
 
-        <xsl:variable name="positionAndDept"><xsl:value-of select="$object/api:position,$object/api:department" separator=", '" /></xsl:variable>
+        <xsl:variable name="positionAndDept"><xsl:value-of select="$object/api:position,$object/api:department" separator=", " /></xsl:variable>
         <xsl:variable name="preferredTitle">
             <xsl:choose>
                 <xsl:when test="not(string($positionAndDept))"><xsl:value-of select="$object/api:title" /></xsl:when>

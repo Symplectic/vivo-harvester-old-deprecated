@@ -46,14 +46,6 @@
         <xsl:variable name="academic-appointments"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'academic-appointments')" /></xsl:variable>
         <xsl:variable name="non-academic-employments"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'non-academic-employments')" /></xsl:variable>
 
-        <xsl:variable name="positionAndDept"><xsl:value-of select="api:position,api:department" separator=", '" /></xsl:variable>
-        <xsl:variable name="preferredTitle">
-            <xsl:choose>
-                <xsl:when test="not(string($positionAndDept))"><xsl:value-of select="api:title" /></xsl:when>
-                <xsl:otherwise><xsl:value-of select="$positionAndDept" /></xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
         <!-- Output RDF for individual representing the user -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="$userURI" />
