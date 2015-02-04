@@ -27,11 +27,6 @@
 
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-    <!--
-        Output as part of relationship - Supports publication
-        <vivo:supportedInformationResource rdf:resource="http://vivo.mydomain.edu/individual/n4893"/>
-    -->
-
     <!-- Match Elements objects of category 'grant' -->
     <xsl:template match="api:object[@category='grant']">
         <xsl:variable name="grantId"><xsl:value-of select="@id" /></xsl:variable>
