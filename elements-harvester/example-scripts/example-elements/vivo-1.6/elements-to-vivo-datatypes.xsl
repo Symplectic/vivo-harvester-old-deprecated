@@ -57,6 +57,22 @@
     </xsl:template>
 
     <!--
+        Render a money field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+    -->
+    <xsl:template match="api:money" mode="renderForProperty">
+        <xsl:param name="propertyName" />
+        <xsl:param name="fieldName" />
+
+        <xsl:element name="{$propertyName}">
+            <xsl:if test="@iso-currency">
+                <xsl:value-of select="@iso-currency" /><xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:value-of select="." />
+        </xsl:element>
+    </xsl:template>
+
+    <!--
         Render a pagination field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
         the field name is Elements is passed in fieldName.
     -->

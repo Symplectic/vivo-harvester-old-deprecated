@@ -32,6 +32,7 @@
         Import XSLT for object and relationship transformations
     -->
     <xsl:import href="elements-to-vivo-activity.xsl" />
+    <xsl:import href="elements-to-vivo-grant.xsl" />
     <xsl:import href="elements-to-vivo-teaching-activity.xsl" />
     <xsl:import href="elements-to-vivo-publication.xsl" />
     <xsl:import href="elements-to-vivo-relationship.xsl" />
@@ -49,4 +50,5 @@
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
+
 </xsl:stylesheet>
