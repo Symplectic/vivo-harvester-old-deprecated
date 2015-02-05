@@ -28,6 +28,8 @@
 
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
 
+    <xsl:param name="recordDir">data/raw-records/</xsl:param>
+
     <!-- ======================================
          Function Library
          ======================================- -->
@@ -171,11 +173,16 @@
     -->
     <xsl:function name="svfn:fullObject">
         <xsl:param name="object" />
-        <xsl:variable name="filename" select="concat('data/raw-records/',$object/@category,'/',$object/@id)" />
+        <xsl:variable name="filename" select="concat($recordDir,$object/@category,'/',$object/@id)" />
 
-        <xsl:if test="fn:doc-available($filename)">
-            <xsl:copy-of select="document($filename)" />
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="fn:doc-available($filename)">
+                <xsl:copy-of select="document($filename)//api:object" />
+            </xsl:when>
+            <xsl:when test="fn:doc-available(concat($filename,'.xml'))">
+                <xsl:copy-of select="document(concat($filename,'.xml'))//api:object" />
+            </xsl:when>
+        </xsl:choose>
     </xsl:function>
 
     <!--

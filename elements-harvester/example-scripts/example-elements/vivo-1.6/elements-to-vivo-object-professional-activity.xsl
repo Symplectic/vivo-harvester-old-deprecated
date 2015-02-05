@@ -30,19 +30,14 @@
         If you add mappings for your own custom objects, you should create additional XSLT files, and add imports below.
     -->
 
+    <!-- Catch all template to ensure that nothing untoward is processed -->
+    <xsl:template match="api:object[@category='activity']" />
+
     <!--
         Import XSLT to handle each type of professional activity
     -->
-    <!--<xsl:include href="elements-to-vivo-activity-biography.xsl" />-->
-    <!--<xsl:include href="elements-to-vivo-activity-honor-award.xsl" />-->
-    <!--<xsl:include href="elements-to-vivo-teaching-activity.xsl" />-->
-    <!--<xsl:include href="elements-to-vivo-activity-education.xsl" />&ndash;&gt;-->
-    <!--<xsl:include href="elements-to-vivo-activity-work-experience.xsl" />-->
-
-    <!-- Zeroing out these because the activity translation is done at the relationship phase -->
-
-    <xsl:template match="api:object[@category='activity']">
-    </xsl:template>
-
-
+    <!-- xsl:include href="elements-to-vivo-object-professional-activity-distinction.xsl" />-->
+    <!--<xsl:include href="elements-to-vivo-object-professional-activity-honor-award.xsl" />-->
+    <!--<xsl:include href="elements-to-vivo-object-professional-activity-education.xsl" />-->
+    <!--<xsl:include href="elements-to-vivo-object-professional-activity-work-experience.xsl" />-->
 </xsl:stylesheet>

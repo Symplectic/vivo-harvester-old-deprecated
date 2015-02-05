@@ -29,7 +29,6 @@
 
     <!-- Match Elements objects of category 'grant' -->
     <xsl:template match="api:object[@category='grant']">
-        <xsl:variable name="grantId"><xsl:value-of select="@id" /></xsl:variable>
         <xsl:variable name="grantURI"><xsl:value-of select="svfn:objectURI(.)" /></xsl:variable>
 
         <xsl:variable name="startDateURI" select="concat(svfn:objectURI(.),'-startDate')" />

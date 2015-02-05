@@ -30,11 +30,15 @@
     -->
 
     <!-- Import XSLT files that are used -->
-    <xsl:import href="elements-to-vivo-activity.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-    <xsl:template match="api:relationship[@type='activity-user-association']">
+    <xsl:include href="elements-to-vivo-relationship-professional-activity-distinction.xsl" />
 
+    <!--
+        Old stuff - TO REMOVE
+    -->
+
+    <xsl:template match="api:relationship[@type='activity-user-association']" mode="old">
         <xsl:variable name="associationURI" select="svfn:relationshipURI(.,'activity-user-association')" />
 
         <!-- Get the activity object reference from the relationship -->
@@ -86,107 +90,6 @@
 
         -->
 
-
-        <!-- We need to establish this is an honor-award relationship we are processing before proceeding further -->
-
-        <xsl:if test="$fullActivityObj/symp:entry/api:object[@type='distinction']">
-
-            <xsl:variable name="honorAwardName" select="$fullActivityObj/symp:entry/api:object/api:records/api:record/api:native/api:field[@name='title']/api:text"/>
-
-            <xsl:variable name="awardingOrganization" select="$fullActivityObj/symp:entry/api:object/api:records/api:record/api:native/api:field[@name='institution']/api:addresses/api:address/api:line[@type='organisation']"/>
-
-            <xsl:variable name="awardingOrganizationURI">
-                <xsl:if test="$awardingOrganization">
-                    <xsl:value-of select="concat($baseURI, 'organization-', svfn:stringToURI($awardingOrganization))" />
-                </xsl:if>
-            </xsl:variable>
-
-
-            <xsl:variable name="honorAwardURI">
-                <xsl:if test="$honorAwardName">
-                    <xsl:value-of select="concat($baseURI, 'award-', svfn:stringToURI($honorAwardName))" />
-                </xsl:if>
-            </xsl:variable>
-
-            <xsl:variable name="honorAwardDate" select="$fullActivityObj/symp:entry/api:object/api:records/api:record/api:native/api:field[@name='start-date']"/>
-
-            <!--Add a reference to the association object to the activity object -->
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$honorAwardURI" />
-                <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Award"/>
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
-                    <rdfs:label><xsl:value-of select="$honorAwardName"/></rdfs:label>
-                    <vivo:relatedBy rdf:resource="{$associationURI}"/>
-                </xsl:with-param>
-            </xsl:call-template>
-
-            <!--Add a reference to the association object to the user object -->
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
-                <xsl:with-param name="rdfNodes">
-                    <vivo:relatedBy rdf:resource="{$associationURI}"/>
-                </xsl:with-param>
-            </xsl:call-template>
-
-            <!-- Output the Awarding Organization Object, if there is one -->
-            <xsl:if test="$awardingOrganization">
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$awardingOrganizationURI" />
-                <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
-                    <rdfs:label><xsl:value-of select="$awardingOrganization"/></rdfs:label>
-                    <vivo:assigns rdf:resource="{$associationURI}"/>
-                </xsl:with-param>
-            </xsl:call-template>
-            </xsl:if>
-
-
-            <!-- Create a URI for the associated award date, and create the award date object (if there is one) -->
-            <xsl:variable name="honorAwardBeginDateObjectURI" select="concat($associationURI, '-award-date')" />
-            <xsl:variable name="honorAwardBeginDateObject" select="svfn:renderDateObject(.,$honorAwardBeginDateObjectURI,$honorAwardDate)" />
-
-            <!-- Output the association object -->
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$associationURI" />
-                <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
-                    <vivo:relates rdf:resource="{$honorAwardURI}"/>
-                    <vivo:relates rdf:resource="{svfn:userURI($user)}"/>
-
-                    <!-- If the date object exists (check for child nodes), output a reference to it -->
-                    <xsl:if test="$honorAwardBeginDateObject/*" >
-                        <vivo:dateTimeValue rdf:resource="{$honorAwardBeginDateObjectURI}"/>
-                    </xsl:if>
-                    <xsl:if test="$awardingOrganization">
-                        <vivo:assignedBy rdf:resource="{$awardingOrganizationURI}"/>
-                    </xsl:if>
-
-                    <!-- Grab the User and Activity Object values to Label the Relationship Object Appropriately. -->
-                    <rdfs:label>
-                        <xsl:value-of select="$honorAwardName"/>
-                        <xsl:text> (</xsl:text>
-                        <xsl:value-of select="$fullUserObj/symp:entry/api:object/api:first-name"/>
-                        <xsl:text> </xsl:text>
-                        <xsl:value-of select="$fullUserObj/symp:entry/api:object/api:last-name"/>
-                        <xsl:text>)</xsl:text>
-
-                        <!-- Add an award date to the Relationship Label, if there is one. -->
-                        <!--<xsl:if test="$honorAwardBeginDateObject/*" >-->
-                            <!--<xsl:text> - </xsl:text>-->
-                            <!--<xsl:value-of select="$honorAwardDate"/>-->
-                        <!--</xsl:if>-->
-                    </rdfs:label>
-
-                </xsl:with-param>
-            </xsl:call-template>
-
-            <xsl:copy-of select="$honorAwardBeginDateObject" />
-        </xsl:if>
 
         <!-- We need to establish this is an education relationship we are processing before proceeding further -->
 

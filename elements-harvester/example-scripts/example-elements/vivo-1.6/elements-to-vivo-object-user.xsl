@@ -26,7 +26,7 @@
         >
 
     <!-- Import XSLT files that are used -->
-    <xsl:import href="elements-to-vivo-user-vcard.xsl" />
+    <xsl:import href="elements-to-vivo-object-user-vcard.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
     <!-- Match Elements objects of category 'user' -->

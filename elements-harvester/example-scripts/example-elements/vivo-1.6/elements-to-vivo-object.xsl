@@ -17,35 +17,24 @@
                 xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
                 xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
                 xmlns:api="http://www.symplectic.co.uk/publications/api"
-                xmlns:symp="http://www.symplectic.co.uk/ontology/elements/"
-                exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp xs"
+                xmlns:symp="http://www.symplectic.co.uk/vivo/"
+                xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
+                xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config"
+                exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
     <!--
-        Import general utility and configuration XSLT files
+        Main import for Object processing (publication, user, etc.)
     -->
-    <xsl:import href="elements-to-vivo-config.xsl" />
-    <xsl:import href="elements-to-vivo-datatypes.xsl" />
-    <xsl:import href="elements-to-vivo-utils.xsl" />
+
+    <!-- Default template - do not output relationship, unless overridden -->
+    <xsl:template match="api:object" />
 
     <!--
-        Import XSLT for object and relationship transformations
+        Import XSLT to handle each type of object
     -->
-    <xsl:import href="elements-to-vivo-teaching-activity.xsl" />
-    <xsl:import href="elements-to-vivo-object.xsl" />
-    <xsl:import href="elements-to-vivo-relationship.xsl" />
-
-    <xsl:output method="xml" indent="yes" />
-
-    <!--
-        Default template - matches the root, to output an RDF document tag around any RDF objects that are output
-    -->
-    <xsl:template match="/">
-        <xsl:call-template name="render_rdf_document">
-            <xsl:with-param name="rdfNodes">
-                <xsl:apply-templates select="*" />
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
+    <xsl:include href="elements-to-vivo-object-grant.xsl" />
+    <xsl:include href="elements-to-vivo-object-professional-activity.xsl" />
+    <xsl:include href="elements-to-vivo-object-publication.xsl" />
+    <xsl:include href="elements-to-vivo-object-user.xsl" />
 </xsl:stylesheet>

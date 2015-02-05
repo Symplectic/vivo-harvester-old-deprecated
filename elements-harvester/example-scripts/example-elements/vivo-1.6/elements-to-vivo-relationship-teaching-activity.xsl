@@ -30,7 +30,7 @@
     -->
 
     <!-- Import XSLT files that are used -->
-    <xsl:import href="elements-to-vivo-activity.xsl" />
+    <xsl:import href="elements-to-vivo-object-professional-activity.xsl" />
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
     <xsl:template match="api:relationship[@type='user-teaching-association']">
