@@ -38,10 +38,7 @@
         <xsl:variable name="isAcademic"><xsl:value-of select="api:is-academic" /></xsl:variable>
         <xsl:variable name="firstName"><xsl:value-of select="api:first-name" /></xsl:variable>
         <xsl:variable name="lastName"><xsl:value-of select="api:last-name" /></xsl:variable>
-        <xsl:variable name="overview"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'overview')" /></xsl:variable><!-- TODO -->
-
-        <xsl:variable name="employeeType"><xsl:value-of select="api:organisation-defined-data[@field-name='Employee Type']" /></xsl:variable><!-- TODO -->
-
+        <xsl:variable name="overview"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'overview')" /></xsl:variable>
         <xsl:variable name="degrees"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'degrees')" /></xsl:variable>
         <xsl:variable name="academic-appointments"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'academic-appointments')" /></xsl:variable>
         <xsl:variable name="non-academic-employments"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'non-academic-employments')" /></xsl:variable>
@@ -71,8 +68,8 @@
 
                 <rdfs:label><xsl:value-of select="$lastName" />, <xsl:value-of select="$firstName" /></rdfs:label>
 
-                <xsl:if test="$overview">
-                    <vivo:overview><xsl:value-of select="$overview" /></vivo:overview>
+                <xsl:if test="$overview/*">
+                    <vivo:overview><xsl:value-of select="$overview/api:text" /></vivo:overview>
                 </xsl:if>
             </xsl:with-param>
         </xsl:call-template>
@@ -82,8 +79,7 @@
         -->
         <xsl:apply-templates select="." mode="vcard" />
 
-
-        <xsl:if test="$degrees">
+        <xsl:if test="$degrees/*">
             <xsl:for-each select="$degrees/api:degrees/api:degree[@privacy='public']">
                 <xsl:variable name="awardedDegreeName" select="api:name" />
                 <xsl:variable name="awardedDegreeField" select="api:field-of-study" />
@@ -94,21 +90,13 @@
                 <xsl:variable name="eduProcessURI" select="concat($baseURI, 'eduprocess-', $userId, '-', translate($awardedDegreeName, ' ', ''), '-', translate($awardedDegreeField, ' ', ''))" />
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
-                <xsl:variable name="orgName" select="api:institution/api:line[@type='organisation']" />
-                <xsl:variable name="orgURI" select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" />
+                <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:institution)" />
+                <xsl:variable name="orgURI" select="svfn:organisationObjectsMainURI($orgObjects)" />
+
                 <xsl:variable name="degreeURI" select="concat($baseURI, 'degree-', translate($awardedDegreeName, ' ', ''), '-', translate($awardedDegreeField, ' ', ''))" />
 
                 <!-- Output RDF for vivo:University individual -->
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$orgURI" />
-                    <xsl:with-param name="rdfNodes">
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#University" />
-                        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
-                        <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
-                    </xsl:with-param>
-                </xsl:call-template>
+                <xsl:copy-of select="$orgObjects" />
 
                 <!-- Output RDF for vivo:AcademicDegree individual -->
                 <!-- TODO: Might be possible to map to pre-defined VIVO 1.7 degrees, e.g. http://vivoweb.org/ontology/degree/academicDegree33 (B.S. Bachelor of Science) -->
@@ -303,6 +291,7 @@
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="$appointmentURI" />
                     <xsl:with-param name="rdfNodes">
+                        <!-- TODO Implement a dictionary to convert position into type of position -->
                         <!-- XXX: vivo:Position is the "Other" select option in VIVO 1.7 user interface. This
                              could also be vivo:FacultyPosition, vivo:FacultyAdministrativePosition,
                              vivo:LibrarianPosition, vivo:NonFacultyAcademicPosition, vivo:PostdocPosition,
@@ -311,6 +300,9 @@
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#Position" />
                         <rdfs:label><xsl:value-of select="api:position" /></rdfs:label>
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
+                        <!--
+                            Link to department if available, otherwise organisation
+                        -->
                         <vivo:relates rdf:resource="{$orgURI}" />
                         <vivo:relates rdf:resource="{$userURI}" />
                     </xsl:with-param>

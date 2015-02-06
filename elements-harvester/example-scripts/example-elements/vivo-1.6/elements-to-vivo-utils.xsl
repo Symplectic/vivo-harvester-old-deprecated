@@ -69,6 +69,100 @@
     </xsl:function>
 
     <!--
+        svfn:departmentName
+        ===================
+        Get the department from an api:address or api:institution object
+    -->
+    <xsl:function name="svfn:departmentName" as="xs:string">
+        <xsl:param name="address" />
+
+        <xsl:value-of select="$address/api:line[@type='suborganisation']" />
+    </xsl:function>
+
+    <!--
+        svfn:departmentURI
+        ==================
+        Create a URI for a department from an api:address or api:institution object
+    -->
+    <xsl:function name="svfn:departmentURI" as="xs:string">
+        <xsl:param name="address" />
+
+        <xsl:variable name="orgName" select="svfn:departmentName($address)" />
+        <xsl:if test="$orgName">
+            <xsl:value-of select="concat($baseURI, 'dept-', translate($orgName, ' ', ''))" />
+        </xsl:if>
+    </xsl:function>
+
+    <!--
+        svfn:institutionName
+        ===================
+        Get the institution from an api:address or api:institution object
+    -->
+    <xsl:function name="svfn:institutionName" as="xs:string">
+        <xsl:param name="address" />
+
+        <xsl:value-of select="$address/api:line[@type='organisation']" />
+    </xsl:function>
+
+    <!--
+        svfn:institutionURI
+        ====================
+        Create a URI for an institution from an api:address or api:institution object
+    -->
+    <xsl:function name="svfn:institutionURI" as="xs:string">
+        <xsl:param name="address" />
+
+        <xsl:variable name="orgName" select="svfn:institutionName($address)" />
+        <xsl:if test="$orgName">
+            <xsl:value-of select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" />
+        </xsl:if>
+    </xsl:function>
+
+    <!--
+        svfn:institutionURI
+        ====================
+        Create a URI for an institution from an api:address or api:institution object
+    -->
+    <xsl:function name="svfn:organisationObjects" as="xs:string">
+        <xsl:param name="address" />
+
+        <xsl:variable name="deptURI" select="svfn:departmentURI($address)"/>
+        <xsl:variable name="instURI" select="svfn:institutionURI($address)"/>
+
+        <xsl:if test="$address/api:line[@type='suborganisation']">
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$deptURI" />
+                <xsl:with-param name="rdfNodes">
+                    <!-- TODO Implement dictionary to determine department type -->
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDepartment"/>
+                    <xsl:if test="$address/api:line[@type='organisation']">
+                        <obo:BFO_0000050 rdf:resource="{$instURI}" />
+                    </xsl:if>
+                    <rdfs:label><xsl:value-of select="svfn:departmentName($address)" /></rdfs:label>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+
+        <xsl:if test="$address/api:line[@type='organisation']">
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$instURI" />
+                <xsl:with-param name="rdfNodes">
+                    <!-- TODO Implement dictionary to determine institution type -->
+                    <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#University" />
+                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
+                    <rdfs:label><xsl:value-of select="svfn:institutionName($address)" /></rdfs:label>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+    </xsl:function>
+
+    <xsl:function name="svfn:organisationObjectsMainURI">
+        <xsl:param name="orgObjects" />
+        <xsl:value-of select="$orgObjects/rdf:Description[1]/@rdf:about" />
+    </xsl:function>
+
+    <!--
         svfn:renderDateObject
         =====================
         Generate a VIVO date object for the supplied date object
