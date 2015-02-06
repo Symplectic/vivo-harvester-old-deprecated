@@ -88,9 +88,10 @@
         <xsl:param name="address" />
 
         <xsl:variable name="orgName" select="svfn:departmentName($address)" />
-        <xsl:if test="$orgName">
-            <xsl:value-of select="concat($baseURI, 'dept-', translate($orgName, ' ', ''))" />
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="$orgName"><xsl:value-of select="concat($baseURI, 'dept-', translate($orgName, ' ', ''))" /></xsl:when>
+            <xsl:otherwise><xsl:text /></xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <!--
@@ -113,9 +114,10 @@
         <xsl:param name="address" />
 
         <xsl:variable name="orgName" select="svfn:institutionName($address)" />
-        <xsl:if test="$orgName">
-            <xsl:value-of select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" />
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="$orgName"><xsl:value-of select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" /></xsl:when>
+            <xsl:otherwise><xsl:text /></xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <!--
@@ -123,7 +125,7 @@
         ====================
         Create a URI for an institution from an api:address or api:institution object
     -->
-    <xsl:function name="svfn:organisationObjects" as="xs:string">
+    <xsl:function name="svfn:organisationObjects">
         <xsl:param name="address" />
 
         <xsl:variable name="deptURI" select="svfn:departmentURI($address)"/>
@@ -159,7 +161,10 @@
 
     <xsl:function name="svfn:organisationObjectsMainURI">
         <xsl:param name="orgObjects" />
-        <xsl:value-of select="$orgObjects/rdf:Description[1]/@rdf:about" />
+        <xsl:choose>
+            <xsl:when test="$orgObjects/*"><xsl:value-of select="$orgObjects/rdf:Description[1]/@rdf:about" /></xsl:when>
+            <xsl:otherwise><xsl:text/></xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <!--
