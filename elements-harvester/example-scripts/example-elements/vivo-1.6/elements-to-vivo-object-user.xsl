@@ -177,7 +177,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
-                        <obo:RO_0000057 rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgURI"><obo:RO_0000057 rdf:resource="{$orgURI}" /></xsl:if>
                         <obo:RO_0000057 rdf:resource="{$userURI}" />
                         <obo:RO_0002234 rdf:resource="{$awardedDegreeURI}" />
                     </xsl:with-param>
@@ -190,7 +190,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
                         <rdfs:label><xsl:value-of select="concat($lastName, ', ', $firstName, ': ', $awardedDegreeName, ' ', $awardedDegreeField)" /></rdfs:label>  <!-- VIVO includes name, e.g. "Smith, John: B.S. Bachelor of Science" -->
-                        <vivo:assignedBy rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgURI"><vivo:assignedBy rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$degreeURI}" />
                         <vivo:relates rdf:resource="{$userURI}" />
                         <obo:RO_0002353 rdf:resource="{$eduProcessURI}" />
@@ -211,20 +211,11 @@
                 <xsl:variable name="appointmentURI" select="concat($baseURI, 'appointment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
-                <xsl:variable name="orgName" select="api:institution/api:line[@type='organisation']" />
-                <xsl:variable name="orgURI" select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" />
+                <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:institution)" />
+                <xsl:variable name="orgURI" select="svfn:organisationObjectsMainURI($orgObjects)" />
 
                 <!-- Output RDF for vivo:University individual -->
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$orgURI" />
-                    <xsl:with-param name="rdfNodes">
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#University" />
-                        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
-                        <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
-                    </xsl:with-param>
-                </xsl:call-template>
+                <xsl:copy-of select="$orgObjects" />
 
                 <!-- Output RDF for vivo:DateTimeInterval and child vivo:DateTimeValue individuals -->
                 <xsl:variable name="startDate" select="api:start-date/api:year" />
@@ -303,7 +294,7 @@
                         <!--
                             Link to department if available, otherwise organisation
                         -->
-                        <vivo:relates rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgURI"><vivo:relates rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$userURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
@@ -322,20 +313,11 @@
                 <xsl:variable name="appointmentURI" select="concat($baseURI, 'employment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
-                <xsl:variable name="orgName" select="api:employer/api:line[@type='organisation']" />
-                <xsl:variable name="orgURI" select="concat($baseURI, 'employer-', translate($orgName, ' ', ''))" />
+                <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:employer)" />
+                <xsl:variable name="orgURI" select="svfn:organisationObjectsMainURI($orgObjects)" />
 
                 <!-- Output RDF for foaf:Organization individual -->
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$orgURI" />
-                    <xsl:with-param name="rdfNodes">
-                        <!-- XXX: This could be more specific, i.e. vivo:University or vivo:Company instead of the generic "organization" -->
-                        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
-                        <vitro:mostSpecificType rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
-                        <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                        <!-- TODO: api:line output for sub-organisation, street, city, state/province, zip/postal, and country -->
-                    </xsl:with-param>
-                </xsl:call-template>
+                <xsl:copy-of select="$orgObjects" />
 
                 <!-- Output RDF for vivo:DateTimeInterval and child vivo:DateTimeValue individuals -->
                 <xsl:variable name="startDate" select="api:start-date/api:year" />
@@ -407,7 +389,7 @@
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#NonAcademicPosition" />
                         <rdfs:label><xsl:value-of select="api:position" /></rdfs:label>
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
-                        <vivo:relates rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgURI"><vivo:relates rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$userURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
