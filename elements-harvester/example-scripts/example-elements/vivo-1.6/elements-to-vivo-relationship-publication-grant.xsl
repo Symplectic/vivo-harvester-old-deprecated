@@ -23,10 +23,6 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
         >
 
-    <!--
-        Template for handling relationships between users and publications as authors
-    -->
-
     <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
@@ -39,10 +35,10 @@
         <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
 
-        <!-- Get the user object reference from the relationship -->
+        <!-- Get the grant object reference from the relationship -->
         <xsl:variable name="grant" select="api:related/api:object[@category='grant']" />
 
-        <!-- Add a reference to the authorship object to the user object -->
+        <!-- Add a reference to the grant object for the publication -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($grant)" />
             <xsl:with-param name="rdfNodes">
@@ -50,7 +46,7 @@
             </xsl:with-param>
         </xsl:call-template>
 
-        <!-- Add a reference to the authorship object to the publication object -->
+        <!-- Add a reference to the publication object for the grant -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">

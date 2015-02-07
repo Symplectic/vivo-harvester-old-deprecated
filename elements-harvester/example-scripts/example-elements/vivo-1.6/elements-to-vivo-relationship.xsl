@@ -45,4 +45,5 @@
     <xsl:include href="elements-to-vivo-relationship-publication-editor.xsl" />
     <xsl:include href="elements-to-vivo-relationship-professional-activity.xsl" />
     <xsl:include href="elements-to-vivo-relationship-teaching-activity.xsl" />
+    <xsl:include href="elements-to-vivo-relationship-user-grant.xsl" />
 </xsl:stylesheet>
