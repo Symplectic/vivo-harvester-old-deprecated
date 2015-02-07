@@ -54,7 +54,7 @@
                 </xsl:choose>
                 <vivo:relatedBy rdf:resource="svfn:objectURI($grant)"/><!-- link to grant -->
                 <obo:RO_0000052 rdf:resource="svfn:userURI($user)"/><!-- link to user -->
-                <<!-- vivo:dateTimeInterval rdf:resource="http://vivo.mydomain.edu/individual/n6127" / - link to date / time -->
+                <!-- vivo:dateTimeInterval rdf:resource="http://vivo.mydomain.edu/individual/n6127" / - link to date / time -->
             </xsl:with-param>
         </xsl:call-template>
 
