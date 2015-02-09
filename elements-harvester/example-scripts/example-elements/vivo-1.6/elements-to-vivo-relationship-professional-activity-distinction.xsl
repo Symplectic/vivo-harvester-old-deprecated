@@ -44,7 +44,6 @@
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$awardURI" />
                 <xsl:with-param name="rdfNodes">
-                    <xsl:copy-of select="api:related/api:object[@category='activity']" />
                     <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Award"/>
                     <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','title')" />
                     <vivo:relatedBy rdf:resource="{$contextURI}"/><!-- Context object -->
