@@ -162,8 +162,8 @@
     <xsl:function name="svfn:organisationObjectsMainURI">
         <xsl:param name="orgObjects" />
         <xsl:choose>
-            <xsl:when test="$orgObjects/*"><xsl:value-of select="$orgObjects/rdf:Description[1]/@rdf:about" /></xsl:when>
-            <xsl:otherwise><xsl:text/></xsl:otherwise>
+            <xsl:when test="$orgObjects/*"><xsl:value-of select="$orgObjects[1]/@rdf:about" /></xsl:when>
+            <xsl:otherwise><xsl:text /></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
 

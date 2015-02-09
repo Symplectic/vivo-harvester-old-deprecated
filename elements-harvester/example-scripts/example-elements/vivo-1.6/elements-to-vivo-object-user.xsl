@@ -177,7 +177,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
-                        <obo:RO_0000057 rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgObjects/*"><obo:RO_0000057 rdf:resource="{$orgURI}" /></xsl:if>
                         <obo:RO_0000057 rdf:resource="{$userURI}" />
                         <obo:RO_0002234 rdf:resource="{$awardedDegreeURI}" />
                     </xsl:with-param>
@@ -190,7 +190,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
                         <rdfs:label><xsl:value-of select="concat($lastName, ', ', $firstName, ': ', $awardedDegreeName, ' ', $awardedDegreeField)" /></rdfs:label>  <!-- VIVO includes name, e.g. "Smith, John: B.S. Bachelor of Science" -->
-                        <vivo:assignedBy rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgObjects/*"><vivo:assignedBy rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$degreeURI}" />
                         <vivo:relates rdf:resource="{$userURI}" />
                         <obo:RO_0002353 rdf:resource="{$eduProcessURI}" />
@@ -294,7 +294,7 @@
                         <!--
                             Link to department if available, otherwise organisation
                         -->
-                        <vivo:relates rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgObjects/*"><vivo:relates rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$userURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
@@ -389,7 +389,7 @@
                         <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#NonAcademicPosition" />
                         <rdfs:label><xsl:value-of select="api:position" /></rdfs:label>
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
-                        <vivo:relates rdf:resource="{$orgURI}" />
+                        <xsl:if test="$orgObjects/*"><vivo:relates rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$userURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
