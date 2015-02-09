@@ -135,7 +135,11 @@ final class TranslationServiceImpl {
                 caughtException = e;
                 retCode = Boolean.FALSE;
             } catch (TransformerException e) {
-                log.error("Unable to perform translation", e);
+                if (inputFile != null) {
+                    log.error("Unable to perform translation on " + inputFile.getAbsolutePath(), e);
+                } else {
+                    log.error("Unable to perform translation", e);
+                }
                 caughtException = e;
                 retCode = Boolean.FALSE;
             } finally {
