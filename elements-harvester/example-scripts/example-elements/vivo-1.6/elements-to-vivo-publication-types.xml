@@ -18,6 +18,13 @@
     3. The following statements are always output, so you do not need to specify them in the configuration:
         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+		
+	Question: These are standard on entered values, do we need them?
+        <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000001"/>
+        <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000002"/>
+        <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000031"/>
+        <rdf:type rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
+		
 -->
 <config:publication-types xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <config:publication-type type="book">
@@ -36,6 +43,10 @@
     <config:publication-type type="conference">
         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#ConferencePaper"/>
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
+        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
+    </config:publication-type>
+	<config:publication-type type="dataset">
+        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Dataset"/>
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
     </config:publication-type>
     <config:publication-type type="exhibition">
@@ -60,23 +71,23 @@
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Event"/>
     </config:publication-type>
     <config:publication-type type="poster">
-        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#ConferencePoster"/>
+        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
     </config:publication-type>
     <config:publication-type type="report">
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Report"/>
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
     </config:publication-type>
     <config:publication-type type="scholarly-edition">
-        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>
+        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
     </config:publication-type>
     <config:publication-type type="software">
         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Software"/>
     </config:publication-type>
     <config:publication-type type="thesis-dissertation">
-        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Thesis"/>
+        <rdf:type rdf:resource="http://purl.org/ontology/bibo/Document"/>
     </config:publication-type>
     <config:publication-type type="z-default">
         <rdf:type rdf:resource="http://purl.org/ontology/bibo/Article"/>

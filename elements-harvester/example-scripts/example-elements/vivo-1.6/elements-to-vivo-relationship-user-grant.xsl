@@ -52,8 +52,8 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InvestigatorRole"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <vivo:relatedBy rdf:resource="svfn:objectURI($grant)"/><!-- link to grant -->
-                <obo:RO_0000052 rdf:resource="svfn:userURI($user)"/><!-- link to user -->
+                <vivo:relatedBy rdf:resource="{svfn:objectURI($grant)}"/><!-- link to grant -->
+                <obo:RO_0000052 rdf:resource="{svfn:userURI($user)}"/><!-- link to user -->
                 <!-- vivo:dateTimeInterval rdf:resource="http://vivo.mydomain.edu/individual/n6127" / - link to date / time -->
             </xsl:with-param>
         </xsl:call-template>
@@ -63,7 +63,7 @@
             <xsl:with-param name="objectURI" select="svfn:objectURI($grant)" />
             <xsl:with-param name="rdfNodes">
                 <vivo:relates rdf:resource="{$investigatorURI}"/><!-- link to role -->
-                <vivo:relates rdf:resource="svfn:userURI($user)" /><!-- link to user -->
+                <vivo:relates rdf:resource="{svfn:userURI($user)}" /><!-- link to user -->
             </xsl:with-param>
         </xsl:call-template>
 
