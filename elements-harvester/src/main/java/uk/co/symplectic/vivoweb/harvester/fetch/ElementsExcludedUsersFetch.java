@@ -14,12 +14,13 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ElementsExcludedUsersFetch {
     private ElementsAPI elementsAPI = null;
     private String groupsToExclude;
-    private Set<String> excludedUserIds;
+    private Set<String> excludedUserIds = new HashSet<String>();
 
     public ElementsExcludedUsersFetch(ElementsAPI api) {
         if (api == null) {
