@@ -35,102 +35,105 @@
         <xsl:variable name="userObj" select="svfn:fullObject(api:related/api:object[@category='user'])" />
 
         <xsl:variable name="awardName" select="svfn:getRecordField($activityObj,'title')" />
-        <xsl:variable name="awardURI" select="concat($baseURI,'award-',svfn:stringToURI($awardName/api:text))" />
+        <xsl:if test="$awardName/api:text">
+            <xsl:variable name="awardURI"><xsl:value-of select="concat($baseURI,'award-',svfn:stringToURI($awardName/api:text))" /></xsl:variable>
 
-        <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
+            <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 
-        <!-- An Award-->
-        <xsl:call-template name="render_rdf_object">
-            <xsl:with-param name="objectURI" select="$awardURI" />
-            <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Award"/>
-                <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','title')" />
-                <vivo:relatedBy rdf:resource="{$contextURI}"/><!-- Context object -->
-            </xsl:with-param>
-        </xsl:call-template>
-
-        <!-- Awarding Agent -->
-        <xsl:variable name="awardedBy" select="svfn:getRecordField($activityObj,'institution')" />
-        <xsl:for-each select="$awardedBy/api:addresses/api:address">
-            <xsl:if test="api:line[@type='organisation']">
-                <!-- Awarding agaent -->
-                <xsl:variable name="awardAgentURI" select="concat($baseURI,'institution-',svfn:stringToURI(api:line[@type='organisation']))" />
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$awardAgentURI" />
-                    <xsl:with-param name="rdfNodes">
-                        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                        <rdfs:label><xsl:value-of select="api:line[@type='name']" /></rdfs:label>
-                        <vivo:assigns rdf:resource="${$contextURI}"/><!-- Context Object -->
-                    </xsl:with-param>
-                </xsl:call-template>
-                <!-- Add context object link -->
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$contextURI" />
-                    <xsl:with-param name="rdfNodes">
-                        <vivo:assignedBy rdf:resource="{$awardAgentURI}"/><!-- Awarding Agent -->
-                    </xsl:with-param>
-                </xsl:call-template>
-            </xsl:if>
-        </xsl:for-each>
-
-        <!-- Context Object -->
-        <xsl:variable name="awardDate" select="svfn:getRecordField($activityObj,'start-date')" />
-        <xsl:variable name="finishDate" select="svfn:getRecordField($activityObj,'end-date')" />
-
-        <xsl:variable name="yearAwardedURI" select="concat($contextURI,'-awarded')" />
-        <xsl:variable name="inclusiveURI" select="concat($contextURI,'-inclusive')" />
-        <xsl:variable name="startURI" select="concat($contextURI,'-inclusive-start')" />
-        <xsl:variable name="endURI" select="concat($contextURI,'-inclusive-end')" />
-
-        <xsl:call-template name="render_rdf_object">
-            <xsl:with-param name="objectURI" select="$contextURI" />
-            <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
-                <rdfs:label>
-                    <xsl:apply-templates select="$awardName/api:text" />
-                    <xsl:text> (</xsl:text>
-                    <xsl:value-of select="$userObj/api:last-name,$userObj/api:first-name" separator=", " />
-                    <xsl:if test="$awardDate/*">
-                        <xsl:text>  - </xsl:text>
-                    </xsl:if>
-                    <xsl:value-of select="$awardDate/api:date/api:year" />
-                    <xsl:text>)</xsl:text>
-                </rdfs:label>
-                <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'vivo:description','description')" />
-                <vivo:relates rdf:resource="{$awardURI}"/><!-- Award -->
-                <vivo:relates rdf:resource="{$userURI}"/><!-- User -->
-                <xsl:if test="$awardDate/*">
-                    <vivo:dateTimeValue rdf:resource="{$yearAwardedURI}"/><!-- Year Awarded -->
-                    <xsl:if test="$finishDate/*">
-                        <vivo:dateTimeInterval rdf:resource="{$inclusiveURI}"/><!-- Years Inclusive -->
-                    </xsl:if>
-                </xsl:if>
-            </xsl:with-param>
-        </xsl:call-template>
-
-        <!-- Relate user to context-->
-        <xsl:call-template name="render_rdf_object">
-            <xsl:with-param name="objectURI" select="$userURI" />
-            <xsl:with-param name="rdfNodes">
-                <vivo:relates rdf:resource="{$contextURI}"/>
-            </xsl:with-param>
-        </xsl:call-template>
-
-        <xsl:if test="$awardDate/*">
-            <xsl:copy-of select="svfn:renderDateObject(.,$yearAwardedURI,$awardDate)" />
-        </xsl:if>
-
-        <xsl:if test="$finishDate/*">
+            <!-- An Award-->
             <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$inclusiveURI" />
+                <xsl:with-param name="objectURI" select="$awardURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeInterval"/>
-                    <vivo:start rdf:resource="{$startURI}" />
-                    <vivo:end rdf:resource="{$endURI}" />
+                    <xsl:copy-of select="api:related/api:object[@category='activity']" />
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Award"/>
+                    <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','title')" />
+                    <vivo:relatedBy rdf:resource="{$contextURI}"/><!-- Context object -->
                 </xsl:with-param>
             </xsl:call-template>
-            <xsl:copy-of select="svfn:renderDateObject(.,$startURI,$awardDate)" />
-            <xsl:copy-of select="svfn:renderDateObject(.,$endURI,$finishDate)" />
+
+            <!-- Awarding Agent -->
+            <xsl:variable name="awardedBy" select="svfn:getRecordField($activityObj,'institution')" />
+            <xsl:for-each select="$awardedBy/api:addresses/api:address">
+                <xsl:if test="api:line[@type='organisation']/*">
+                    <!-- Awarding agaent -->
+                    <xsl:variable name="awardAgentURI" select="concat($baseURI,'institution-',svfn:stringToURI(api:line[@type='organisation']))" />
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$awardAgentURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+                            <rdfs:label><xsl:value-of select="api:line[@type='name']" /></rdfs:label>
+                            <vivo:assigns rdf:resource="${$contextURI}"/><!-- Context Object -->
+                        </xsl:with-param>
+                    </xsl:call-template>
+                    <!-- Add context object link -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$contextURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:assignedBy rdf:resource="{$awardAgentURI}"/><!-- Awarding Agent -->
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:if>
+            </xsl:for-each>
+
+            <!-- Context Object -->
+            <xsl:variable name="awardDate" select="svfn:getRecordField($activityObj,'start-date')" />
+            <xsl:variable name="finishDate" select="svfn:getRecordField($activityObj,'end-date')" />
+
+            <xsl:variable name="yearAwardedURI" select="concat($contextURI,'-awarded')" />
+            <xsl:variable name="inclusiveURI" select="concat($contextURI,'-inclusive')" />
+            <xsl:variable name="startURI" select="concat($contextURI,'-inclusive-start')" />
+            <xsl:variable name="endURI" select="concat($contextURI,'-inclusive-end')" />
+
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$contextURI" />
+                <xsl:with-param name="rdfNodes">
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardReceipt"/>
+                    <rdfs:label>
+                        <xsl:apply-templates select="$awardName" />
+                        <xsl:text> (</xsl:text>
+                        <xsl:value-of select="$userObj/api:last-name,$userObj/api:first-name" separator=", " />
+                        <xsl:if test="$awardDate/*">
+                            <xsl:text>  - </xsl:text>
+                        </xsl:if>
+                        <xsl:value-of select="$awardDate/api:date/api:year" />
+                        <xsl:text>)</xsl:text>
+                    </rdfs:label>
+                    <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'vivo:description','description')" />
+                    <vivo:relates rdf:resource="{$awardURI}"/><!-- Award -->
+                    <vivo:relates rdf:resource="{$userURI}"/><!-- User -->
+                    <xsl:if test="$awardDate/*">
+                        <vivo:dateTimeValue rdf:resource="{$yearAwardedURI}"/><!-- Year Awarded -->
+                        <xsl:if test="$finishDate/*">
+                            <vivo:dateTimeInterval rdf:resource="{$inclusiveURI}"/><!-- Years Inclusive -->
+                        </xsl:if>
+                    </xsl:if>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <!-- Relate user to context-->
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$userURI" />
+                <xsl:with-param name="rdfNodes">
+                    <vivo:relates rdf:resource="{$contextURI}"/>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:if test="$awardDate/*">
+                <xsl:copy-of select="svfn:renderDateObject(.,$yearAwardedURI,$awardDate)" />
+            </xsl:if>
+
+            <xsl:if test="$finishDate/*">
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$inclusiveURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeInterval"/>
+                        <vivo:start rdf:resource="{$startURI}" />
+                        <vivo:end rdf:resource="{$endURI}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+                <xsl:copy-of select="svfn:renderDateObject(.,$startURI,$awardDate)" />
+                <xsl:copy-of select="svfn:renderDateObject(.,$endURI,$finishDate)" />
+            </xsl:if>
         </xsl:if>
     </xsl:template>
 </xsl:stylesheet>

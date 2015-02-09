@@ -39,7 +39,7 @@
         <xsl:variable name="intervalURI" select="concat(svfn:objectURI(.),'-interval')" />
 
         <xsl:variable name="funderName" select="svfn:getRecordField(.,'funder-name')" />
-        <xsl:variable name="funderURI" select="concat($baseURI,'funder-',svfn:stringToURI($funderName/api:text))" />
+        <xsl:variable name="funderURI"><xsl:if test="$funderName/api:text"><xsl:value-of select="concat($baseURI,'funder-',svfn:stringToURI($funderName/api:text))" /></xsl:if></xsl:variable>
 
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="$grantURI" />
