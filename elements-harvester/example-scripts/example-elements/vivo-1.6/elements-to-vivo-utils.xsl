@@ -29,6 +29,7 @@
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
 
     <xsl:param name="recordDir">data/raw-records/</xsl:param>
+    <xsl:param name="includeDept">false</xsl:param>
 
     <!-- ======================================
          Function Library
@@ -131,18 +132,20 @@
         <xsl:variable name="deptURI" select="svfn:departmentURI($address)"/>
         <xsl:variable name="instURI" select="svfn:institutionURI($address)"/>
 
-        <xsl:if test="$address/api:line[@type='suborganisation']">
-            <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$deptURI" />
-                <xsl:with-param name="rdfNodes">
-                    <!-- TODO Implement dictionary to determine department type -->
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDepartment"/>
-                    <xsl:if test="$address/api:line[@type='organisation']">
-                        <obo:BFO_0000050 rdf:resource="{$instURI}" />
-                    </xsl:if>
-                    <rdfs:label><xsl:value-of select="svfn:departmentName($address)" /></rdfs:label>
-                </xsl:with-param>
-            </xsl:call-template>
+        <xsl:if test="$includeDept='true'">
+            <xsl:if test="$address/api:line[@type='suborganisation']">
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$deptURI" />
+                    <xsl:with-param name="rdfNodes">
+                        <!-- TODO Implement dictionary to determine department type -->
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDepartment"/>
+                        <xsl:if test="$address/api:line[@type='organisation']">
+                            <obo:BFO_0000050 rdf:resource="{$instURI}" />
+                        </xsl:if>
+                        <rdfs:label><xsl:value-of select="svfn:departmentName($address)" /></rdfs:label>
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
         </xsl:if>
 
         <xsl:if test="$address/api:line[@type='organisation']">
