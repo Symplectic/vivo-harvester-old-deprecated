@@ -15,7 +15,7 @@
     <Param name="vivoImageDir">/Library/Tomcat/webapps/vivo</Param>
     <Param name="vivoBaseURI">http://localhost:8080/vivo/individual/</Param>
 
-    <Param name="queryObjects">users,publications,grants,activities</Param>
+    <Param name="queryObjects">users,publications,grants,activities,teaching-activities</Param>
     <Param name="currentStaffOnly">true</Param>
     <Param name="visibleLinksOnly">true</Param>
 
