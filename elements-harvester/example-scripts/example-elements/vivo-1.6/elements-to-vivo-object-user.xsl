@@ -56,16 +56,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Staff" />
                     </xsl:otherwise>
                 </xsl:choose>
-
-                <!-- XXX: Are all of these types necessary and can't be inferred??? -->
-                <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person" />
-                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000001" />
-                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000002" />
-                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/BFO_0000004" />
-                <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Agent" />
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
-                <rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" />
-
+                <!-- rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" / -->
                 <rdfs:label><xsl:value-of select="$lastName" />, <xsl:value-of select="$firstName" /></rdfs:label>
 
                 <xsl:if test="$overview/*">

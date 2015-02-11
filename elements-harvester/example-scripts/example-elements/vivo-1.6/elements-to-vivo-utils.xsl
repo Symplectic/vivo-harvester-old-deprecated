@@ -191,7 +191,6 @@
                             <xsl:apply-templates select="$date" />
                         </xsl:with-param>
                         <xsl:with-param name="nodesToAdd">
-                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                             <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue"/>
                         </xsl:with-param>
                     </xsl:call-template>

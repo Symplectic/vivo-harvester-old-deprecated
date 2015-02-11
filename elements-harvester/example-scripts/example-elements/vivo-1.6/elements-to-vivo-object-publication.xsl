@@ -45,7 +45,7 @@
         <xsl:variable name="publicationVenueURI" select="concat($baseURI, 'journal-', svfn:stringToURI($publicationVenueTitle))" />
 
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
-        <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle)" />
+        <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
 
         <!-- Render an RDF object -->
         <xsl:call-template name="render_rdf_object">
@@ -72,11 +72,13 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:volume','volume')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:freetextKeyword','keywords')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:location','location')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:notes','notes')" />
-                <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:pii','pii')" />
+                <xsl:if test="not($useSympNS='')">
+                    <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:location','location')" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:notes','notes')" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:pii','pii')" />
+                </xsl:if>
                 <xsl:if test="$publicationDateObject/*"><vivo:dateTimeValue rdf:resource="{$publicationDateURI}" /></xsl:if>
                 <xsl:if test="$publicationVenueObject/*"><vivo:hasPublicationVenue rdf:resource="{$publicationVenueURI}" /></xsl:if>
             </xsl:with-param>
@@ -114,17 +116,14 @@
                 <vitro:mostSpecificType rdf:resource="{$publication-type/vitro:mostSpecificType/@rdf:resource}" />
             </xsl:when>
             <!-- no most specific type designated, so use the first type listed -->
-            <xsl:otherwise>
+            <xsl:when test="count($publication-type/*) &gt; 1">
                 <vitro:mostSpecificType rdf:resource="{$publication-type/rdf:type[1]/@rdf:resource}" />
-            </xsl:otherwise>
+            </xsl:when>
         </xsl:choose>
         <!-- Copy all of the rdf:type statements from the selected configuration to the output -->
         <xsl:for-each select="$publication-type/rdf:type">
             <rdf:type rdf:resource="{@rdf:resource}" />
         </xsl:for-each>
-        <!-- Everything is a 'Thing' and an 'Information Resource', so add these anyway (so they don't need to be in the configuration -->
-        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     </xsl:function>
 
     <!-- Select the journal title for the publication. Delegates to an internal function for iteration -->
@@ -166,18 +165,16 @@
         <xsl:param name="object" />
         <xsl:param name="journalObjectURI" as="xs:string" />
         <xsl:param name="journalTitle" as="xs:string" />
+        <xsl:param name="publicationURI" as="xs:string" />
 
         <!-- Only create the object if we have a journal title -->
         <xsl:if test="$journalTitle">
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$journalObjectURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Periodical"/>
-                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Journal"/>
-                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Collection"/>
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#InformationResource"/>
                     <rdfs:label><xsl:value-of select="$journalTitle" /></rdfs:label>
+                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Journal"/>
+                    <vivo:publicationVenueFor rdf:resource="{$publicationURI}" />
                 </xsl:with-param>
             </xsl:call-template>
         </xsl:if>

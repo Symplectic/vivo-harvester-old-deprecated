@@ -27,7 +27,9 @@
     <xsl:param name="baseURI">http://localhost:8080/vivo/individual/</xsl:param>
 
     <!-- Harvested by statement for the URI (set to blank if not required) -->
-    <xsl:param name="harvestedBy"></xsl:param>
+    <xsl:param name="harvestedBy" />
+
+    <xsl:param name="useSympNS" />
 
     <!-- DO NOT TOUCH: Read the record and journal precedence configuration into variables for processing -->
     <xsl:variable name="record-precedences" select="document('')//config:record-precedences/config:record-precedences" />
