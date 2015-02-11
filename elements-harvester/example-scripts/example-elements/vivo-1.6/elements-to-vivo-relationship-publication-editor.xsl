@@ -32,6 +32,9 @@
 
     <!-- Match relationship of type publication-user editorship association -->
     <xsl:template match="api:relationship[@type='publication-user-editorship']">
+        <!-- Create a URI for the object relating author to publication -->
+        <xsl:variable name="editorshipURI" select="svfn:relationshipURI(.,'editorship')" />
+
         <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
 
@@ -42,7 +45,7 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
-                <vivo:relatedBy rdf:resource="{svfn:objectURI($publication)}"/>
+                <vivo:relatedBy rdf:resource="{$editorshipURI}"/>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -51,7 +54,17 @@
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
-                <vivo:relatedBy rdf:resource="{svfn:userURI($user)}"/>
+                <vivo:relatedBy rdf:resource="{$editorshipURI}"/>
+            </xsl:with-param>
+        </xsl:call-template>
+
+        <!-- Output the editorship object -->
+        <xsl:call-template name="render_rdf_object">
+            <xsl:with-param name="objectURI" select="$editorshipURI" />
+            <xsl:with-param name="rdfNodes">
+                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Editorship"/>
+                <vivo:relates rdf:resource="{svfn:userURI($user)}"/>
+                <vivo:relates rdf:resource="{svfn:objectURI($publication)}"/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

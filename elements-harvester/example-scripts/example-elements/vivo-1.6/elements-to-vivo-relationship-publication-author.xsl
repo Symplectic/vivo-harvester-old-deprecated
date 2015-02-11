@@ -62,8 +62,6 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="$authorshipURI" />
             <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-                <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Relationship"/>
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
                 <vivo:relates rdf:resource="{svfn:userURI($user)}"/>
                 <vivo:relates rdf:resource="{svfn:objectURI($publication)}"/>

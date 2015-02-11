@@ -377,7 +377,6 @@
                     <xsl:with-param name="objectURI" select="$appointmentURI" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#NonAcademicPosition" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#NonAcademicPosition" />
                         <rdfs:label><xsl:value-of select="api:position" /></rdfs:label>
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
                         <xsl:if test="$orgObjects/*"><vivo:relates rdf:resource="{$orgURI}" /></xsl:if>

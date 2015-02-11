@@ -53,22 +53,16 @@
             <!-- Awarding Agent -->
             <xsl:variable name="awardedBy" select="svfn:getRecordField($activityObj,'institution')" />
             <xsl:for-each select="$awardedBy/api:addresses/api:address">
-                <xsl:if test="api:line[@type='organisation']/*">
-                    <!-- Awarding agaent -->
-                    <xsl:variable name="awardAgentURI" select="concat($baseURI,'institution-',svfn:stringToURI(api:line[@type='organisation']))" />
-                    <xsl:call-template name="render_rdf_object">
-                        <xsl:with-param name="objectURI" select="$awardAgentURI" />
-                        <xsl:with-param name="rdfNodes">
-                            <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                            <rdfs:label><xsl:value-of select="api:line[@type='name']" /></rdfs:label>
-                            <vivo:assigns rdf:resource="${$contextURI}"/><!-- Context Object -->
-                        </xsl:with-param>
-                    </xsl:call-template>
+                <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:institution)" />
+                <xsl:variable name="orgURI" select="svfn:organisationObjectsMainURI($orgObjects)" />
+
+                <xsl:if test="$orgObjects/*">
+                    <xsl:copy-of select="$orgObjects" />
                     <!-- Add context object link -->
                     <xsl:call-template name="render_rdf_object">
                         <xsl:with-param name="objectURI" select="$contextURI" />
                         <xsl:with-param name="rdfNodes">
-                            <vivo:assignedBy rdf:resource="{$awardAgentURI}"/><!-- Awarding Agent -->
+                            <vivo:assignedBy rdf:resource="{$orgURI}"/><!-- Awarding Agent -->
                         </xsl:with-param>
                     </xsl:call-template>
                 </xsl:if>
