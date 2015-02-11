@@ -53,7 +53,6 @@
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($publication)" />
             <xsl:with-param name="rdfNodes">
-                <rdf:type rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
                 <vivo:relatedBy rdf:resource="{$editorshipURI}"/>
             </xsl:with-param>
         </xsl:call-template>
