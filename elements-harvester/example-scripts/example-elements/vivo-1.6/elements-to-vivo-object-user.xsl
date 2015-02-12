@@ -77,14 +77,14 @@
                 <!-- XXX: Tried using encode-for-uri() instead of translate() to handle spaces and other
                      invalid characters for a URI, but VIVO has a rendering issue, having been designed to
                      expect paths like /individual/n999 -->
-                <xsl:variable name="awardedDegreeURI" select="concat($baseURI, 'degree-', $userId, '-', translate($awardedDegreeName, ' ', ''), '-', translate($awardedDegreeField, ' ', ''))" />
-                <xsl:variable name="eduProcessURI" select="concat($baseURI, 'eduprocess-', $userId, '-', translate($awardedDegreeName, ' ', ''), '-', translate($awardedDegreeField, ' ', ''))" />
+                <xsl:variable name="awardedDegreeURI" select="svfn:makeURI('degree-', concat($userId,'-',$awardedDegreeName,'-',$awardedDegreeField))" />
+                <xsl:variable name="eduProcessURI" select="svfn:makeURI('eduprocess-', concat($userId,'-',$awardedDegreeName,'-',$awardedDegreeField))" />
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
                 <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:institution)" />
                 <xsl:variable name="orgURI" select="svfn:organisationObjectsMainURI($orgObjects)" />
 
-                <xsl:variable name="degreeURI" select="concat($baseURI, 'degree-', translate($awardedDegreeName, ' ', ''), '-', translate($awardedDegreeField, ' ', ''))" />
+                <xsl:variable name="degreeURI" select="svfn:makeURI('degree-', concat($awardedDegreeName,'-',$awardedDegreeField))" />
 
                 <!-- Output RDF for vivo:University individual -->
                 <xsl:copy-of select="$orgObjects" />
@@ -199,7 +199,7 @@
 
         <xsl:if test="$academic-appointments">
             <xsl:for-each select="$academic-appointments/api:academic-appointments/api:academic-appointment[@privacy='public']">
-                <xsl:variable name="appointmentURI" select="concat($baseURI, 'appointment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
+                <xsl:variable name="appointmentURI" select="svfn:makeURI('appointment-', concat($userId,'-',position()))" />  <!-- TODO: using position() is weak!!! -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
                 <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:institution)" />
@@ -301,7 +301,7 @@
 
         <xsl:if test="$non-academic-employments">
             <xsl:for-each select="$non-academic-employments/api:non-academic-employments/api:non-academic-employment[@privacy='public']">
-                <xsl:variable name="appointmentURI" select="concat($baseURI, 'employment-', $userId, '-', position())" />  <!-- TODO: using position() is weak!!! -->
+                <xsl:variable name="appointmentURI" select="svfn:makeURI('employment-', concat($userId,'-',position()))" />  <!-- TODO: using position() is weak!!! -->
 
                 <!-- XXX: Ideally these will be unique identifiers in the future that can map to unique individuals in VIVO -->
                 <xsl:variable name="orgObjects" select="svfn:organisationObjects(api:employer)" />

@@ -42,7 +42,7 @@
         <xsl:variable name="publicationVenueTitle" select="svfn:selectJournalTitle(.)" />
 
         <!-- Generate a publication venue object URI from the journal title -->
-        <xsl:variable name="publicationVenueURI" select="concat($baseURI, 'journal-', svfn:stringToURI($publicationVenueTitle))" />
+        <xsl:variable name="publicationVenueURI" select="svfn:makeURI('journal-',$publicationVenueTitle)" />
 
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
         <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />

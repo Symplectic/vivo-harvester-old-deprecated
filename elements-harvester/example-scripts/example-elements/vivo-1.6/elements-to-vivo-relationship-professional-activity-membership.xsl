@@ -48,7 +48,7 @@
         </xsl:variable>
 
         <xsl:if test="not($orgName='')">
-            <xsl:variable name="orgURI"><xsl:value-of select="concat($baseURI,'org-',svfn:stringToURI($orgName))" /></xsl:variable>
+            <xsl:variable name="orgURI"><xsl:value-of select="svfn:makeURI('org-',$orgName)" /></xsl:variable>
 
             <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 

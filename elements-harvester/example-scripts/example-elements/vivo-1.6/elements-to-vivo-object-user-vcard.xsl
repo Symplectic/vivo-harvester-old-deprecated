@@ -34,15 +34,15 @@
         <xsl:variable name="userId"><xsl:value-of select="@username" /></xsl:variable>
         <xsl:variable name="userURI" select="svfn:userURI(.)" />
 
-        <xsl:variable name="vcardURI" select="concat($baseURI, 'vcard-', $userId)" />
+        <xsl:variable name="vcardURI" select="svfn:makeURI('vcard-',$userId)" />
 
-        <xsl:variable name="vcardEmailURI" select="concat($baseURI, 'vcardEmail-', $userId)" />
+        <xsl:variable name="vcardEmailURI" select="svfn:makeURI('vcardEmail-',$userId)" />
         <xsl:variable name="vcardEmailObject" select="svfn:renderVcardEmailObject(.,$vcardEmailURI,api:email-address)" />
 
-        <xsl:variable name="vcardNameURI" select="concat($baseURI, 'vcardName-', $userId)" />
+        <xsl:variable name="vcardNameURI" select="svfn:makeURI('vcardName-',$userId)" />
         <xsl:variable name="vcardNameObject" select="svfn:renderVcardNameObject(.,$vcardNameURI)" />
 
-        <xsl:variable name="vcardTitleURI" select="concat($baseURI, 'vcardTitle-', $userId)" />
+        <xsl:variable name="vcardTitleURI" select="svfn:makeURI('vcardTitle-',$userId)" />
         <xsl:variable name="vcardTitleObject" select="svfn:renderVcardTitleObject(.,$vcardTitleURI)" />
 
         <xsl:variable name="vcardAddresses"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'addresses')" /></xsl:variable>
@@ -75,26 +75,22 @@
                 </xsl:if>
                 <xsl:if test="$vcardAddresses">
                     <xsl:for-each select="$vcardAddresses/api:addresses/api:address[@privacy='public']">
-                        <xsl:variable name="vcardStreetAddress">
-                            <xsl:value-of select="api:line[@type='organisation'],api:line[@type='suborganisation'],api:line[@type='street-address']" separator="; " />
-                        </xsl:variable>
-                        <xsl:variable name="vcardAddressURI" select="concat($baseURI, 'vcardAddress-', $userId, '-', translate($vcardStreetAddress, ' ', ''))" />
-                        <vcard:hasAddress rdf:resource="{$vcardAddressURI}" />
+                        <vcard:hasAddress rdf:resource="{svfn:vcardAddressURI($userId,.)}" />
                     </xsl:for-each>
                 </xsl:if>
                 <xsl:if test="$vcardOtherEmails">
                     <xsl:for-each select="$vcardOtherEmails/api:email-addresses/api:email-address[@privacy='public']">
-                        <vcard:hasEmail rdf:resource="{concat($baseURI, 'vcardOtherEmail-', $userId, '-', translate(api:address, ' ', ''))}" />
+                        <vcard:hasEmail rdf:resource="{svfn:vcardEmailURI($userId,.)}" />
                     </xsl:for-each>
                 </xsl:if>
                 <xsl:if test="$vcardPhoneNumbers">
                     <xsl:for-each select="$vcardPhoneNumbers/api:phone-numbers/api:phone-number[@privacy='public']">
-                        <vcard:hasTelephone rdf:resource="{concat($baseURI, 'vcardPhoneNumber-', $userId, '-', translate(api:number, ' ', ''))}" />
+                        <vcard:hasTelephone rdf:resource="{svfn:vcardPhoneURI($userId,.)}" />
                     </xsl:for-each>
                 </xsl:if>
                 <xsl:if test="$vcardWebSites">
                     <xsl:for-each select="$vcardWebSites/api:web-addresses/api:web-address[@privacy='public']">
-                        <vcard:hasURL rdf:resource="{concat($baseURI, 'vcardUrl-', $userId, '-', translate(api:url, ' ', ''))}" />
+                        <vcard:hasURL rdf:resource="{svfn:vcardWebURI($userId,.)}" />
                     </xsl:for-each>
                 </xsl:if>
             </xsl:with-param>
@@ -108,9 +104,8 @@
                 <xsl:variable name="vcardStreetAddress">
                     <xsl:value-of select="api:line[@type='organisation'],api:line[@type='suborganisation'],api:line[@type='street-address']" separator="; " />
                 </xsl:variable>
-                <xsl:variable name="vcardAddressURI" select="concat($baseURI, 'vcardAddress-', $userId, '-', translate($vcardStreetAddress, ' ', ''))" />
                 <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$vcardAddressURI" />
+                    <xsl:with-param name="objectURI" select="svfn:vcardAddressURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Address" />
                         <vcard:streetAddress><xsl:value-of select="$vcardStreetAddress" /></vcard:streetAddress>
@@ -125,7 +120,7 @@
         <xsl:if test="$vcardOtherEmails">
             <xsl:for-each select="$vcardOtherEmails/api:email-addresses/api:email-address[@privacy='public']">
                 <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="concat($baseURI, 'vcardOtherEmail-', $userId, '-', translate(api:address, ' ', ''))" />
+                    <xsl:with-param name="objectURI" select="svfn:vcardEmailURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Email" />
                         <vcard:email><xsl:value-of select="api:address" /></vcard:email>
@@ -136,7 +131,7 @@
         <xsl:if test="$vcardPhoneNumbers">
             <xsl:for-each select="$vcardPhoneNumbers/api:phone-numbers/api:phone-number[@privacy='public']">
                 <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="concat($baseURI, 'vcardPhoneNumber-', $userId, '-', translate(api:number, ' ', ''))" />
+                    <xsl:with-param name="objectURI" select="svfn:vcardPhoneURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Telephone" />
                         <vcard:telephone><xsl:value-of select="api:number" /></vcard:telephone>
@@ -147,7 +142,7 @@
         <xsl:if test="$vcardWebSites">
             <xsl:for-each select="$vcardWebSites/api:web-addresses/api:web-address[@privacy='public']">
                 <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="concat($baseURI, 'vcardUrl-', $userId, '-', translate(api:url, ' ', ''))" />
+                    <xsl:with-param name="objectURI" select="svfn:vcardWebURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
                         <vcard:url><xsl:value-of select="api:url" /></vcard:url>
@@ -209,5 +204,36 @@
                 </xsl:with-param>
             </xsl:call-template>
         </xsl:if>
+    </xsl:function>
+
+    <xsl:function name="svfn:vcardAddressURI">
+        <xsl:param name="userId" />
+        <xsl:param name="address" />
+
+        <xsl:variable name="vcardStreetAddress">
+            <xsl:value-of select="$address/api:line[@type='organisation'],$address/api:line[@type='suborganisation'],$address/api:line[@type='street-address']" separator="; " />
+        </xsl:variable>
+        <xsl:value-of select="svfn:makeURI('vcardAddress-', concat($userId,'-',$vcardStreetAddress))" />
+    </xsl:function>
+
+    <xsl:function name="svfn:vcardEmailURI">
+        <xsl:param name="userId" />
+        <xsl:param name="email-address" />
+
+        <xsl:value-of select="svfn:makeURI('vcardOtherEmail-',concat($userId,'-',$email-address/api:address))" />
+    </xsl:function>
+
+    <xsl:function name="svfn:vcardPhoneURI">
+        <xsl:param name="userId" />
+        <xsl:param name="phone-number" />
+
+        <xsl:value-of select="svfn:makeURI('vcardPhoneNumber-', concat($userId,'-',$phone-number/api:number))" />
+    </xsl:function>
+
+    <xsl:function name="svfn:vcardWebURI">
+        <xsl:param name="userId" />
+        <xsl:param name="web-address" />
+
+        <xsl:value-of select="svfn:makeURI('vcardUrl-', concat($userId,'-',$web-address/api:url))" />
     </xsl:function>
 </xsl:stylesheet>

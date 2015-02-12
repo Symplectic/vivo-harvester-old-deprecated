@@ -36,6 +36,15 @@
          ======================================- -->
 
     <!--
+    -->
+    <xsl:function name="svfn:makeURI">
+        <xsl:param name="prefix" />
+        <xsl:param name="id" />
+
+        <xsl:value-of select="concat($baseURI,svfn:stringToURI($prefix),svfn:stringToURI($id))" />
+    </xsl:function>
+
+    <!--
         svfn:objectURI
         ==============
         Create a URI for the RDF objects based on the passed Elements object
@@ -43,7 +52,7 @@
     <xsl:function name="svfn:objectURI" as="xs:string">
         <xsl:param name="object" />
 
-        <xsl:value-of select="concat($baseURI,$object/@category,$object/@id)" />
+        <xsl:value-of select="svfn:makeURI($object/@category,$object/@id)" />
     </xsl:function>
 
     <!--
@@ -54,7 +63,7 @@
     <xsl:function name="svfn:userURI" as="xs:string">
         <xsl:param name="object" />
 
-        <xsl:value-of select="concat($baseURI,$object/@username)" />
+        <xsl:value-of select="svfn:makeURI('',$object/@username)" />
     </xsl:function>
 
     <!--
@@ -66,7 +75,7 @@
         <xsl:param name="relationship" />
         <xsl:param name="type" />
 
-        <xsl:value-of select="concat($baseURI,$type,$relationship/@id)" />
+        <xsl:value-of select="svfn:makeURI($type,$relationship/@id)" />
     </xsl:function>
 
     <!--
@@ -90,7 +99,7 @@
 
         <xsl:variable name="orgName" select="svfn:departmentName($address)" />
         <xsl:choose>
-            <xsl:when test="$orgName"><xsl:value-of select="concat($baseURI, 'dept-', translate($orgName, ' ', ''))" /></xsl:when>
+            <xsl:when test="$orgName"><xsl:value-of select="svfn:makeURI('dept-',$orgName)" /></xsl:when>
             <xsl:otherwise><xsl:text /></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -116,7 +125,7 @@
 
         <xsl:variable name="orgName" select="svfn:institutionName($address)" />
         <xsl:choose>
-            <xsl:when test="$orgName"><xsl:value-of select="concat($baseURI, 'institution-', translate($orgName, ' ', ''))" /></xsl:when>
+            <xsl:when test="$orgName"><xsl:value-of select="svfn:makeURI('institution-',$orgName)" /></xsl:when>
             <xsl:otherwise><xsl:text /></xsl:otherwise>
         </xsl:choose>
     </xsl:function>

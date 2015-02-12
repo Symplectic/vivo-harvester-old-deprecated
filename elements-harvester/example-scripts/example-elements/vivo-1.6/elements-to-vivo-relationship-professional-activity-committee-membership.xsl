@@ -36,7 +36,7 @@
 
         <xsl:variable name="committeeName" select="svfn:getRecordField($activityObj,'title')" />
         <xsl:if test="$committeeName/api:text">
-            <xsl:variable name="committeeURI"><xsl:value-of select="concat($baseURI,'committee-',svfn:stringToURI($committeeName/api:text))" /></xsl:variable>
+            <xsl:variable name="committeeURI"><xsl:value-of select="svfn:makeURI('committee-',$committeeName/api:text)" /></xsl:variable>
 
             <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 

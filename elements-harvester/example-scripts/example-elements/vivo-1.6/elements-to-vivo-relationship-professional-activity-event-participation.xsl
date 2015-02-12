@@ -36,7 +36,7 @@
 
         <xsl:variable name="eventName" select="svfn:getRecordField($activityObj,'description')" />
         <xsl:if test="$eventName/api:text">
-            <xsl:variable name="eventURI"><xsl:value-of select="concat($baseURI,'event-',svfn:stringToURI($eventName/api:text))" /></xsl:variable>
+            <xsl:variable name="eventURI"><xsl:value-of select="svfn:makeURI('event-',$eventName/api:text)" /></xsl:variable>
 
             <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 

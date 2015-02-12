@@ -40,7 +40,7 @@
 
         <xsl:variable name="courseName" select="svfn:getRecordField($activityObj,'title')" />
         <xsl:if test="$courseName/api:text">
-            <xsl:variable name="courseURI"><xsl:value-of select="concat($baseURI,'award-',svfn:stringToURI($courseName/api:text))" /></xsl:variable>
+            <xsl:variable name="courseURI"><xsl:value-of select="svfn:makeURI('award-',$courseName/api:text)" /></xsl:variable>
 
             <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 
