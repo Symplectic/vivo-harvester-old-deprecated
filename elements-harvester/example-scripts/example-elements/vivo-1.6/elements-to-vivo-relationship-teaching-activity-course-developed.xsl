@@ -60,7 +60,6 @@
             <xsl:variable name="inclusiveURI" select="concat($contextURI,'-dates')" />
             <xsl:variable name="startURI" select="concat($contextURI,'-dates-start')" />
 
-
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$contextURI" />
                 <xsl:with-param name="rdfNodes">
@@ -71,6 +70,14 @@
                     <xsl:if test="$startDate/*">
                         <vivo:dateTimeInterval rdf:resource="{$inclusiveURI}"/><!-- Years Inclusive -->
                     </xsl:if>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <!-- Relate user to context-->
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$userURI" />
+                <xsl:with-param name="rdfNodes">
+                    <obo:RO_0000053 rdf:resource="{$contextURI}"/>
                 </xsl:with-param>
             </xsl:call-template>
 

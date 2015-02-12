@@ -76,6 +76,14 @@
                 </xsl:with-param>
             </xsl:call-template>
 
+            <!-- Relate user to context-->
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$userURI" />
+                <xsl:with-param name="rdfNodes">
+                    <obo:RO_0000053 rdf:resource="{$contextURI}"/>
+                </xsl:with-param>
+            </xsl:call-template>
+
             <xsl:if test="$startDate/* or $finishDate/*">
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="$inclusiveURI" />
