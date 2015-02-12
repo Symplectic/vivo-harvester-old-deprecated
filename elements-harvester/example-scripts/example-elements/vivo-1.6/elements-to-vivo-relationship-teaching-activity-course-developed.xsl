@@ -32,7 +32,7 @@
     <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-    <xsl:template match="api:relationship[@type='user-teaching-association' and api:related/api:object[@category='teaching-activity' and @type='course-taught']]">
+    <xsl:template match="api:relationship[@type='user-teaching-association' and api:related/api:object[@category='teaching-activity' and @type='course-developed']]">
         <xsl:variable name="contextURI" select="svfn:relationshipURI(.,'relationship')" />
 
         <xsl:variable name="activityObj" select="svfn:fullObject(api:related/api:object[@category='teaching-activity'])" />
@@ -55,28 +55,26 @@
             </xsl:call-template>
 
             <!-- Context Object -->
-            <xsl:variable name="startDate" select="svfn:getRecordField($activityObj,'start-date')" />
-            <xsl:variable name="finishDate" select="svfn:getRecordField($activityObj,'end-date')" />
+            <xsl:variable name="startDate" select="svfn:getRecordField($activityObj,'release-date')" />
 
             <xsl:variable name="inclusiveURI" select="concat($contextURI,'-dates')" />
             <xsl:variable name="startURI" select="concat($contextURI,'-dates-start')" />
-            <xsl:variable name="endURI" select="concat($contextURI,'-dates-end')" />
 
 
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$contextURI" />
                 <xsl:with-param name="rdfNodes">
                     <rdf:type rdf:resource="http://vivoweb.org/ontology/core#TeacherRole"/>
-                    <rdfs:label>Taught course</rdfs:label>
+                    <rdfs:label>Developed course</rdfs:label>
                     <obo:BFO_0000054 rdf:resource="{$courseURI}" /><!-- Course taught -->
                     <obo:RO_0000052 rdf:resource="{$userURI}" /><!-- Teacher -->
-                    <xsl:if test="$startDate/* or $finishDate/*">
+                    <xsl:if test="$startDate/*">
                         <vivo:dateTimeInterval rdf:resource="{$inclusiveURI}"/><!-- Years Inclusive -->
                     </xsl:if>
                 </xsl:with-param>
             </xsl:call-template>
 
-            <xsl:if test="$startDate/* or $finishDate/*">
+            <xsl:if test="$startDate/*">
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="$inclusiveURI" />
                     <xsl:with-param name="rdfNodes">
@@ -84,13 +82,9 @@
                         <xsl:if test="$startDate/*">
                             <vivo:start rdf:resource="{$startURI}" />
                         </xsl:if>
-                        <xsl:if test="$finishDate/*">
-                            <vivo:end rdf:resource="{$endURI}" />
-                        </xsl:if>
                     </xsl:with-param>
                 </xsl:call-template>
                 <xsl:copy-of select="svfn:renderDateObject(.,$startURI,$startDate)" />
-                <xsl:copy-of select="svfn:renderDateObject(.,$endURI,$finishDate)" />
             </xsl:if>
         </xsl:if>
     </xsl:template>

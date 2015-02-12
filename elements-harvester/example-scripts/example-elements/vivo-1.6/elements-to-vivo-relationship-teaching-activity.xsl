@@ -25,5 +25,6 @@
                 exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api obo symp svfn config xs"
         >
 
+    <xsl:include href="elements-to-vivo-relationship-teaching-activity-course-developed.xsl" />
     <xsl:include href="elements-to-vivo-relationship-teaching-activity-course-taught.xsl" />
 </xsl:stylesheet>
