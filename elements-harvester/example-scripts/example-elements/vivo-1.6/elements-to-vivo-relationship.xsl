@@ -43,6 +43,7 @@
     <xsl:include href="elements-to-vivo-relationship-publication-author.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-grant.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-editor.xsl" />
+    <xsl:include href="elements-to-vivo-relationship-publication-translator.xsl" />
     <xsl:include href="elements-to-vivo-relationship-professional-activity.xsl" />
     <xsl:include href="elements-to-vivo-relationship-teaching-activity.xsl" />
     <xsl:include href="elements-to-vivo-relationship-user-grant.xsl" />
