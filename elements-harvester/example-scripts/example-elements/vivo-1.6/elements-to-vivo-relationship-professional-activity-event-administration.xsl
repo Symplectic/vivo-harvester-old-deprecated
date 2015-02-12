@@ -28,37 +28,26 @@
     <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-    <xsl:template match="api:relationship[@type='activity-user-association' and api:related/api:object[@category='activity' and @type='membership']]">
+    <xsl:template match="api:relationship[@type='activity-user-association' and api:related/api:object[@category='activity' and @type='event-administration']]">
         <xsl:variable name="contextURI" select="svfn:relationshipURI(.,'relationship')" />
 
         <xsl:variable name="activityObj" select="svfn:fullObject(api:related/api:object[@category='activity'])" />
         <xsl:variable name="userObj" select="svfn:fullObject(api:related/api:object[@category='user'])" />
 
-        <xsl:variable name="orgAddress" select="svfn:getRecordField($activityObj,'institution')" />
-
-        <xsl:variable name="orgName">
-            <xsl:choose>
-                <xsl:when test="$orgAddress//api:line[@type='name'][1]">
-                    <xsl:value-of select="$orgAddress//api:line[@type='name'][1]" />
-                </xsl:when>
-                <xsl:when test="$orgAddress//api:line[@type='suborganisation'][1]">
-                    <xsl:value-of select="$orgAddress//api:line[@type='suborganisation'][1]" />
-                </xsl:when>
-            </xsl:choose>
-        </xsl:variable>
-
-        <xsl:if test="not($orgName='')">
-            <xsl:variable name="orgURI"><xsl:value-of select="concat($baseURI,'org-',svfn:stringToURI($orgName))" /></xsl:variable>
+        <xsl:variable name="eventName" select="svfn:getRecordField($activityObj,'description')" />
+        <xsl:if test="$eventName/api:text">
+            <xsl:variable name="eventURI"><xsl:value-of select="concat($baseURI,'event-',svfn:stringToURI($eventName/api:text))" /></xsl:variable>
 
             <xsl:variable name="userURI" select="svfn:userURI($userObj)" />
 
-            <!-- An Organization-->
+            <!-- An Event -->
             <xsl:call-template name="render_rdf_object">
-                <xsl:with-param name="objectURI" select="$orgURI" />
+                <xsl:with-param name="objectURI" select="$eventURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                    <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
-                    <vivo:contributingRole rdf:resource="{$contextURI}"/><!-- Context object -->
+                    <!-- TODO Map event-type to rdf:type -->
+                    <rdf:type rdf:resource="http://purl.org/NET/c4dm/event.owl#Event"/>
+                    <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','description')" />
+                    <obo:BFO_0000055 rdf:resource="{$contextURI}"/><!-- Context object -->
                 </xsl:with-param>
             </xsl:call-template>
 
@@ -73,9 +62,9 @@
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$contextURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#MemberRole"/>
-                    <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','membership-type')" />
-                    <vivo:roleContributesTo rdf:resource="{$orgURI}" />
+                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#OrganizerRole"/>
+                    <xsl:copy-of select="svfn:renderPropertyFromField($activityObj,'rdfs:label','administrative-role')" />
+                    <obo:BFO_0000054 rdf:resource="{$eventURI}" />
                     <obo:RO_0000052 rdf:resource="{$userURI}"/><!-- User -->
                     <xsl:if test="$startDate/* or $finishDate/*">
                         <vivo:dateTimeInterval rdf:resource="{$inclusiveURI}"/><!-- Years Inclusive -->
