@@ -40,6 +40,7 @@
     <!--
         Import XSLT to handle each type of relationship
     -->
+    <xsl:include href="elements-to-vivo-relationship-collaborator.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-author.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-grant.xsl" />
     <xsl:include href="elements-to-vivo-relationship-publication-editor.xsl" />
