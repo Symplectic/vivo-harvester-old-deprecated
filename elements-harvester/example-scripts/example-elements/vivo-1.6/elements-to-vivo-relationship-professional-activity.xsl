@@ -30,4 +30,5 @@
     -->
     <xsl:include href="elements-to-vivo-relationship-professional-activity-committee-membership.xsl" />
     <xsl:include href="elements-to-vivo-relationship-professional-activity-distinction.xsl" />
+    <xsl:include href="elements-to-vivo-relationship-professional-activity-membership.xsl" />
 </xsl:stylesheet>
