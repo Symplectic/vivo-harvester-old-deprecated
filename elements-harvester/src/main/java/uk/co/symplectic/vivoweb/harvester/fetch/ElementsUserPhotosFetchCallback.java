@@ -45,6 +45,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
 
     @Override
     public void fetchSuccess(File downloadedFile) {
+        String uriUserName = userInfo.getUsername().toLowerCase().replaceAll("\\a+", "-").replaceAll("[^a-z0-9\\-]", "");
         BufferedImage image = ImageUtils.readFile(downloadedFile);
         if (image != null) {
             // Write out full size image
@@ -53,7 +54,7 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 fullImageDir.mkdirs();
             }
 
-            ImageUtils.writeFile(image, new File(fullImageDir, userInfo.getUsername() + ".jpg"), "jpeg");
+            ImageUtils.writeFile(image, new File(fullImageDir, uriUserName + ".jpg"), "jpeg");
 
             // Write out thumbnail
             File thumbnailDir = new File(new File(vivoImageDir, "harvestedImages"), "thumbnails");
@@ -62,13 +63,11 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             }
 
             int targetHeight = ImageUtils.getTargetHeight(image.getWidth(), image.getHeight(), VIVO_THUMBNAIL_WIDTH);
-            ImageUtils.writeFile(ImageUtils.getScaledInstance(image, VIVO_THUMBNAIL_WIDTH, targetHeight, true), new File(thumbnailDir, userInfo.getUsername() + ".thumbnail.jpg"), "jpeg");
+            ImageUtils.writeFile(ImageUtils.getScaledInstance(image, VIVO_THUMBNAIL_WIDTH, targetHeight, true), new File(thumbnailDir, uriUserName + ".thumbnail.jpg"), "jpeg");
 
             // Write out XML
             Writer photoXml = new StringWriter();
             try {
-                String uriUserName = userInfo.getUsername().toLowerCase().replaceAll("\\a+", "-").replaceAll("[^a-z0-9\\-]", "");
-
                 photoXml.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 photoXml.write("<rdf:RDF xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:score=\"http://vivoweb.org/ontology/score#\" xmlns:vitro=\"http://vitro.mannlib.cornell.edu/ns/vitro/0.7#\" xmlns:bibo=\"http://purl.org/ontology/bibo/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:ufVivo=\"http://vivo.ufl.edu/ontology/vivo-ufl/\" xmlns:owlPlus=\"http://www.w3.org/2006/12/owl2-xml#\" xmlns:svo=\"http://www.symplectic.co.uk/vivo/\" xmlns:skos=\"http://www.w3.org/2008/05/skos#\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema#\" xmlns:api=\"http://www.symplectic.co.uk/publications/api\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:vitro-public=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#\" xmlns:vocab=\"http://purl.org/vocab/vann/\" xmlns:core=\"http://vivoweb.org/ontology/core#\" xmlns:swvocab=\"http://www.w3.org/2003/06/sw-vocab-status/ns#\">");
 
