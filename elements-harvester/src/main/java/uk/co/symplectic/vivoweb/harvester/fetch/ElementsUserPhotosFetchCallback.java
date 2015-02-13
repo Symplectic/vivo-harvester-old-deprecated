@@ -67,38 +67,40 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             // Write out XML
             Writer photoXml = new StringWriter();
             try {
+                String uriUserName = userInfo.getUsername().toLowerCase().replaceAll("\\a+", "-").replaceAll("[^a-z0-9\\-]", "");
+
                 photoXml.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 photoXml.write("<rdf:RDF xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:score=\"http://vivoweb.org/ontology/score#\" xmlns:vitro=\"http://vitro.mannlib.cornell.edu/ns/vitro/0.7#\" xmlns:bibo=\"http://purl.org/ontology/bibo/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:ufVivo=\"http://vivo.ufl.edu/ontology/vivo-ufl/\" xmlns:owlPlus=\"http://www.w3.org/2006/12/owl2-xml#\" xmlns:svo=\"http://www.symplectic.co.uk/vivo/\" xmlns:skos=\"http://www.w3.org/2008/05/skos#\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema#\" xmlns:api=\"http://www.symplectic.co.uk/publications/api\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:vitro-public=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#\" xmlns:vocab=\"http://purl.org/vocab/vann/\" xmlns:core=\"http://vivoweb.org/ontology/core#\" xmlns:swvocab=\"http://www.w3.org/2003/06/sw-vocab-status/ns#\">");
 
-                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + userInfo.getUsername() + "\">");
-                photoXml.write("    <vitro-public:mainImage rdf:resource=\"" + baseUrl + userInfo.getUsername() + "-image\"/>");
+                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + uriUserName + "\">");
+                photoXml.write("    <vitro-public:mainImage rdf:resource=\"" + baseUrl + uriUserName + "-image\"/>");
                 photoXml.write("</rdf:Description>");
 
-                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + userInfo.getUsername() + "-image\">");
+                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + uriUserName + "-image\">");
                 photoXml.write("    <rdf:type rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/>");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#File\"/>");
-                photoXml.write("    <vitro-public:downloadLocation rdf:resource=\"" + baseUrl + userInfo.getUsername() + "-imageDownload\"/>");
-                photoXml.write("    <vitro-public:thumbnailImage rdf:resource=\"" + baseUrl + userInfo.getUsername() + "-imageThumbnail\"/>");
-                photoXml.write("    <vitro-public:filename>" + userInfo.getUsername() + ".jpg</vitro-public:filename>");
+                photoXml.write("    <vitro-public:downloadLocation rdf:resource=\"" + baseUrl + uriUserName + "-imageDownload\"/>");
+                photoXml.write("    <vitro-public:thumbnailImage rdf:resource=\"" + baseUrl + uriUserName + "-imageThumbnail\"/>");
+                photoXml.write("    <vitro-public:filename>" + uriUserName + ".jpg</vitro-public:filename>");
                 photoXml.write("    <vitro-public:mimeType>image/jpeg</vitro-public:mimeType>");
                 photoXml.write("</rdf:Description>");
 
-                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + userInfo.getUsername() + "-imageDownload\">");
+                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + uriUserName + "-imageDownload\">");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream\"/>");
-                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "fullImages/" + userInfo.getUsername() + ".jpg</vitro-public:directDownloadUrl>");
+                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "fullImages/" + uriUserName + ".jpg</vitro-public:directDownloadUrl>");
                 photoXml.write("</rdf:Description>");
 
-                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + userInfo.getUsername() + "-imageThumbnail\">");
+                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + uriUserName + "-imageThumbnail\">");
                 photoXml.write("    <rdf:type rdf:resource=\"http://www.w3.org/2002/07/owl#Thing\"/>");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#File\"/>");
-                photoXml.write("    <vitro-public:downloadLocation rdf:resource=\"" + baseUrl + userInfo.getUsername() + "-imageThumbnailDownload\"/>");
-                photoXml.write("    <vitro-public:filename>" + userInfo.getUsername() + ".thumbnail.jpg</vitro-public:filename>");
+                photoXml.write("    <vitro-public:downloadLocation rdf:resource=\"" + baseUrl + uriUserName + "-imageThumbnailDownload\"/>");
+                photoXml.write("    <vitro-public:filename>" + uriUserName + ".thumbnail.jpg</vitro-public:filename>");
                 photoXml.write("    <vitro-public:mimeType>image/jpeg</vitro-public:mimeType>");
                 photoXml.write("</rdf:Description>");
 
-                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + userInfo.getUsername() + "-imageThumbnailDownload\">");
+                photoXml.write("<rdf:Description rdf:about=\"" + baseUrl + uriUserName + "-imageThumbnailDownload\">");
                 photoXml.write("    <rdf:type rdf:resource=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#FileByteStream\"/>");
-                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "thumbnails/" + userInfo.getUsername() + ".thumbnail.jpg</vitro-public:directDownloadUrl>");
+                photoXml.write("    <vitro-public:directDownloadUrl>" + imageUrlBase + "thumbnails/" + uriUserName + ".thumbnail.jpg</vitro-public:directDownloadUrl>");
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("</rdf:RDF>");
