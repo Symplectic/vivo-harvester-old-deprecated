@@ -11,7 +11,9 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
                 xmlns:bibo="http://purl.org/ontology/bibo/"
+                xmlns:obo="http://purl.obolibrary.org/obo/"
                 xmlns:vivo="http://vivoweb.org/ontology/core#"
+                xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
                 xmlns:foaf="http://xmlns.com/foaf/0.1/"
                 xmlns:score="http://vivoweb.org/ontology/score#"
                 xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
@@ -20,7 +22,7 @@
                 xmlns:symp="http://www.symplectic.co.uk/vivo/"
                 xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
                 xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config"
-                exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn config xs"
+                exclude-result-prefixes="rdf rdfs bibo obo vivo vcard foaf score ufVivo vitro api symp svfn config xs"
         >
 
     <!--
@@ -38,6 +40,12 @@
         <!-- Generate the publication date object. Custom XSLT 2 function that takes the current object, the URI for the date, and the field that holds the publication date -->
         <xsl:variable name="publicationDateObject" select="svfn:renderDateObject(.,$publicationDateURI,svfn:getRecordField(.,'publication-date'))" />
 
+        <!-- Attempt to generate a URI for the filed date object -->
+        <xsl:variable name="filedDateURI" select="concat(svfn:objectURI(.),'-filedDate')" />
+
+        <!-- Generate the filed date object. Custom XSLT 2 function that takes the current object, the URI for the date, and the field that holds the filed date -->
+        <xsl:variable name="filedDateObject" select="svfn:renderDateObject(.,$filedDateURI,svfn:getRecordField(.,'filed-date'))" />
+
         <!-- Attempt to get a journal title for the article -->
         <xsl:variable name="publicationVenueTitle" select="svfn:selectJournalTitle(.)" />
 
@@ -46,6 +54,13 @@
 
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
         <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
+
+        <!-- Web pages -->
+        <xsl:variable name="arxivPdfUrl" select="svfn:getRecordField(.,'arxiv-pdf-url')" />
+        <xsl:variable name="authorUrl" select="svfn:getRecordField(.,'author-url')" />
+        <xsl:variable name="publisherUrl" select="svfn:getRecordField(.,'publisher-url')" />
+
+        <xsl:variable name="publicationStatus" select="svfn:getRecordField(.,'publication-status')" />
 
         <!-- Render an RDF object -->
         <xsl:call-template name="render_rdf_object">
@@ -72,6 +87,7 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:volume','volume')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:freetextKeyword','keywords')" />
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:patentNumber','patent-number')" />
                 <xsl:if test="not($useSympNS='')">
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
@@ -79,14 +95,72 @@
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:notes','notes')" />
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:pii','pii')" />
                 </xsl:if>
+                <xsl:if test="$filedDateObject/*"><vivo:dateFiled rdf:resource="{$filedDateURI}" /></xsl:if>
                 <xsl:if test="$publicationDateObject/*"><vivo:dateTimeValue rdf:resource="{$publicationDateURI}" /></xsl:if>
                 <xsl:if test="$publicationVenueObject/*"><vivo:hasPublicationVenue rdf:resource="{$publicationVenueURI}" /></xsl:if>
+                <xsl:if test="$arxivPdfUrl/* or $authorUrl/* or $publisherUrl">
+                    <obo:ARG_2000028 rdf:resource="{concat(svfn:objectURI(.),'-webpages')}" />
+                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="$publicationStatus/api:text='Accepted'"><bibo:status rdf:resource="http://purl.org/ontology/bibo/accepted" /></xsl:when>
+                    <xsl:when test="$publicationStatus/api:text='In preparation'"><bibo:status rdf:resource="http://vivoweb.org/ontology/core#inPress" /></xsl:when>
+                    <xsl:when test="$publicationStatus/api:text='Published'"><bibo:status rdf:resource="http://purl.org/ontology/bibo/published" /></xsl:when>
+                    <xsl:when test="$publicationStatus/api:text='Submitted'"><bibo:status rdf:resource="http://vivoweb.org/ontology/core#submitted" /></xsl:when>
+                    <xsl:when test="$publicationStatus/api:text='Unpublished'"><bibo:status rdf:resource="http://purl.org/ontology/bibo/unpublished" /></xsl:when>
+                </xsl:choose>
             </xsl:with-param>
         </xsl:call-template>
 
         <!-- Output the publication date and venue objects. If they are empty, nothing will be output -->
+        <xsl:copy-of select="$filedDateObject" />
         <xsl:copy-of select="$publicationDateObject" />
         <xsl:copy-of select="$publicationVenueObject" />
+
+        <xsl:if test="$arxivPdfUrl/* or $authorUrl/* or $publisherUrl">
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="concat(svfn:objectURI(.),'-webpages')" />
+                <xsl:with-param name="rdfNodes">
+                    <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Kind" />
+                    <obo:ARG_2000029 rdf:resource="svfn:objectURI(.)" />
+                    <xsl:if test="$arxivPdfUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-arxiv')}" /></xsl:if>
+                    <xsl:if test="$authorUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-author')}" /></xsl:if>
+                    <xsl:if test="$publisherUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-publisher')}" /></xsl:if>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:if test="$arxivPdfUrl/*">
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="concat(svfn:objectURI(.),'-webpages-arxiv')" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
+                        <rdfs:label>ArXiv PDF</rdfs:label>
+                        <vcard:url><xsl:value-of select="$arxivPdfUrl/api:text" /></vcard:url>
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+
+            <xsl:if test="$authorUrl/*">
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="concat(svfn:objectURI(.),'-webpages-author')" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
+                        <rdfs:label>Author's Version</rdfs:label>
+                        <vcard:url><xsl:value-of select="$authorUrl/api:text" /></vcard:url>
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+
+            <xsl:if test="$publisherUrl/*">
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="concat(svfn:objectURI(.),'-webpages-publisher')" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
+                        <rdfs:label>Publisher's Version</rdfs:label>
+                        <vcard:url><xsl:value-of select="$publisherUrl/api:text" /></vcard:url>
+                    </xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:if>
     </xsl:template>
 
     <!-- ====================================================
