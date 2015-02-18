@@ -122,6 +122,10 @@
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="svfn:vcardEmailURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
+                        <xsl:choose>
+                            <xsl:when test="api:type='personal'"><rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Home"/></xsl:when>
+                            <xsl:when test="api:type='work'"><rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Work"/></xsl:when>
+                        </xsl:choose>
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Email" />
                         <vcard:email><xsl:value-of select="api:address" /></vcard:email>
                     </xsl:with-param>
@@ -133,6 +137,10 @@
                 <xsl:call-template name="render_rdf_object">
                     <xsl:with-param name="objectURI" select="svfn:vcardPhoneURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
+                        <xsl:choose>
+                            <xsl:when test="api:type='mobile'"><rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Cell"/></xsl:when>
+                            <xsl:when test="api:type='work'"><rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Work"/></xsl:when>
+                        </xsl:choose>
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Telephone" />
                         <vcard:telephone><xsl:value-of select="api:number" /></vcard:telephone>
                     </xsl:with-param>
@@ -145,6 +153,9 @@
                     <xsl:with-param name="objectURI" select="svfn:vcardWebURI($userId,.)" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#URL" />
+                        <xsl:choose>
+                            <xsl:when test="api:type='company'"><rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Work"/></xsl:when>
+                        </xsl:choose>
                         <vcard:url><xsl:value-of select="api:url" /></vcard:url>
                         <rdfs:label><xsl:value-of select="api:label" /></rdfs:label>
                     </xsl:with-param>
@@ -179,6 +190,7 @@
                 <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Name" />
                 <vcard:givenName><xsl:value-of select="$object/api:first-name" /></vcard:givenName>
                 <vcard:familyName><xsl:value-of select="$object/api:last-name" /></vcard:familyName>
+                <xsl:if test="$object/api:suffix"><vcard:honorificSuffix><xsl:value-of select="$object/api:suffix" /></vcard:honorificSuffix></xsl:if>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:function>

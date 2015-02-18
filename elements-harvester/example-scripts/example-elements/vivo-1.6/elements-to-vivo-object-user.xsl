@@ -38,7 +38,6 @@
         <xsl:variable name="isAcademic"><xsl:value-of select="api:is-academic" /></xsl:variable>
         <xsl:variable name="firstName"><xsl:value-of select="api:first-name" /></xsl:variable>
         <xsl:variable name="lastName"><xsl:value-of select="api:last-name" /></xsl:variable>
-        <xsl:variable name="overview"><xsl:value-of select="svfn:getRecordFieldOrFirst(.,'overview')" /></xsl:variable>
         <xsl:variable name="degrees" select="svfn:getRecordFieldOrFirst(.,'degrees')" />
         <xsl:variable name="academic-appointments" select="svfn:getRecordFieldOrFirst(.,'academic-appointments')" />
         <xsl:variable name="non-academic-employments" select="svfn:getRecordFieldOrFirst(.,'non-academic-employments')" />
@@ -58,10 +57,7 @@
                 </xsl:choose>
                 <!-- rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" / -->
                 <rdfs:label><xsl:value-of select="$lastName" />, <xsl:value-of select="$firstName" /></rdfs:label>
-
-                <xsl:if test="$overview/*">
-                    <vivo:overview><xsl:value-of select="$overview/api:text" /></vivo:overview>
-                </xsl:if>
+                <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'vivo:overview','overview')" />
             </xsl:with-param>
         </xsl:call-template>
 
@@ -197,7 +193,7 @@
             </xsl:for-each>
         </xsl:if>
 
-        <xsl:if test="$academic-appointments">
+        <xsl:if test="$academic-appointments/*">
             <xsl:for-each select="$academic-appointments/api:academic-appointments/api:academic-appointment[@privacy='public']">
                 <xsl:variable name="appointmentURI" select="svfn:makeURI('appointment-', concat($userId,'-',position()))" />  <!-- TODO: using position() is weak!!! -->
 
@@ -279,7 +275,6 @@
                              vivo:LibrarianPosition, vivo:NonFacultyAcademicPosition, vivo:PostdocPosition,
                              or vivo:PrimaryPosition -->
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Position" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#Position" />
                         <rdfs:label><xsl:value-of select="api:position" /></rdfs:label>
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
                         <!--
