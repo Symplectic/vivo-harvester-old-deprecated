@@ -8,6 +8,7 @@
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
                 xmlns:bibo="http://purl.org/ontology/bibo/"
@@ -19,7 +20,7 @@
                 xmlns:api="http://www.symplectic.co.uk/publications/api"
                 xmlns:symp="http://www.symplectic.co.uk/ontology/elements/"
                 xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
-                exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn xs"
+                exclude-result-prefixes="rdf rdfs bibo vivo foaf score ufVivo vitro api symp svfn fn xs"
         >
 
     <!--
@@ -83,6 +84,8 @@
         <xsl:choose>
             <xsl:when test="$propertyName='bibo:pageStart'"><xsl:element name="{$propertyName}"><xsl:value-of select="api:begin-page" /></xsl:element></xsl:when>
             <xsl:when test="$propertyName='bibo:pageEnd'"><xsl:element name="{$propertyName}"><xsl:value-of select="api:end-page" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:numPages' and api:page-count"><xsl:element name="{$propertyName}"><xsl:value-of select="api:page-count" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:numPages' and api:begin-page and api:end-page"><xsl:element name="{$propertyName}"><xsl:value-of select="fn:number(api:end-page)-fn:number(api:begin-page)+1" /></xsl:element></xsl:when>
             <xsl:otherwise />
         </xsl:choose>
     </xsl:template>
