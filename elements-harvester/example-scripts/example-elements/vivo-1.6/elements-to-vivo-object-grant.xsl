@@ -46,6 +46,7 @@
             <xsl:with-param name="rdfNodes">
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Grant"/>
                 <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'rdfs:label','title')" />
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:abstract','abstract')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:abstract','description')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:sponsorAwardId','funder-reference')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:localAwardId','institution-reference')" />
