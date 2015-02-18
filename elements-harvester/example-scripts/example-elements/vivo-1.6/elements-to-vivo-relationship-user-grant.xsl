@@ -53,7 +53,7 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#ResearcherRole"/>
-                        <rdfs:label>Funding</rdfs:label>
+                        <rdfs:label>Funded</rdfs:label>
                     </xsl:otherwise>
                 </xsl:choose>
                 <vivo:relatedBy rdf:resource="{svfn:objectURI($grant)}"/><!-- link to grant -->
@@ -64,7 +64,7 @@
             </xsl:with-param>
         </xsl:call-template>
 
-        <!-- Add a reference to the authorship object to the user object -->
+        <!-- Add a reference to the role object to the grant object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:objectURI($grant)" />
             <xsl:with-param name="rdfNodes">
@@ -73,14 +73,14 @@
             </xsl:with-param>
         </xsl:call-template>
 
-        <!-- Add a reference to the authorship object to the publication object -->
+        <!-- Add a reference to the role object to the user object -->
         <xsl:call-template name="render_rdf_object">
             <xsl:with-param name="objectURI" select="svfn:userURI($user)" />
             <xsl:with-param name="rdfNodes">
+                <obo:RO_0000053 rdf:resource="{$investigatorURI}"/><!-- link to role -->
                 <xsl:if test="./@type='user-grant-primary-investigation' or @type='user-grant-secondary-investigation'">
-                    <obo:RO_0000053 rdf:resource="{$investigatorURI}"/><!-- link to role -->
+                    <vivo:relatedBy rdf:resource="{svfn:objectURI($grant)}" /><!-- link to grant -->
                 </xsl:if>
-                <vivo:relatedBy rdf:resource="{svfn:objectURI($grant)}" /><!-- link to grant -->
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
