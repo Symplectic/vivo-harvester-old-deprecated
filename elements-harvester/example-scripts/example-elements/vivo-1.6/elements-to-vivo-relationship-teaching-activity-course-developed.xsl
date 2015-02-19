@@ -39,7 +39,7 @@
         <xsl:variable name="userObj" select="svfn:fullObject(api:related/api:object[@category='user'])" />
 
         <xsl:variable name="subject" select="svfn:getRecordField($activityObj,'degree-subject')" />
-        <xsl:variable name="subjectURI"><xsl:value-of select="svfn:makeURI('award-',$subject/api:text)" /></xsl:variable>
+        <xsl:variable name="subjectURI"><xsl:if test="$subject/api:text"><xsl:value-of select="svfn:makeURI('award-',$subject/api:text)" /></xsl:if></xsl:variable>
         <xsl:variable name="courseName" select="svfn:getRecordField($activityObj,'title')" />
         <xsl:if test="$courseName/api:text">
             <xsl:variable name="courseURI"><xsl:value-of select="svfn:makeURI('award-',$courseName/api:text)" /></xsl:variable>
