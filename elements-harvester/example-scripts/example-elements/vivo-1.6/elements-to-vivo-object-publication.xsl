@@ -122,9 +122,9 @@
                 <xsl:with-param name="rdfNodes">
                     <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Kind" />
                     <obo:ARG_2000029 rdf:resource="{svfn:objectURI(.)}" />
-                    <xsl:if test="$arxivPdfUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-arxiv')}" /></xsl:if>
-                    <xsl:if test="$authorUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-author')}" /></xsl:if>
-                    <xsl:if test="$publisherUrl/*"><vcard:hasUrl rdf:resource="{concat(svfn:objectURI(.),'-webpages-publisher')}" /></xsl:if>
+                    <xsl:if test="$arxivPdfUrl/*"><vcard:hasURL rdf:resource="{concat(svfn:objectURI(.),'-webpages-arxiv')}" /></xsl:if>
+                    <xsl:if test="$authorUrl/*"><vcard:hasURL rdf:resource="{concat(svfn:objectURI(.),'-webpages-author')}" /></xsl:if>
+                    <xsl:if test="$publisherUrl/*"><vcard:hasURL rdf:resource="{concat(svfn:objectURI(.),'-webpages-publisher')}" /></xsl:if>
                 </xsl:with-param>
             </xsl:call-template>
 
