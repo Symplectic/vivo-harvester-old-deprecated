@@ -91,7 +91,6 @@
                     <xsl:with-param name="objectURI" select="$degreeURI" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDegree" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#AcademicDegree" />
                         <rdfs:label><xsl:value-of select="concat($awardedDegreeName, ' ', $awardedDegreeField)" /></rdfs:label>
                     </xsl:with-param>
                 </xsl:call-template>
@@ -162,7 +161,6 @@
                     <xsl:with-param name="objectURI" select="$eduProcessURI" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#EducationalProcess" />
                         <vivo:dateTimeInterval rdf:resource="{$dateIntervalURI}" />
                         <xsl:if test="$orgObjects/*"><obo:RO_0000057 rdf:resource="{$orgURI}" /></xsl:if>
                         <obo:RO_0000057 rdf:resource="{$userURI}" />
@@ -175,7 +173,6 @@
                     <xsl:with-param name="objectURI" select="$awardedDegreeURI" />
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
-                        <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#AwardedDegree" />
                         <rdfs:label><xsl:value-of select="concat($lastName, ', ', $firstName, ': ', $awardedDegreeName, ' ', $awardedDegreeField)" /></rdfs:label>  <!-- VIVO includes name, e.g. "Smith, John: B.S. Bachelor of Science" -->
                         <xsl:if test="$orgObjects/*"><vivo:assignedBy rdf:resource="{$orgURI}" /></xsl:if>
                         <vivo:relates rdf:resource="{$degreeURI}" />
@@ -190,6 +187,15 @@
                         <vivo:relatedBy rdf:resource="{$awardedDegreeURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
+
+                <xsl:if test="$orgObjects/*">
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$orgURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:relatedBy rdf:resource="{$awardedDegreeURI}" />
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:if>
             </xsl:for-each>
         </xsl:if>
 
@@ -291,6 +297,15 @@
                         <vivo:relatedBy rdf:resource="{$appointmentURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
+
+                <xsl:if test="$orgObjects/*">
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$orgURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:relatedBy rdf:resource="{$appointmentURI}" />
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:if>
             </xsl:for-each>
         </xsl:if>
 
@@ -326,7 +341,6 @@
                         <xsl:with-param name="objectURI" select="$startDateURI" />
                         <xsl:with-param name="rdfNodes">
                             <rdf:type rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue" />
-                            <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#DateTimeValue" />
                             <!-- XXX: Some Elements date values include a month, and might even include a day? -->
                             <vivo:dateTime rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"><xsl:value-of select="concat($startDate,'-01-01T00:00:00')" /></vivo:dateTime>
                             <vivo:dateTimePrecision rdf:resource="http://vivoweb.org/ontology/core#yearPrecision" />
@@ -385,6 +399,15 @@
                         <vivo:relatedBy rdf:resource="{$appointmentURI}" />
                     </xsl:with-param>
                 </xsl:call-template>
+
+                <xsl:if test="$orgObjects/*">
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$orgURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:relatedBy rdf:resource="{$appointmentURI}" />
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:if>
             </xsl:for-each>
         </xsl:if>
 

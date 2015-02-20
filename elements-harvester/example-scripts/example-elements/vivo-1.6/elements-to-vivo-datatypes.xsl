@@ -132,4 +132,17 @@
             <xsl:value-of select="." />
         </xsl:element>
     </xsl:template>
+
+    <!--
+        Render an integer field to a named property. The name of the VIVO property (namespace:element) is passed in propertyName,
+        the field name is Elements is passed in fieldName.
+    -->
+    <xsl:template match="api:integer" mode="renderForProperty">
+        <xsl:param name="propertyName" />
+        <xsl:param name="fieldName" />
+
+        <xsl:element name="{$propertyName}">
+            <xsl:value-of select="." />
+        </xsl:element>
+    </xsl:template>
 </xsl:stylesheet>

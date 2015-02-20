@@ -162,10 +162,11 @@
                 <xsl:with-param name="objectURI" select="$instURI" />
                 <xsl:with-param name="rdfNodes">
                     <!-- TODO Implement dictionary to determine institution type -->
-                    <vitro:mostSpecificType rdf:resource="http://vivoweb.org/ontology/core#University" />
                     <rdf:type rdf:resource="http://vivoweb.org/ontology/core#University" />
-                    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization" />
                     <rdfs:label><xsl:value-of select="svfn:institutionName($address)" /></rdfs:label>
+                    <xsl:if test="$address/api:line[@type='suborganisation']">
+                        <obo:BFO_0000051 rdf:resource="{$deptURI}" />
+                    </xsl:if>
                 </xsl:with-param>
             </xsl:call-template>
         </xsl:if>

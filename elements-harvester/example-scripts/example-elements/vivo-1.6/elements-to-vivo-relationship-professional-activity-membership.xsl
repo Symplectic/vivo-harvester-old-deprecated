@@ -56,6 +56,7 @@
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$orgURI" />
                 <xsl:with-param name="rdfNodes">
+                    <!-- TODO Implement dictionary to determine institution type -->
                     <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
                     <rdfs:label><xsl:value-of select="$orgName" /></rdfs:label>
                     <vivo:contributingRole rdf:resource="{$contextURI}"/><!-- Context object -->
