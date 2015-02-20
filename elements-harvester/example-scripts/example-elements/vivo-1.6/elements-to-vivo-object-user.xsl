@@ -143,7 +143,7 @@
                             <xsl:if test="$startDate">
                                 <vivo:start rdf:resource="{$startDateURI}" />
                             </xsl:if>
-                            <!-- XXX: Add a condition to "close" the interval with the start date if end date doesn't exist to avoid the appearance of it looking current -->
+                            <!-- For a degree only, add a condition to "close" the interval with the start date if end date doesn't exist to avoid the appearance of it looking current -->
                             <xsl:choose>
                                 <xsl:when test="$endDate">
                                     <vivo:end rdf:resource="{$endDateURI}" />
