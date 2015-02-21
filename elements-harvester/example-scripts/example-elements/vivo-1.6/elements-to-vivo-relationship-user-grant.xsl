@@ -61,6 +61,9 @@
                     <obo:RO_0000052 rdf:resource="{svfn:userURI($user)}"/><!-- link to user -->
                 </xsl:if>
                 <!-- vivo:dateTimeInterval rdf:resource="http://vivo.mydomain.edu/individual/n6127" / - link to date / time -->
+                <xsl:if test="api:is-visible='true'">
+                    <vivo:hideFromDisplay>true</vivo:hideFromDisplay>
+                </xsl:if>
             </xsl:with-param>
         </xsl:call-template>
 

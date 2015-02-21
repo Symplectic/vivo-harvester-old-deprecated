@@ -26,7 +26,6 @@
     <!-- Import XSLT files that are used -->
     <xsl:import href="elements-to-vivo-utils.xsl" />
 
-
     <!--
         Output as part of relationship - Supports publication
         <vivo:supportedInformationResource rdf:resource="http://vivo.mydomain.edu/individual/n4893"/>
