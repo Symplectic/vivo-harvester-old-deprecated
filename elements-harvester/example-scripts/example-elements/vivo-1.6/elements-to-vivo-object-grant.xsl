@@ -75,8 +75,8 @@
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$funderURI" />
                 <xsl:with-param name="rdfNodes">
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FundingOrganization"/>
-                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+                    <rdf:type rdf:resource="{svfn:getOrganizationType($funderName,'http://vivoweb.org/ontology/core#FundingOrganization')}"/>
+                    <!-- rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/ -->
                     <xsl:apply-templates select="$funderName" mode="renderForProperty">
                         <xsl:with-param name="propertyName">rdfs:label</xsl:with-param>
                         <xsl:with-param name="fieldName">funder-name</xsl:with-param>

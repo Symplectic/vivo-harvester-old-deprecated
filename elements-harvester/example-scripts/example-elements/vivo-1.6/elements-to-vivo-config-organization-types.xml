@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ | Copyright (c) 2012 Symplectic Limited. All rights reserved.
+ | This Source Code Form is subject to the terms of the Mozilla Public
+ | License, v. 2.0. If a copy of the MPL was not distributed with this
+ | file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -->
+<!--
+    Map organization names to rdf types. Recognized types are:
+
+http://vivoweb.org/ontology/core#AcademicDepartment
+http://vivoweb.org/ontology/core#Association
+http://vivoweb.org/ontology/core#Center
+http://vivoweb.org/ontology/core#ClinicalOrganization
+http://vivoweb.org/ontology/core#College
+http://vivoweb.org/ontology/core#Company
+http://vivoweb.org/ontology/core#Consortium
+http://vivoweb.org/ontology/core#CoreLaboratory
+http://vivoweb.org/ontology/core#Department
+http://vivoweb.org/ontology/core#Division
+http://vivoweb.org/ontology/core#ExtensionUnit
+http://vivoweb.org/ontology/core#Foundation
+http://vivoweb.org/ontology/core#FundingOrganization
+http://vivoweb.org/ontology/core#GovernmentAgency
+http://vivoweb.org/ontology/core#Hospital
+http://vivoweb.org/ontology/core#Institute
+http://vivoweb.org/ontology/core#Laboratory
+http://vivoweb.org/ontology/core#Library
+http://vivoweb.org/ontology/core#Museum
+http://vivoweb.org/ontology/core#PrivateCompany
+http://vivoweb.org/ontology/core#Program
+http://vivoweb.org/ontology/core#Publisher
+http://vivoweb.org/ontology/core#ResearchOrganization
+http://vivoweb.org/ontology/core#School
+http://vivoweb.org/ontology/core#ServiceProvidingLaboratory
+http://vivoweb.org/ontology/core#StudentOrganization
+http://vivoweb.org/ontology/core#University
+
+http://purl.obolibrary.org/obo/ERO_0000565 (Technology Transfer Office)
+-->
+<config:organization-types xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <config:organization-type name="A. N. Nesmeyanov Institute of Organoelement Compounds RAS"  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Albany College of Pharmacy"                                 type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Alfred P. Sloan Foundation"                                 type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="American Astronomical Society"                              type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="American Institute of Physics"                              type="http://vivoweb.org/ontology/core#Consortium" />
+    <config:organization-type name="American University Observatory"                            type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="American University of Beirut"                              type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Australian Research Council"                                type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Bates College"                                              type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Baylor University"                                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="BBSRC"                                                      type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Biotech incubator Upper Austrian Research GmbH"             type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Birkbeck College"                                           type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Boston Museum of Science"                                   type="http://vivoweb.org/ontology/core#Museum" />
+    <config:organization-type name="Boston University"                                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Brown University"                                           type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Brigham and Women's Hospital"                               type="http://vivoweb.org/ontology/core#Hospital" />
+    <config:organization-type name="California Institute of Technology"                         type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="CalTech"                                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Cambridge University"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Cerulean Pharma"                                            type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Children's Hospital Medical Center"                         type="http://vivoweb.org/ontology/core#Hospital" />
+    <config:organization-type name="Clare College, Cambridge"                                   type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Cornell University"                                         type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Creighton University"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Deshpande Center for Technological Innovation"              type="http://vivoweb.org/ontology/core#ResearchOrganization" />
+    <config:organization-type name="Digital Science"                                            type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Ecole Normale Superieure, Paris"                            type="http://vivoweb.org/ontology/core#ResearchOrganization" />
+    <config:organization-type name="Eli Lilly &amp; Co"                                         type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="EPSRC"                                                      type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="FBC Ltd. Chesterford Park"                                  type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Griffith University"                                        type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Harvard Medical School"                                     type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Harvard Medical School, Brigham &amp; Women's Hospital"     type="http://vivoweb.org/ontology/core#Hospital" />
+    <config:organization-type name="Harvard Stem Cell Institute"                                type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Harvard University"                                         type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Heidelberg University"                                      type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Howard Hughes Medical Institute"                            type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Imperial College London"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Indiana University-Purdue University"                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Institute of Chemical Research of Catalonia"                type="http://vivoweb.org/ontology/core#School" />
+    <config:organization-type name="Institute of Organic Chemistry, PAS"                        type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Johannes Gutenberg Universitaet"                            type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="John Templeton Foundation"                                  type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Johns Hopkins"                                              type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Johns Hopkins University"                                   type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Kanel Foundation"                                           type="http://vivoweb.org/ontology/core#Foundation" />
+    <config:organization-type name="Library of Congress"                                        type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Louisiana State University System"                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Marquette University"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Massachusetts Institute of Technology"                      type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Massgeneral Hospital for Children"                          type="http://vivoweb.org/ontology/core#Hospital" />
+    <config:organization-type name="McGill University"                                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="MIT"                                                        type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Momenta Pharmaceuticals"                                    type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Moscow Chemical Lyceum"                                     type="http://vivoweb.org/ontology/core#School" />
+    <config:organization-type name="National Cancer Institute"                                  type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Center For Complimentary &amp; Alternative Medicine"  type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Health &amp; Medical Research Council"             type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Heart, Lung, And Blood Institute"                  type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Institute Of Allergy And Infectious Diseases"      type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Institute Of Biomedical Imaging And Bioengineering"  type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Institute Of Dental &amp; Craniofacial Research"   type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Institute Of General Medical Sciences"             type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Institute of Health"                               type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="National Science Foundation"                                type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="NATO"                                                       type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="NERC"                                                       type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Newcastle University"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Nottingham Trent University"                                type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="NSF"                                                        type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Oxford University"                                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Paisley College"                                            type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Princeton"                                                  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Royal Institution"                                          type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Santa Fe Institute"                                         type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Rensselaer Polytechnic Institute"                           type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Santa Fe Institute"                                         type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="Silicon Valley Community Foundation"                        type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Soreq NRC"                                                  type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="St John's College, Cambridge"                               type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="St. Catharine's College, Cambridge"                         type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Symplectic"                                                 type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Symplectic Ltd"                                             type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Tel Aviv University"                                        type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="The Group School, Cambridge"                                type="http://vivoweb.org/ontology/core#School" />
+    <config:organization-type name="The Hebrew University of Jerusalem"                         type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="The Institute for Advanced Study"                           type="http://vivoweb.org/ontology/core#Institute" />
+    <config:organization-type name="The University of Chicago"                                  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="The University of Michigan"                                 type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="UC Berkeley"                                                type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="UC Davis"                                                   type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="UCL"                                                        type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="UMR"                                                        type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="University College London"                                  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Bristol"                                      type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of California"                                   type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of California at Berkeley"                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of California at Davis"                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Cambridge"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Cambridge, Churchill College"                 type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="University of Chicago"                                      type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of East Anglia"                                  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Edinburgh"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Hawaii Institute for Astronomy"               type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Illinois at Urbana-Champaign"                 type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Manchester Institute of Science and Technology"  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Minnesota"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Missouri-Rolla"                               type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of New Mexico"                                   type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of North Carolina"                               type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Paris VII"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Pennsylvania"                                 type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Rochester"                                    type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Science and Technology of China"              type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Southampton"                                  type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Sussex"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Toronto"                                      type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Vienna"                                       type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Western Australia"                            type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="University of Wisconsin - Madison"                          type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="US National Committee for the International Astronomical Union"  type="http://vivoweb.org/ontology/core#GovernmentAgency" />
+    <config:organization-type name="US-Israel Binational Science Foundation"                    type="http://vivoweb.org/ontology/core#FundingOrganization" />
+    <config:organization-type name="Vassar College"                                             type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Virginia Polytechnic Institute and State University"        type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Visterra"                                                   type="http://vivoweb.org/ontology/core#Company" />
+    <config:organization-type name="Washington University in St. Louis"                         type="http://vivoweb.org/ontology/core#University" />
+    <config:organization-type name="Wellesley College"                                          type="http://vivoweb.org/ontology/core#College" />
+    <config:organization-type name="Yale University"                                            type="http://vivoweb.org/ontology/core#University" />
+</config:organization-types>

@@ -29,11 +29,35 @@
     <xsl:import href="elements-to-vivo-datatypes.xsl" />
 
     <xsl:param name="recordDir">data/raw-records/</xsl:param>
-    <xsl:param name="includeDept">false</xsl:param>
+    <xsl:param name="includeDept">true</xsl:param>
+
+    <xsl:variable name="organization-types" select="document('elements-to-vivo-config-organization-types.xml')//config:organization-types" />
 
     <!-- ======================================
          Function Library
          ======================================- -->
+
+    <!--
+    -->
+    <xsl:function name="svfn:getOrganizationType">
+        <xsl:param name="name" />
+        <xsl:param name="default" />
+
+        <xsl:choose>
+            <xsl:when test="$organization-types/config:organization-type[@name=$name]"><xsl:value-of select="$organization-types/config:organization-type[@name=$name]/@type" /></xsl:when>
+            <xsl:when test="contains($name,'University')"><xsl:text>http://vivoweb.org/ontology/core#University</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'College')"><xsl:text>http://vivoweb.org/ontology/core#College</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Museum')"><xsl:text>http://vivoweb.org/ontology/core#Museum</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Hospital')"><xsl:text>http://vivoweb.org/ontology/core#Hospital</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Institute')"><xsl:text>http://vivoweb.org/ontology/core#Institute</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'School')"><xsl:text>http://vivoweb.org/ontology/core#School</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Association')"><xsl:text>http://vivoweb.org/ontology/core#Association</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Library')"><xsl:text>http://vivoweb.org/ontology/core#Library</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Foundation')"><xsl:text>http://vivoweb.org/ontology/core#Foundation</xsl:text></xsl:when>
+            <xsl:when test="contains($name,'Ltd')"><xsl:text>http://vivoweb.org/ontology/core#PrivateCompany</xsl:text></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$default" /></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
 
     <!--
     -->
@@ -97,9 +121,11 @@
     <xsl:function name="svfn:departmentURI" as="xs:string">
         <xsl:param name="address" />
 
-        <xsl:variable name="orgName" select="svfn:departmentName($address)" />
+        <xsl:variable name="orgName" select="svfn:institutionName($address)" />
+        <xsl:variable name="deptName" select="svfn:departmentName($address)" />
         <xsl:choose>
-            <xsl:when test="$orgName"><xsl:value-of select="svfn:makeURI('dept-',$orgName)" /></xsl:when>
+            <xsl:when test="not($deptName='') and not($orgName='')"><xsl:value-of select="svfn:makeURI('dept-',concat(fn:substring($deptName,1,100),'-',fn:substring($orgName,1,50)))" /></xsl:when>
+            <xsl:when test="not($deptName='')"><xsl:value-of select="svfn:makeURI('dept-',fn:substring($deptName,1,150))" /></xsl:when>
             <xsl:otherwise><xsl:text /></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -125,7 +151,7 @@
 
         <xsl:variable name="orgName" select="svfn:institutionName($address)" />
         <xsl:choose>
-            <xsl:when test="$orgName"><xsl:value-of select="svfn:makeURI('institution-',$orgName)" /></xsl:when>
+            <xsl:when test="not($orgName='')"><xsl:value-of select="svfn:makeURI('institution-',$orgName)" /></xsl:when>
             <xsl:otherwise><xsl:text /></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -148,23 +174,23 @@
                     <xsl:with-param name="rdfNodes">
                         <!-- TODO Implement dictionary to determine department type -->
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#AcademicDepartment"/>
+                        <rdfs:label><xsl:value-of select="svfn:departmentName($address)" /></rdfs:label>
                         <xsl:if test="$address/api:line[@type='organisation']">
                             <obo:BFO_0000050 rdf:resource="{$instURI}" />
                         </xsl:if>
-                        <rdfs:label><xsl:value-of select="svfn:departmentName($address)" /></rdfs:label>
                     </xsl:with-param>
                 </xsl:call-template>
             </xsl:if>
         </xsl:if>
 
         <xsl:if test="$address/api:line[@type='organisation']">
+            <xsl:variable name="insName" select="svfn:institutionName($address)" />
             <xsl:call-template name="render_rdf_object">
                 <xsl:with-param name="objectURI" select="$instURI" />
                 <xsl:with-param name="rdfNodes">
-                    <!-- TODO Implement dictionary to determine institution type -->
-                    <rdf:type rdf:resource="http://vivoweb.org/ontology/core#University" />
-                    <rdfs:label><xsl:value-of select="svfn:institutionName($address)" /></rdfs:label>
-                    <xsl:if test="$address/api:line[@type='suborganisation']">
+                    <rdf:type rdf:resource="{svfn:getOrganizationType($insName,'http://vivoweb.org/ontology/core#University')}" />
+                    <rdfs:label><xsl:value-of select="$insName" /></rdfs:label>
+                    <xsl:if test="$address/api:line[@type='suborganisation'] and $includeDept='true'">
                         <obo:BFO_0000051 rdf:resource="{$deptURI}" />
                     </xsl:if>
                 </xsl:with-param>
