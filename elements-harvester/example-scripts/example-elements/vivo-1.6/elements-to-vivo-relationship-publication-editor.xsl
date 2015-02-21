@@ -64,7 +64,7 @@
                 <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Editorship"/>
                 <vivo:relates rdf:resource="{svfn:userURI($user)}"/>
                 <vivo:relates rdf:resource="{svfn:objectURI($publication)}"/>
-                <xsl:if test="api:is-visible='true'">
+                <xsl:if test="api:is-visible='false'">
                     <vivo:hideFromDisplay>true</vivo:hideFromDisplay>
                 </xsl:if>
             </xsl:with-param>
