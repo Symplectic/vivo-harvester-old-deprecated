@@ -31,6 +31,8 @@
 
     <xsl:param name="useSympNS" />
 
+    <xsl:param name="externalAuthors">true</xsl:param>
+
     <!-- DO NOT TOUCH: Read the record and journal precedence configuration into variables for processing -->
     <xsl:variable name="record-precedences" select="document('')//config:record-precedences/config:record-precedences" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />

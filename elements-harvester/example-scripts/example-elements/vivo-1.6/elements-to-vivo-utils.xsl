@@ -60,10 +60,13 @@
     </xsl:function>
 
     <!--
+        svfn:makeURI
+        ============
+        Format a URI
     -->
     <xsl:function name="svfn:makeURI">
-        <xsl:param name="prefix" />
-        <xsl:param name="id" />
+        <xsl:param name="prefix" as="xs:string" />
+        <xsl:param name="id" as="xs:string" />
 
         <xsl:value-of select="concat($baseURI,svfn:stringToURI($prefix),svfn:stringToURI($id))" />
     </xsl:function>
@@ -88,6 +91,18 @@
         <xsl:param name="object" />
 
         <xsl:value-of select="svfn:makeURI('',$object/@username)" />
+    </xsl:function>
+
+    <!--
+        svfn:objectToObjectURI
+        ======================
+    -->
+    <xsl:function name="svfn:objectToObjectURI" as="xs:string">
+        <xsl:param name="prefix" as="xs:string" />
+        <xsl:param name="objectid1" as="xs:string" />
+        <xsl:param name="objectid2" as="xs:string" />
+
+        <xsl:value-of select="svfn:makeURI($prefix,concat($objectid1,'-',$objectid2))" />
     </xsl:function>
 
     <!--

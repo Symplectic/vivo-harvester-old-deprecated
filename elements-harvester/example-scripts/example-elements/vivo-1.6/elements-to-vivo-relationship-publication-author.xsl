@@ -32,14 +32,14 @@
 
     <!-- Match relationship of type publication-user authorship association -->
     <xsl:template match="api:relationship[@type='publication-user-authorship']">
-        <!-- Create a URI for the object relating author to publication -->
-        <xsl:variable name="authorshipURI" select="svfn:relationshipURI(.,'authorship')" />
-
         <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
 
         <!-- Get the user object reference from the relationship -->
         <xsl:variable name="user" select="api:related/api:object[@category='user']" />
+
+        <!-- Create a URI for the object relating author to publication -->
+        <xsl:variable name="authorshipURI" select="svfn:objectToObjectURI('authorship',$publication/@id,$user/@id)" />
 
         <!-- Add a reference to the authorship object to the user object -->
         <xsl:call-template name="render_rdf_object">
@@ -67,6 +67,7 @@
                 <xsl:if test="api:is-visible='false'">
                     <vivo:hideFromDisplay>true</vivo:hideFromDisplay>
                 </xsl:if>
+                <!-- vivo:rank -->
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

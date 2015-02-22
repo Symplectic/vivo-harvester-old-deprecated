@@ -8,6 +8,7 @@
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:fn="http://www.w3.org/2005/xpath-functions"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
                 xmlns:bibo="http://purl.org/ontology/bibo/"
@@ -22,7 +23,7 @@
                 xmlns:symp="http://www.symplectic.co.uk/vivo/"
                 xmlns:svfn="http://www.symplectic.co.uk/vivo/namespaces/functions"
                 xmlns:config="http://www.symplectic.co.uk/vivo/namespaces/config"
-                exclude-result-prefixes="rdf rdfs bibo obo vivo vcard foaf score ufVivo vitro api symp svfn config xs"
+                exclude-result-prefixes="rdf rdfs fn bibo obo vivo vcard foaf score ufVivo vitro api symp svfn config xs"
         >
 
     <!--
@@ -34,6 +35,9 @@
 
     <!-- Match objects of type 'publication' -->
     <xsl:template match="api:object[@category='publication']">
+        <xsl:variable name="publicationId" select="@id" />
+        <xsl:variable name="publicationUri" select="svfn:objectURI(.)" />
+
         <!-- Attempt to generate a URI for the publication date object -->
         <xsl:variable name="publicationDateURI" select="concat(svfn:objectURI(.),'-publicationDate')" />
 
@@ -55,6 +59,9 @@
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
         <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
 
+        <!-- Get the authors -->
+        <xsl:variable name="authors" select="svfn:getRecordField(.,'authors')" />
+
         <!-- Web pages -->
         <xsl:variable name="arxivPdfUrl" select="svfn:getRecordField(.,'arxiv-pdf-url')" />
         <xsl:variable name="authorUrl" select="svfn:getRecordField(.,'author-url')" />
@@ -65,7 +72,7 @@
         <!-- Render an RDF object -->
         <xsl:call-template name="render_rdf_object">
             <!-- Generate a URI for the current publication -->
-            <xsl:with-param name="objectURI" select="svfn:objectURI(.)" />
+            <xsl:with-param name="objectURI" select="$publicationUri" />
             <!--
                 Generate the RDF property statements for the publication object.
                 Uses the getTypesForPublication custom XSLT function to retrieve all the type statements (including mostSpecificType)
@@ -161,6 +168,93 @@
                 </xsl:call-template>
             </xsl:if>
         </xsl:if>
+
+        <xsl:for-each select="$authors/api:people/api:person">
+            <xsl:choose>
+                <xsl:when test="api:links/api:link/@type='elements/user'">
+                    <xsl:variable name="authorshipURI" select="svfn:objectToObjectURI('authorship',$publicationId,api:links/api:link[@type='elements/user']/@id)" />
+
+                    <!-- Add rank to authorship object -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$authorshipURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="position()" /></vivo:rank>
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$externalAuthors='true'">
+                    <xsl:variable name="authorId" select="concat(fn:lower-case(fn:normalize-space(api:last-name)),'-',fn:lower-case(fn:normalize-space(api:initials)))" />
+                    <xsl:variable name="authorshipURI" select="svfn:objectToObjectURI('authorship',$publicationId,$authorId)" />
+
+                    <!-- Create authorship object -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$authorshipURI" />
+                        <xsl:with-param name="rdfNodes">
+                            <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/>
+                            <vivo:relates rdf:resource="{svfn:makeURI('author-',$authorId)}"/>
+                            <vivo:relates rdf:resource="{$publicationUri}"/>
+                            <vivo:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="position()" /></vivo:rank>
+                        </xsl:with-param>
+                    </xsl:call-template>
+
+                    <!-- Create author object -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="svfn:makeURI('author-',$authorId)" />
+                        <xsl:with-param name="rdfNodes">
+                            <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+                            <xsl:choose>
+                                <xsl:when test="api:last-name and api:first-names">
+                                    <rdfs:label><xsl:value-of select="api:last-name" />, <xsl:value-of select="api:first-names" /></rdfs:label>
+                                </xsl:when>
+                                <xsl:when test="api:last-name and api:initials">
+                                    <rdfs:label><xsl:value-of select="api:last-name" />, <xsl:value-of select="api:initials" /></rdfs:label>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <rdfs:label><xsl:value-of select="api:last-name" /></rdfs:label>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <obo:ARG_2000028 rdf:resource="{svfn:makeURI('authorvcard-',$authorId)}"/>
+                            <vivo:relatedBy rdf:resource="{$authorshipURI}" />
+                        </xsl:with-param>
+                    </xsl:call-template>
+
+                    <!-- Create author vcard object -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="svfn:makeURI('authorvcard-',$authorId)" />
+                        <xsl:with-param name="rdfNodes">
+                            <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Individual"/>
+                            <obo:ARG_2000029 rdf:resource="{svfn:makeURI('author-',$authorId)}"/>
+                            <vcard:hasName rdf:resource="{svfn:makeURI('authorvcardname-',$authorId)}"/>
+                        </xsl:with-param>
+                    </xsl:call-template>
+
+                    <!-- Create author vcard name object -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="svfn:makeURI('authorvcardname-',$authorId)" />
+                        <xsl:with-param name="rdfNodes">
+                            <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Name"/>
+                            <xsl:choose>
+                                <xsl:when test="api:first-names">
+                                    <vcard:givenName><xsl:value-of select="api:first-names" /></vcard:givenName>
+                                </xsl:when>
+                                <xsl:when test="api:initials">
+                                    <vcard:givenName><xsl:value-of select="api:initials" /></vcard:givenName>
+                                </xsl:when>
+                            </xsl:choose>
+                            <vcard:familyName><xsl:value-of select="api:last-name" /></vcard:familyName>
+                        </xsl:with-param>
+                    </xsl:call-template>
+
+                    <!-- Add publication relationship -->
+                    <xsl:call-template name="render_rdf_object">
+                        <xsl:with-param name="objectURI" select="$publicationUri" />
+                        <xsl:with-param name="rdfNodes">
+                            <vivo:relatedBy rdf:resource="{$authorshipURI}" />
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
 
     <!-- ====================================================
