@@ -560,7 +560,19 @@
                         </xsl:call-template>
                     </xsl:when>
                     <xsl:when test="$externalPersons='true'">
-                        <xsl:variable name="personId" select="concat(fn:lower-case(fn:normalize-space(api:last-name)),'-',fn:lower-case(fn:normalize-space(api:initials)))" />
+                        <xsl:variable name="personId">
+                            <xsl:choose>
+                                <xsl:when test="api:initials and not(api:initials='')">
+                                    <xsl:value-of select="concat(fn:lower-case(fn:normalize-space(api:last-name)),'-',fn:lower-case(fn:normalize-space(api:initials)))" />
+                                </xsl:when>
+                                <xsl:when test="api:first-names and not(api:first-names='')">
+                                    <xsl:value-of select="concat(fn:lower-case(fn:normalize-space(api:last-name)),'-',fn:substring(fn:lower-case(fn:normalize-space(api:first-names)),1,1))" />
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="fn:lower-case(fn:normalize-space(api:last-name))" />
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
                         <xsl:variable name="contextURI" select="svfn:objectToObjectURI($linkType,$linkedId,$personId)" />
 
                         <!-- Create context object -->
