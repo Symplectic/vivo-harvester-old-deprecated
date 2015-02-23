@@ -32,14 +32,14 @@
 
     <!-- Match relationship of type publication-user editorship association -->
     <xsl:template match="api:relationship[@type='publication-user-editorship']">
-        <!-- Create a URI for the object relating author to publication -->
-        <xsl:variable name="editorshipURI" select="svfn:relationshipURI(.,'editorship')" />
-
         <!-- Get the publication object reference from the relationship -->
         <xsl:variable name="publication" select="api:related/api:object[@category='publication']" />
 
         <!-- Get the user object reference from the relationship -->
         <xsl:variable name="user" select="api:related/api:object[@category='user']" />
+
+        <!-- Create a URI for the object relating editor to publication -->
+        <xsl:variable name="editorshipURI" select="svfn:objectToObjectURI('editorship',$publication/@id,$user/@id)" />
 
         <!-- Add an editor of statement to the user object -->
         <xsl:call-template name="render_rdf_object">

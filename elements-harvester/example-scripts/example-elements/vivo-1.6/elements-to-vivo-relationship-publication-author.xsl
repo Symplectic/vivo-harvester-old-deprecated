@@ -67,7 +67,6 @@
                 <xsl:if test="api:is-visible='false'">
                     <vivo:hideFromDisplay>true</vivo:hideFromDisplay>
                 </xsl:if>
-                <!-- vivo:rank -->
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>

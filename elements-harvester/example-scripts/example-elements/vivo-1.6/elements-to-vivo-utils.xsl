@@ -530,6 +530,117 @@
         </xsl:choose>
     </xsl:function>
 
+    <!--
+    -->
+    <xsl:function name="svfn:renderLinksAndExternalPeople">
+        <xsl:param name="people" />
+        <xsl:param name="linkedId" as="xs:string" />
+        <xsl:param name="linkedUri" as="xs:string" />
+
+        <xsl:variable name="linkType">
+            <xsl:choose>
+                <xsl:when test="$people/@name='authors'">authorship</xsl:when>
+                <xsl:when test="$people/@name='associated-authors'"></xsl:when>
+                <xsl:when test="$people/@name='editors'">editorship</xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:if test="not($linkType='') and $people/api:people/api:person/api:links[api:link/@type='elements/user']/*">
+            <xsl:for-each select="$people/api:people/api:person">
+                <xsl:choose>
+                    <xsl:when test="api:links/api:link/@type='elements/user'">
+                        <xsl:variable name="contextURI" select="svfn:objectToObjectURI($linkType,$linkedId,api:links/api:link[@type='elements/user']/@id)" />
+
+                        <!-- Add rank to context object -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="$contextURI" />
+                            <xsl:with-param name="rdfNodes">
+                                <vivo:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="position()" /></vivo:rank>
+                            </xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test="$externalPersons='true'">
+                        <xsl:variable name="personId" select="concat(fn:lower-case(fn:normalize-space(api:last-name)),'-',fn:lower-case(fn:normalize-space(api:initials)))" />
+                        <xsl:variable name="contextURI" select="svfn:objectToObjectURI($linkType,$linkedId,$personId)" />
+
+                        <!-- Create context object -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="$contextURI" />
+                            <xsl:with-param name="rdfNodes">
+                                <xsl:choose>
+                                    <xsl:when test="$linkType='authorship'"><rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/></xsl:when>
+                                    <xsl:when test="$linkType='editorship'"><rdf:type rdf:resource="http://vivoweb.org/ontology/core#Editorship"/></xsl:when>
+                                    <xsl:otherwise><rdf:type rdf:resource="http://vivoweb.org/ontology/core#Authorship"/></xsl:otherwise>
+                                </xsl:choose>
+                                <vivo:relates rdf:resource="{svfn:makeURI('person-',$personId)}"/>
+                                <vivo:relates rdf:resource="{$linkedUri}"/>
+                                <vivo:rank rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="position()" /></vivo:rank>
+                            </xsl:with-param>
+                        </xsl:call-template>
+
+                        <!-- Create person object -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="svfn:makeURI('person-',$personId)" />
+                            <xsl:with-param name="rdfNodes">
+                                <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+                                <rdfs:label><xsl:value-of select="$externalPersonLabelPrefix" />
+                                    <xsl:choose>
+                                        <xsl:when test="api:last-name and api:first-names">
+                                            <xsl:value-of select="api:last-name" />, <xsl:value-of select="api:first-names" />
+                                        </xsl:when>
+                                        <xsl:when test="api:last-name and api:initials">
+                                            <xsl:value-of select="api:last-name" />, <xsl:value-of select="api:initials" />
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="api:last-name" />
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    <xsl:value-of select="$externalPersonLabelSuffix" /></rdfs:label>
+                                <obo:ARG_2000028 rdf:resource="{svfn:makeURI('personvcard-',$personId)}"/>
+                                <vivo:relatedBy rdf:resource="{$contextURI}" />
+                            </xsl:with-param>
+                        </xsl:call-template>
+
+                        <!-- Create person vcard object -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="svfn:makeURI('personvcard-',$personId)" />
+                            <xsl:with-param name="rdfNodes">
+                                <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Individual"/>
+                                <obo:ARG_2000029 rdf:resource="{svfn:makeURI('person-',$personId)}"/>
+                                <vcard:hasName rdf:resource="{svfn:makeURI('personvcardname-',$personId)}"/>
+                            </xsl:with-param>
+                        </xsl:call-template>
+
+                        <!-- Create person vcard name object -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="svfn:makeURI('personvcardname-',$personId)" />
+                            <xsl:with-param name="rdfNodes">
+                                <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#Name"/>
+                                <xsl:choose>
+                                    <xsl:when test="api:first-names">
+                                        <vcard:givenName><xsl:value-of select="api:first-names" /></vcard:givenName>
+                                    </xsl:when>
+                                    <xsl:when test="api:initials">
+                                        <vcard:givenName><xsl:value-of select="api:initials" /></vcard:givenName>
+                                    </xsl:when>
+                                </xsl:choose>
+                                <vcard:familyName><xsl:value-of select="api:last-name" /></vcard:familyName>
+                            </xsl:with-param>
+                        </xsl:call-template>
+
+                        <!-- Add publication relationship -->
+                        <xsl:call-template name="render_rdf_object">
+                            <xsl:with-param name="objectURI" select="$linkedUri" />
+                            <xsl:with-param name="rdfNodes">
+                                <vivo:relatedBy rdf:resource="{$contextURI}" />
+                            </xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:function>
+
     <!-- ======================================
          Template Library
          ======================================- -->
