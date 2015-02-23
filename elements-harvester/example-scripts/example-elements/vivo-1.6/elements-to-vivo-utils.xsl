@@ -456,7 +456,6 @@
                 <xsl:copy-of select="svfn:_getRecordField($object, $fieldName, fn:tokenize($records,','), $record-precedence-select-by, 1, false())" />
             </xsl:otherwise>
         </xsl:choose>
-
     </xsl:function>
 
     <!--
@@ -649,6 +648,36 @@
                         </xsl:call-template>
                     </xsl:when>
                 </xsl:choose>
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:function>
+
+    <xsl:function name="svfn:renderControlledSubjects">
+        <xsl:param name="allLabels" />
+        <xsl:param name="publicationUri" as="xs:string" />
+        <xsl:param name="scheme" as="xs:string" />
+        <xsl:param name="schemeDefinedBy" as="xs:string" />
+
+        <xsl:if test="not($schemeDefinedBy='')">
+            <xsl:for-each select="fn:distinct-values($allLabels/api:keywords/api:keyword[@scheme=$scheme])">
+                <xsl:variable name="definitionUri" select="svfn:makeURI(concat('vocab-',$scheme,'-'),.)" />
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$definitionUri" />
+                    <xsl:with-param name="rdfNodes">
+                        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept" />
+                        <rdfs:label><xsl:value-of select="." /></rdfs:label>
+                        <vivo:subjectAreaOf rdf:resource="{$publicationUri}" />
+                        <rdfs:isDefinedBy rdf:resource="{$schemeDefinedBy}" />
+                    </xsl:with-param>
+                </xsl:call-template>
+
+                <xsl:call-template name="render_rdf_object">
+                    <xsl:with-param name="objectURI" select="$publicationUri" />
+                    <xsl:with-param name="rdfNodes">
+                        <vivo:hasSubjectArea rdf:resource="{$definitionUri}" />
+                    </xsl:with-param>
+                </xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:function>

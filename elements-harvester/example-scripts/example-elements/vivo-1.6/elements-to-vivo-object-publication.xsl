@@ -68,6 +68,9 @@
         <xsl:variable name="authorUrl" select="svfn:getRecordField(.,'author-url')" />
         <xsl:variable name="publisherUrl" select="svfn:getRecordField(.,'publisher-url')" />
 
+        <!-- Labels -->
+        <xsl:variable name="allLabels" select="api:all-labels" />
+
         <xsl:variable name="publicationStatus" select="svfn:getRecordField(.,'publication-status')" />
 
         <!-- Render an RDF object -->
@@ -172,6 +175,10 @@
 
         <xsl:copy-of select="svfn:renderLinksAndExternalPeople($authors, $publicationId, $publicationUri)" />
         <xsl:copy-of select="svfn:renderLinksAndExternalPeople($editors, $publicationId, $publicationUri)" />
+
+        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'mesh',$meshDefinedBy)" />
+        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'science-metrix',$scimetDefinedBy)" />
+        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'for',$forDefinedBy)" />
     </xsl:template>
 
     <!-- ====================================================

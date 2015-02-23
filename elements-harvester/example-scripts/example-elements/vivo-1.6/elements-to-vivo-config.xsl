@@ -35,6 +35,22 @@
     <xsl:param name="externalPersonLabelPrefix">[</xsl:param>
     <xsl:param name="externalPersonLabelSuffix">]</xsl:param>
 
+    <xsl:param name="meshDefinedBy">http://www.nlm.nih.gov/mesh</xsl:param>
+    <xsl:param name="scimetDefinedBy">http://www.science-metrix.com/</xsl:param>
+    <xsl:param name="forDefinedBy">http://www.arc.gov.au/era/for</xsl:param>
+
+    <!--
+        To use MeSH / Science Metrix / FoR, as well as having the URLs above defined, the following should be
+        added to vocabularySource.n3 in vivo/home/rdf/abox/filegraph
+
+<http://www.nlm.nih.gov/mesh> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.nlm.nih.gov/mesh> <http://www.w3.org/2000/01/rdf-schema#label> "MeSH"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://www.science-metrix.com/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.science-metrix.com/> <http://www.w3.org/2000/01/rdf-schema#label> "Science Metrix"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://www.arc.gov.au/era/for> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.arc.gov.au/era/for> <http://www.w3.org/2000/01/rdf-schema#label> "FoR"^^<http://www.w3.org/2001/XMLSchema#string>  .
+    -->
+
     <!-- DO NOT TOUCH: Read the record and journal precedence configuration into variables for processing -->
     <xsl:variable name="record-precedences" select="document('')//config:record-precedences/config:record-precedences" />
     <xsl:variable name="journal-precedence" select="document('')//config:journal-precedences/config:journal-precedence" />
