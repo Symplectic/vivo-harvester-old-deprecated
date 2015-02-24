@@ -35,7 +35,7 @@
     <xsl:import href="elements-to-vivo-object.xsl" />
     <xsl:import href="elements-to-vivo-relationship.xsl" />
 
-    <xsl:output method="xml" indent="yes" />
+    <xsl:output method="xml" indent="yes" encoding="UTF-8" />
 
     <!--
         Default template - matches the root, to output an RDF document tag around any RDF objects that are output
