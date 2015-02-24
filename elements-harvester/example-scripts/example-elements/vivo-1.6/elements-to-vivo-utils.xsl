@@ -652,9 +652,22 @@
         </xsl:if>
     </xsl:function>
 
-    <xsl:function name="svfn:renderControlledSubjects">
+    <xsl:function name="svfn:renderControlledSubjectLinks">
+        <xsl:param name="allLabels" />
+        <xsl:param name="scheme" as="xs:string" />
+        <xsl:param name="schemeDefinedBy" as="xs:string" />
+
+        <xsl:if test="not($schemeDefinedBy='')">
+            <xsl:for-each select="fn:distinct-values($allLabels/api:keywords/api:keyword[@scheme=$scheme])">
+                <vivo:hasSubjectArea rdf:resource="{svfn:makeURI(concat('vocab-',$scheme,'-'),.)}" />
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:function>
+
+    <xsl:function name="svfn:renderControlledSubjectObjects">
         <xsl:param name="allLabels" />
         <xsl:param name="publicationUri" as="xs:string" />
+        <xsl:param name="publicationVenueUri" as="xs:string" />
         <xsl:param name="scheme" as="xs:string" />
         <xsl:param name="schemeDefinedBy" as="xs:string" />
 
@@ -667,15 +680,13 @@
                     <xsl:with-param name="rdfNodes">
                         <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept" />
                         <rdfs:label><xsl:value-of select="." /></rdfs:label>
-                        <vivo:subjectAreaOf rdf:resource="{$publicationUri}" />
                         <rdfs:isDefinedBy rdf:resource="{$schemeDefinedBy}" />
-                    </xsl:with-param>
-                </xsl:call-template>
-
-                <xsl:call-template name="render_rdf_object">
-                    <xsl:with-param name="objectURI" select="$publicationUri" />
-                    <xsl:with-param name="rdfNodes">
-                        <vivo:hasSubjectArea rdf:resource="{$definitionUri}" />
+                        <xsl:if test="not($publicationUri='')">
+                            <vivo:subjectAreaOf rdf:resource="{$publicationUri}" />
+                        </xsl:if>
+                        <xsl:if test="not($publicationVenueUri='')">
+                            <vivo:subjectAreaOf rdf:resource="{$publicationVenueUri}" />
+                        </xsl:if>
                     </xsl:with-param>
                 </xsl:call-template>
             </xsl:for-each>

@@ -38,6 +38,9 @@
         <xsl:variable name="publicationId" select="@id" />
         <xsl:variable name="publicationUri" select="svfn:objectURI(.)" />
 
+        <!-- Labels -->
+        <xsl:variable name="allLabels" select="api:all-labels" />
+
         <!-- Attempt to generate a URI for the publication date object -->
         <xsl:variable name="publicationDateURI" select="concat(svfn:objectURI(.),'-publicationDate')" />
 
@@ -57,7 +60,7 @@
         <xsl:variable name="publicationVenueURI" select="svfn:makeURI('journal-',$publicationVenueTitle)" />
 
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
-        <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
+        <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$allLabels,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
 
         <!-- Get the authors -->
         <xsl:variable name="authors" select="svfn:getRecordField(.,'authors')" />
@@ -68,10 +71,9 @@
         <xsl:variable name="authorUrl" select="svfn:getRecordField(.,'author-url')" />
         <xsl:variable name="publisherUrl" select="svfn:getRecordField(.,'publisher-url')" />
 
-        <!-- Labels -->
-        <xsl:variable name="allLabels" select="api:all-labels" />
-
         <xsl:variable name="publicationStatus" select="svfn:getRecordField(.,'publication-status')" />
+
+        <xsl:variable name="externalIdentifiers" select="svfn:getRecordField(.,'external-identifiers')" />
 
         <!-- Render an RDF object -->
         <xsl:call-template name="render_rdf_object">
@@ -97,8 +99,15 @@
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageStart','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:volume','volume')" />
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:isbn10','isbn-10')" />
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:isbn13','isbn-13')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:freetextKeyword','keywords')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'vivo:patentNumber','patent-number')" />
+                <xsl:for-each select="$externalIdentifiers/api:identifiers/api:identifier">
+                    <xsl:choose>
+                        <xsl:when test="@scheme='pubmed'"><bibo:pmid><xsl:value-of select="." /></bibo:pmid></xsl:when>
+                    </xsl:choose>
+                </xsl:for-each>
                 <xsl:if test="not($useSympNS='')">
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:authors','authors')" />
                     <xsl:copy-of select="svfn:renderPropertyFromField(.,'symp:language','language')" />
@@ -119,6 +128,9 @@
                     <xsl:when test="$publicationStatus/api:text='Submitted'"><bibo:status rdf:resource="http://vivoweb.org/ontology/core#submitted" /></xsl:when>
                     <xsl:when test="$publicationStatus/api:text='Unpublished'"><bibo:status rdf:resource="http://purl.org/ontology/bibo/unpublished" /></xsl:when>
                 </xsl:choose>
+                <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'mesh', $meshDefinedBy)" />
+                <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'science-metrix', $scimetDefinedBy)" />
+                <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'for', $forDefinedBy)" />
             </xsl:with-param>
         </xsl:call-template>
 
@@ -176,9 +188,22 @@
         <xsl:copy-of select="svfn:renderLinksAndExternalPeople($authors, $publicationId, $publicationUri)" />
         <xsl:copy-of select="svfn:renderLinksAndExternalPeople($editors, $publicationId, $publicationUri)" />
 
-        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'mesh',$meshDefinedBy)" />
-        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'science-metrix',$scimetDefinedBy)" />
-        <xsl:copy-of select="svfn:renderControlledSubjects($allLabels, $publicationUri, 'for',$forDefinedBy)" />
+        <xsl:choose>
+            <xsl:when test="$publicationVenueObject/*">
+                <!-- Link MeSH to publication only -->
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, '', 'mesh', $meshDefinedBy)" />
+
+                <!-- Link science metrix and for to publication and journal -->
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, $publicationVenueURI, 'science-metrix', $scimetDefinedBy)" />
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, $publicationVenueURI, 'for', $forDefinedBy)" />
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- Link everything to publication only -->
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, '', 'mesh', $meshDefinedBy)" />
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, '', 'science-metrix', $scimetDefinedBy)" />
+                <xsl:copy-of select="svfn:renderControlledSubjectObjects($allLabels, $publicationUri, '', 'for', $forDefinedBy)" />
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!-- ====================================================
@@ -255,6 +280,7 @@
     <!-- Render the RDF object for the publication venue (journal) -->
     <xsl:function name="svfn:renderPublicationVenueObject">
         <xsl:param name="object" />
+        <xsl:param name="allLabels" />
         <xsl:param name="journalObjectURI" as="xs:string" />
         <xsl:param name="journalTitle" as="xs:string" />
         <xsl:param name="publicationURI" as="xs:string" />
@@ -267,6 +293,10 @@
                     <rdfs:label><xsl:value-of select="$journalTitle" /></rdfs:label>
                     <rdf:type rdf:resource="http://purl.org/ontology/bibo/Journal"/>
                     <vivo:publicationVenueFor rdf:resource="{$publicationURI}" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField($object,'bibo:issn','issn')" />
+                    <xsl:copy-of select="svfn:renderPropertyFromField($object,'bibo:eissn','eissn')" />
+                    <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'science-metrix', $scimetDefinedBy)" />
+                    <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'for', $forDefinedBy)" />
                 </xsl:with-param>
             </xsl:call-template>
         </xsl:if>
