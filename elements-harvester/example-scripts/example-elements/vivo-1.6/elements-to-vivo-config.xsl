@@ -71,8 +71,18 @@
     <config:record-precedences>
         <config:record-precedences for="publication" select-by="field">
             <config:record-precedence>pubmed</config:record-precedence>
-            <config:record-precedence>manual</config:record-precedence>
+            <config:record-precedence>epmc</config:record-precedence>
+            <config:record-precedence>crossref</config:record-precedence>
+            <config:record-precedence>repec</config:record-precedence>
             <config:record-precedence>arxiv</config:record-precedence>
+            <config:record-precedence>orcid</config:record-precedence>
+            <config:record-precedence>dblp</config:record-precedence>
+            <config:record-precedence>figshare</config:record-precedence>
+            <config:record-precedence>manual</config:record-precedence>
+        </config:record-precedences>
+        <config:record-precedences for="grant" select-by="field">
+            <config:record-precedence>symplectic</config:record-precedence>
+            <config:record-precedence>manual</config:record-precedence>
         </config:record-precedences>
         <config:record-precedences for="default" select-by="field">
             <config:record-precedence>manual</config:record-precedence>
