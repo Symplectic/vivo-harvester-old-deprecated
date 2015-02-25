@@ -73,6 +73,7 @@
             <config:record-precedence>pubmed</config:record-precedence>
             <config:record-precedence>epmc</config:record-precedence>
             <config:record-precedence>crossref</config:record-precedence>
+            <config:record-precedence>scopus</config:record-precedence>
             <config:record-precedence>repec</config:record-precedence>
             <config:record-precedence>arxiv</config:record-precedence>
             <config:record-precedence>orcid</config:record-precedence>

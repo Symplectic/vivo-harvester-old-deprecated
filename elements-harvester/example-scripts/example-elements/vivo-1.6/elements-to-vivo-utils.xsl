@@ -503,6 +503,10 @@
                 <xsl:choose>
                     <xsl:when test="$select-by='field'">
                         <xsl:choose>
+                            <!-- Don't use fields from Scopus that are restricted -->
+                            <xsl:when test="$records[$position]='scopus' and ($fieldName='abstract')">
+                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
+                            </xsl:when>
                             <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]">
                                 <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
@@ -513,6 +517,10 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:choose>
+                            <!-- Don't use fields from Scopus that are restricted -->
+                            <xsl:when test="$records[$position]='scopus' and ($fieldName='abstract')">
+                                <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
+                            </xsl:when>
                             <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native">
                                 <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
