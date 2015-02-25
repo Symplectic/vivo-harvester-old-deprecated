@@ -21,15 +21,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -119,13 +111,18 @@ final class TranslationServiceImpl {
             Boolean retCode = Boolean.TRUE;
             Exception caughtException = null;
 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Source xmlSource = new StreamSource(getInputStream());
-            Result outputResult = new StreamResult(getOutputStream());
+            Result outputResult = new StreamResult(baos);
 
             try {
                 Transformer transformer = templates.getTemplates().newTransformer();
                 transformer.setErrorListener(new TranslateTaskErrorListener(config));
                 transformer.transform(xmlSource, outputResult);
+
+                String xml = baos.toString("utf-8");
+                xml = xml.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
+                getOutputStream().write(xml.getBytes("utf-8"));
 
                 if (outputStream != null) {
                     outputStream.flush();

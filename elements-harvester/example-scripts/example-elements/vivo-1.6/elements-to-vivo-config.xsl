@@ -67,13 +67,12 @@
         Otherwise, it will select the highest precedence record, regardless of whether field exizts.
 
         If a record is not listed, it will not be used (except when using the "fallback to first record" function).
-
-		Not using crossref currently as it contains UTF8MB4 characters
     -->
     <config:record-precedences>
         <config:record-precedences for="publication" select-by="field">
             <config:record-precedence>pubmed</config:record-precedence>
             <config:record-precedence>epmc</config:record-precedence>
+            <config:record-precedence>crossref</config:record-precedence>
             <config:record-precedence>repec</config:record-precedence>
             <config:record-precedence>arxiv</config:record-precedence>
             <config:record-precedence>orcid</config:record-precedence>
