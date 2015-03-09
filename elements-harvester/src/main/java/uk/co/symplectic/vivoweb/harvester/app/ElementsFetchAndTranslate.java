@@ -33,14 +33,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class ElementsFetchAndTranslate {
-    private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
-    private static final String ARG_RDF_OUTPUT_DIRECTORY = "rdfOutput";
-
-    private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
-
-    private static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
-    private static final String ARG_VIVO_BASE_URI         = "vivoBaseURI";
-
     /**
      * SLF4J Logger
      */

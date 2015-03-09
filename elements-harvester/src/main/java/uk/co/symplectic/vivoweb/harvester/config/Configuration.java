@@ -7,13 +7,19 @@
 package uk.co.symplectic.vivoweb.harvester.config;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.vivoweb.harvester.util.InitLog;
 import org.vivoweb.harvester.util.args.ArgDef;
 import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Configuration {
     private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
@@ -29,6 +35,8 @@ public class Configuration {
 
     private static final String ARG_CURRENT_STAFF_ONLY    = "currentStaffOnly";
     private static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
+
+    private static final String ARG_USE_FULL_UTF8         = "useFullUTF8";
 
     private static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
     private static final String ARG_VIVO_BASE_URI         = "vivoBaseURI";
@@ -55,6 +63,8 @@ public class Configuration {
     private static final String DEFAULT_IMAGE_DIR = "/Library/Tomcat/webapps/vivo";
     private static final String DEFAULT_BASE_URI = "http://localhost:8080/vivo/individual/";
 
+    private static final String DEFAULT_RAW_OUTPUT_DIR = "data/raw-records";
+    private static final String DEFAULT_RDF_OUTPUT_DIR = "data/translated-records";
 
     private static ArgParser parser = null;
     private static ArgList argList = null;
@@ -80,11 +90,16 @@ public class Configuration {
         private String objectsToHarvest;
 
         private boolean currentStaffOnly = true;
-        private boolean visibleLinksOnly = true;
+        private boolean visibleLinksOnly = false;
+
+        private boolean useFullUTF8 = false;
 
         private String vivoImageDir = DEFAULT_IMAGE_DIR;
         private String baseURI = DEFAULT_BASE_URI;
         private String xslTemplate;
+
+        private String rawOutputDir = DEFAULT_RAW_OUTPUT_DIR;
+        private String rdfOutputDir = DEFAULT_RDF_OUTPUT_DIR;
     };
 
     private static ConfigurationValues values = new ConfigurationValues();
@@ -149,6 +164,8 @@ public class Configuration {
         return values.visibleLinksOnly;
     }
 
+    public static boolean getUseFullUTF8() { return values.useFullUTF8; }
+
     public static String getVivoImageDir() {
         return values.vivoImageDir;
     }
@@ -160,6 +177,9 @@ public class Configuration {
     public static String getXslTemplate() {
         return values.xslTemplate;
     }
+
+    public static String getRawOutputDir() { return values.rawOutputDir; }
+    public static String getRdfOutputDir() { return values.rdfOutputDir; }
 
     public static void parse(String appName, String[] args) throws IOException, UsageException {
         argList = null;
@@ -181,6 +201,8 @@ public class Configuration {
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_CURRENT_STAFF_ONLY).setDescription("Current Staff Only").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_USE_FULL_UTF8).setDescription("Use Full UTF8").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_BASE_URI).setDescription("Vivo Base URI").withParameter(true, "CONFIG_FILE"));
@@ -221,11 +243,16 @@ public class Configuration {
             values.apiRelationshipsPerPage  = getInt(ARG_API_RELS_PER_PAGE, RELATIONSHIPS_PER_PAGE);
 
             values.currentStaffOnly = getBoolean(ARG_CURRENT_STAFF_ONLY, true);
-            values.visibleLinksOnly = getBoolean(ARG_VISIBLE_LINKS_ONLY, true);
+            values.visibleLinksOnly = getBoolean(ARG_VISIBLE_LINKS_ONLY, false);
+
+            values.useFullUTF8 = getBoolean(ARG_USE_FULL_UTF8, false);
 
             values.baseURI      = getString(ARG_VIVO_BASE_URI, DEFAULT_BASE_URI);
             values.vivoImageDir = getString(ARG_VIVO_IMAGE_DIR, DEFAULT_IMAGE_DIR);
-            values.xslTemplate  = getString(ARG_XSL_TEMPLATE);
+            values.xslTemplate = getString(ARG_XSL_TEMPLATE);
+
+            values.rawOutputDir = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
+            values.rdfOutputDir = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
         }
     }
 
@@ -279,5 +306,24 @@ public class Configuration {
         }
 
         return "Error generating usage string";
+    }
+
+    private static String getFileDirFromConfig(String filename, String defValue) {
+        try {
+            File file = new File(filename);
+            if (file.exists()) {
+                SAXBuilder builder = new SAXBuilder();
+                Document doc = builder.build(file);
+                for (Element child :  (List<Element>)doc.getRootElement().getChildren()) {
+                    if ("fileDir".equals(child.getAttribute("name").getValue())) {
+                        return child.getTextNormalize();
+                    }
+                }
+            }
+        } catch (JDOMException e) {
+        } catch (IOException e) {
+        }
+
+        return defValue;
     }
 }

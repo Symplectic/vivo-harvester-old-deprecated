@@ -6,9 +6,11 @@
  ******************************************************************************/
 package uk.co.symplectic.translate;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
+import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
@@ -116,12 +118,26 @@ final class TranslationServiceImpl {
             Result outputResult = new StreamResult(baos);
 
             try {
+                String baseURI = Configuration.getBaseURI();
+                String rawDir = Configuration.getRawOutputDir();
+
                 Transformer transformer = templates.getTemplates().newTransformer();
                 transformer.setErrorListener(new TranslateTaskErrorListener(config));
+
+                if (!StringUtils.isEmpty(baseURI)) {
+                    try { transformer.setParameter("baseURI", baseURI); } catch (RuntimeException re) { }
+                }
+
+                if (!StringUtils.isEmpty(rawDir)) {
+                    try { transformer.setParameter("recordDir", rawDir); } catch (RuntimeException re) { }
+                }
+
                 transformer.transform(xmlSource, outputResult);
 
                 String xml = baos.toString("utf-8");
-                xml = xml.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
+                if (!Configuration.getUseFullUTF8()) {
+                    xml = xml.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
+                }
                 getOutputStream().write(xml.getBytes("utf-8"));
 
                 if (outputStream != null) {

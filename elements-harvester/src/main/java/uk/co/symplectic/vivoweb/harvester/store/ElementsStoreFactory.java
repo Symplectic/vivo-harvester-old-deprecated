@@ -6,20 +6,18 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
+import uk.co.symplectic.vivoweb.harvester.config.Configuration;
+
 public class ElementsStoreFactory {
     private static ElementsObjectStore objectStore = null;
     private static ElementsRdfStore rdfStore = null;
-
-    // These should really be pulled from configuration
-    private static final String RAW_RECORD_STORE = "data/raw-records";
-    private static final String RDF_RECORD_STORE = "data/translated-records";
 
     public static ElementsObjectStore getObjectStore() {
         if (objectStore != null) {
             return objectStore;
         } else {
             synchronized (ElementsStoreFactory.class) {
-                return objectStore != null ? objectStore : (objectStore = new ElementsObjectStore(RAW_RECORD_STORE));
+                return objectStore != null ? objectStore : (objectStore = new ElementsObjectStore(Configuration.getRawOutputDir()));
             }
         }
     }
@@ -29,7 +27,7 @@ public class ElementsStoreFactory {
             return rdfStore;
         } else {
             synchronized (ElementsStoreFactory.class) {
-                return rdfStore != null ? rdfStore : (rdfStore = new ElementsRdfStore(RDF_RECORD_STORE));
+                return rdfStore != null ? rdfStore : (rdfStore = new ElementsRdfStore(Configuration.getRdfOutputDir()));
             }
         }
     }
