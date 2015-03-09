@@ -1,5 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Symplectic Ltd. All rights reserved.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.app;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +18,7 @@ import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
+import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
@@ -30,36 +38,8 @@ public class ElementsFetchAndTranslate {
 
     private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
-    private static final String ARG_ELEMENTS_API_ENDPOINT = "apiEndpoint";
-    private static final String ARG_ELEMENTS_API_SECURE   = "apiIsSecure";
-    private static final String ARG_ELEMENTS_API_VERSION  = "apiVersion";
-    private static final String ARG_ELEMENTS_API_USERNAME = "apiUsername";
-    private static final String ARG_ELEMENTS_API_PASSWORD = "apiPassword";
-
-    private static final String ARG_CURRENT_STAFF_ONLY    = "currentStaffOnly";
-    private static final String ARG_VISIBLE_LINKS_ONLY    = "visibleLinksOnly";
-
     private static final String ARG_VIVO_IMAGE_DIR        = "vivoImageDir";
     private static final String ARG_VIVO_BASE_URI         = "vivoBaseURI";
-
-    private static final String ARG_API_QUERY_OBJECTS     = "queryObjects";
-    private static final String ARG_API_PARAMS_GROUPS     = "paramGroups";
-    private static final String ARG_API_EXCLUDE_GROUPS    = "excludeGroups";
-
-    private static final String ARG_API_OBJECTS_PER_PAGE  = "objectsPerPage";
-    private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
-
-    private static final String ARG_API_SOCKET_TIMEOUT    = "apiSocketTimeout";
-    private static final String ARG_API_REQUEST_DELAY     = "apiRequestDelay";
-
-    private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
-    private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
-
-    // Maximum of 25 is mandated by 4.6 and newer APIs since we request full detail for objects
-    private static final int OBJECTS_PER_PAGE = 25;
-
-    // Default of 100 for optimal performance
-    private static final int RELATIONSHIPS_PER_PAGE = 100;
 
     /**
      * SLF4J Logger
@@ -67,87 +47,42 @@ public class ElementsFetchAndTranslate {
     private static final Logger log = LoggerFactory.getLogger(ElementsFetchAndTranslate.class);
 
     /**
-     * Get the ArgParser for this task
-     * @param appName the application name
-     * @return the ArgParser
-     */
-    private static ArgParser getParser(String appName) {
-        //RecordHandler.parseConfig(argList.get("o"), argList.getValueMap("O"))
-        ArgParser parser = new ArgParser(appName);
-        parser.addArgument(new ArgDef().setShortOption('r').setLongOpt(ARG_RAW_OUTPUT_DIRECTORY).setDescription("Raw RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_EXCLUDE_GROUPS).setDescription("Groups to exclude users from").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setShortOption('e').setLongOpt(ARG_ELEMENTS_API_ENDPOINT).setDescription("Elements API endpoint url").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('s').setLongOpt(ARG_ELEMENTS_API_SECURE).setDescription("Is Elements API secure").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('c').setLongOpt(ARG_API_QUERY_OBJECTS).setDescription("Elements API object categories").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('v').setLongOpt(ARG_ELEMENTS_API_VERSION).setDescription("Elements API version").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setShortOption('u').setLongOpt(ARG_ELEMENTS_API_USERNAME).setDescription("Elements API username").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setShortOption('p').setLongOpt(ARG_ELEMENTS_API_PASSWORD).setDescription("Elements API password").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setLongOpt(ARG_CURRENT_STAFF_ONLY).setDescription("Current Staff Only").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_VISIBLE_LINKS_ONLY).setDescription("Visible Links Only").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_IMAGE_DIR).setDescription("Vivo Image Directory").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_VIVO_BASE_URI).setDescription("Vivo Base URI").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setLongOpt(ARG_API_OBJECTS_PER_PAGE).setDescription("Objects Per Page").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_API_RELS_PER_PAGE).setDescription("Relationships Per Page").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setLongOpt(ARG_API_SOCKET_TIMEOUT).setDescription("HTTP Socket Timeout").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_API_REQUEST_DELAY).setDescription("API Request Delay").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));
-
-        parser.addArgument(new ArgDef().setShortOption('z').setLongOpt(ARG_XSL_TEMPLATE).setDescription("XSL Template").withParameter(true, "CONFIG_FILE"));
-        return parser;
-    }
-
-    /**
      * Main method
      * @param args commandline arguments
      */
     public static void main(String[] args) {
         Throwable caught = null;
-        ArgParser parser = null;
         try {
-            parser = getParser("ElementsFetchAndTranslate");
             try {
-                InitLog.initLogger(args, parser);
+                Configuration.parse("ElementsFetchAndTranslate", args);
+
                 log.debug("ElementsFetchAndTranslate: Start");
 
-                ArgList parsedArgs = parser.parse(args);
+                setExecutorServiceMaxThreadsForPool("TranslationService",   Configuration.getMaxThreadsXsl());
+                setExecutorServiceMaxThreadsForPool("ResourceFetchService", Configuration.getMaxThreadsResource());
 
-                setExecutorServiceMaxThreadsForPool("TranslationService",   parsedArgs.get(ARG_MAX_XSL_THREADS));
-                setExecutorServiceMaxThreadsForPool("ResourceFetchService", parsedArgs.get(ARG_MAX_RESOURCE_THREADS));
-
-                ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI(parsedArgs);
+                ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI();
 
                 ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
-                excludedUserFetcher.setGroupsToExclude(ElementsFetchAndTranslate.getGroupsToExclude(parsedArgs));
+                excludedUserFetcher.setGroupsToExclude(Configuration.getGroupsToExclude());
                 excludedUserFetcher.execute();
                 Set<String> excludedUsers = excludedUserFetcher.getExcludedUsers();
 
                 ElementsFetch fetcher = new ElementsFetch(elementsAPI);
-                fetcher.setGroupsToHarvest(ElementsFetchAndTranslate.getGroupsToHarvest(parsedArgs));
-                fetcher.setObjectsToHarvest(ElementsFetchAndTranslate.getObjectsToHarvest(parsedArgs));
-                fetcher.setObjectsPerPage(ElementsFetchAndTranslate.getObjectsPerPage(parsedArgs));
-                fetcher.setRelationshipsPerPage(ElementsFetchAndTranslate.getRelationshipsPerPage(parsedArgs));
+                fetcher.setGroupsToHarvest(Configuration.getGroupsToHarvest());
+                fetcher.setObjectsToHarvest(Configuration.getObjectsToHarvest());
+                fetcher.setObjectsPerPage(Configuration.getApiObjectsPerPage());
+                fetcher.setRelationshipsPerPage(Configuration.getApiRelationshipsPerPage());
 
                 ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
                 ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
 
-                boolean currentStaffOnly = ElementsFetchAndTranslate.getCurrentStaffOnly(parsedArgs);
-                boolean visibleLinksOnly = ElementsFetchAndTranslate.getVisibleLinksOnly(parsedArgs);
+                boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
+                boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();
 
-                String xslFilename = ElementsFetchAndTranslate.getXslFilename(parsedArgs);
-                File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(parsedArgs);
-                String vivoBaseURI = ElementsFetchAndTranslate.getBaseURI(parsedArgs);
+                String xslFilename = Configuration.getXslTemplate();
+                File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(Configuration.getVivoImageDir());
+                String vivoBaseURI = Configuration.getBaseURI();
 
                 ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
                 objectObserver.setCurrentStaffOnly(currentStaffOnly);
@@ -170,9 +105,9 @@ public class ElementsFetchAndTranslate {
 
         } catch (UsageException e) {
             caught = e;
-            if (parser != null) {
+            if (!Configuration.isConfigured()) {
                 log.info("Printing Usage:");
-                System.out.println(parser.getUsage());
+                System.out.println(Configuration.getUsage());
             } else {
                 System.err.println("Caught UsageExcpetion initialising ElementsFetchAndTranslate");
                 e.printStackTrace(System.err);
@@ -185,39 +120,28 @@ public class ElementsFetchAndTranslate {
         }
     }
 
-    private static ElementsAPI getElementsAPI(ArgList argList) {
-        String apiEndpoint = argList.get(ARG_ELEMENTS_API_ENDPOINT);
-        String apiVersion = argList.get(ARG_ELEMENTS_API_VERSION);
+    private static ElementsAPI getElementsAPI() {
+        String apiEndpoint = Configuration.getApiEndpoint();
+        String apiVersion = Configuration.getApiVersion();
 
-        String apiUsername = argList.get(ARG_ELEMENTS_API_USERNAME);
-        String apiPassword = argList.get(ARG_ELEMENTS_API_PASSWORD);
+        String apiUsername = Configuration.getApiUsername();
+        String apiPassword = Configuration.getApiPassword();
 
         boolean apiIsSecure;
-        String isSecure = argList.get(ARG_ELEMENTS_API_SECURE);
-        if ("false".equalsIgnoreCase(isSecure)) {
-            apiIsSecure = false;
-        } else if ("true".equalsIgnoreCase(isSecure)) {
-            apiIsSecure = true;
-        } else if (apiEndpoint != null && apiEndpoint.startsWith("http://")) {
+        if (apiEndpoint != null && apiEndpoint.toLowerCase().startsWith("http://")) {
             apiIsSecure = false;
         } else {
             apiIsSecure = true;
         }
 
-        String strSoTimeout = argList.get(ARG_API_SOCKET_TIMEOUT);
-        if (!StringUtils.isEmpty(strSoTimeout)) {
-            int soTimeout = Integer.parseInt(strSoTimeout, 10);
-            if (soTimeout > 4999 && soTimeout < (30 * 60 * 1000)) {
-                ElementsAPIHttpClient.setSoTimeout(soTimeout);
-            }
+        int soTimeout = Configuration.getApiSoTimeout();
+        if (soTimeout > 4999 && soTimeout < (30 * 60 * 1000)) {
+            ElementsAPIHttpClient.setSoTimeout(soTimeout);
         }
 
-        String strRequestDelay = argList.get(ARG_API_REQUEST_DELAY);
-        if (!StringUtils.isEmpty(strRequestDelay)) {
-            int requestDelay = Integer.parseInt(strRequestDelay, 10);
-            if (requestDelay > -1 && requestDelay < (5 * 60 * 1000)) {
-                ElementsAPIHttpClient.setRequestDelay(requestDelay);
-            }
+        int requestDelay = Configuration.getApiRequestDelay();
+        if (requestDelay > -1 && requestDelay < (5 * 60 * 1000)) {
+            ElementsAPIHttpClient.setRequestDelay(requestDelay);
         }
 
         ElementsAPI api = ElementsAPI.getAPI(apiVersion, apiEndpoint, apiIsSecure);
@@ -229,24 +153,11 @@ public class ElementsFetchAndTranslate {
         return api;
     }
 
-    private static String getGroupsToHarvest(ArgList argList) {
-        return argList.get(ARG_API_PARAMS_GROUPS);
-    }
-
-    private static String getGroupsToExclude(ArgList argList) {
-        return argList.get(ARG_API_EXCLUDE_GROUPS);
-    }
-
-    private static String getObjectsToHarvest(ArgList argList) {
-        return argList.get(ARG_API_QUERY_OBJECTS);
-    }
-
-    private static File getVivoImageDir(ArgList argList) {
+    private static File getVivoImageDir(String imageDir) {
         File vivoImageDir = null;
         // TODO: This should be a required configuration parameter that specifies a path accessible by the VIVO web container
-        String vivoImageDirArg = argList.get(ARG_VIVO_IMAGE_DIR);
-        if (!StringUtils.isEmpty(vivoImageDirArg)) {
-            vivoImageDir = new File(vivoImageDirArg);
+        if (!StringUtils.isEmpty(imageDir)) {
+            vivoImageDir = new File(imageDir);
             if (vivoImageDir.exists()) {
                 if (!vivoImageDir.isDirectory()) {
                     vivoImageDir = null;
@@ -259,68 +170,9 @@ public class ElementsFetchAndTranslate {
         return vivoImageDir;
     }
 
-    private static String getXslFilename(ArgList argList) {
-        return argList.get(ARG_XSL_TEMPLATE);
-    }
-
-    private static String getBaseURI(ArgList argList) {
-        String uri = argList.get(ARG_VIVO_BASE_URI);
-        if (StringUtils.isEmpty(uri)) {
-            // TODO: This should be a required configuration parameter, and not optional with a default value
-            return "http://vivo.symplectic.co.uk/";
-        }
-
-        return uri;
-    }
-
-    private static boolean getCurrentStaffOnly(ArgList argList) {
-        String currentStaffArg = argList.get(ARG_CURRENT_STAFF_ONLY);
-        if ("false".equalsIgnoreCase(currentStaffArg)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static boolean getVisibleLinksOnly(ArgList argList) {
-        String visibleLinksArg = argList.get(ARG_VISIBLE_LINKS_ONLY);
-        if ("false".equalsIgnoreCase(visibleLinksArg)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static int getObjectsPerPage(ArgList argList) {
-        String strObjectsPerPage = argList.get(ARG_API_OBJECTS_PER_PAGE);
-        if (!StringUtils.isEmpty(strObjectsPerPage)) {
-            int tmpObjectsPerPage = Integer.parseInt(strObjectsPerPage, 10);
-            if (tmpObjectsPerPage > 0 && tmpObjectsPerPage < 501) {
-                return tmpObjectsPerPage;
-            }
-        }
-
-        return OBJECTS_PER_PAGE;
-    }
-
-    private static int getRelationshipsPerPage(ArgList argList) {
-        String strRelsPerPage = argList.get(ARG_API_RELS_PER_PAGE);
-        if (!StringUtils.isEmpty(strRelsPerPage)) {
-            int tmpRelsPerPage = Integer.parseInt(strRelsPerPage, 10);
-            if (tmpRelsPerPage > 0 && tmpRelsPerPage < 501) {
-                return tmpRelsPerPage;
-            }
-        }
-
-        return RELATIONSHIPS_PER_PAGE;
-    }
-
-    private static void setExecutorServiceMaxThreadsForPool(String poolName, String maxThreads) {
-        if (!StringUtils.isEmpty(maxThreads)) {
-            int maxThreadsAsInt = Integer.parseInt(maxThreads, 10);
-            if (maxThreadsAsInt > 0) {
-                ExecutorServiceUtils.setMaxProcessorsForPool(poolName, maxThreadsAsInt);
-            }
+    private static void setExecutorServiceMaxThreadsForPool(String poolName, int maxThreads) {
+        if (maxThreads > 0) {
+            ExecutorServiceUtils.setMaxProcessorsForPool(poolName, maxThreads);
         }
     }
 }
