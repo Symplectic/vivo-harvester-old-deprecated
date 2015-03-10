@@ -82,10 +82,10 @@
         <xsl:param name="fieldName" />
 
         <xsl:choose>
-            <xsl:when test="$propertyName='bibo:pageStart'"><xsl:element name="{$propertyName}"><xsl:value-of select="api:begin-page" /></xsl:element></xsl:when>
-            <xsl:when test="$propertyName='bibo:pageEnd'"><xsl:element name="{$propertyName}"><xsl:value-of select="api:end-page" /></xsl:element></xsl:when>
-            <xsl:when test="$propertyName='bibo:numPages' and api:page-count"><xsl:element name="{$propertyName}"><xsl:value-of select="api:page-count" /></xsl:element></xsl:when>
-            <xsl:when test="$propertyName='bibo:numPages' and api:begin-page and api:end-page"><xsl:element name="{$propertyName}"><xsl:value-of select="fn:number(api:end-page)-fn:number(api:begin-page)+1" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:pageStart' and api:begin-page"><xsl:element name="{$propertyName}"><xsl:value-of select="api:begin-page" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:pageEnd'   and api:end-page"><xsl:element name="{$propertyName}"><xsl:value-of select="api:end-page" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:numPages'  and api:page-count"><xsl:element name="{$propertyName}"><xsl:value-of select="api:page-count" /></xsl:element></xsl:when>
+            <xsl:when test="$propertyName='bibo:numPages'  and api:begin-page and api:end-page"><xsl:element name="{$propertyName}"><xsl:value-of select="fn:number(api:end-page)-fn:number(api:begin-page)+1" /></xsl:element></xsl:when>
             <xsl:otherwise />
         </xsl:choose>
     </xsl:template>
