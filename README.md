@@ -77,8 +77,6 @@ In order to do so, you should first run an ElementsFetch (to obtain the data/raw
 
 You will now be able to run this translation, and the results will appear in a 'console' tab.
 
-### TODO: Could provide alternative instructions on running individual XSL transforms from a command line prompt?
-
 ## Packaging and Deployment
 
 When you are ready to move from your workstation to a server (either test or production), then you will need to package up the Elements harvester extensions, and install them on the server.
@@ -94,10 +92,6 @@ To install the Elements harvester on a server, first download the full VIVO Harv
 Extract this package to a directory on your server. Next, extract the elements-harvester.tar.gz, and copy the 'bin' and 'example-scripts' directories into the location where you extracted the VIVO Harvester package.
 
 You want to merge these with the existing directories, so the contents of the elements-harvester 'bin' directory is added to the contents of the VIVO harvester 'bin' directory, etc.
-
-### TODO: Provide examples of correct configuration for files noted below?
-
-### TODO: Indicate how to specify target version of VIVO ontology, e.g. VIVO 1.5 vs VIVO (VIVO-ISF) 1.6/1.7?
 
 Then, go to the example-scripts/example-elements directory. You'll need to edit the run-elements.sh script to ensure that the HARVESTER_INSTALL_DIR variable is correctly configured. Also verify that your elements.config.xml is correctly configured for your Elements instance, and vivo.model.xml and elements-to-vivo-config.xsl are correctly configured for your VIVO instance. You can then run:
 
