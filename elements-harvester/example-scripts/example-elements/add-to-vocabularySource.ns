@@ -1,0 +1,6 @@
+<http://www.nlm.nih.gov/mesh> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.nlm.nih.gov/mesh> <http://www.w3.org/2000/01/rdf-schema#label> "MeSH"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://www.science-metrix.com/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.science-metrix.com/> <http://www.w3.org/2000/01/rdf-schema#label> "Science Metrix"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://www.arc.gov.au/era/for> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.arc.gov.au/era/for> <http://www.w3.org/2000/01/rdf-schema#label> "FoR"^^<http://www.w3.org/2001/XMLSchema#string>  .
