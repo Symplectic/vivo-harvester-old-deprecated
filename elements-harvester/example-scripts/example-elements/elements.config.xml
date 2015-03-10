@@ -6,24 +6,42 @@
  | file, You can obtain one at http://mozilla.org/MPL/2.0/.
  -->
 <Task>
+    <!--
+        Elements API configuration
+    -->
     <Param name="apiEndpoint">https://elementshost:8091/standard/v4.9</Param>
     <Param name="apiVersion">4.9</Param>
-    <Param name="apiIsSecure">true</Param>
+
+    <!-- Username and Password are required for secure (https:) API endpoints -->
     <Param name="apiUsername">apiuser</Param>
     <Param name="apiPassword">apipassword</Param>
 
-    <Param name="vivoImageDir">/Library/Tomcat/webapps/vivo</Param>
+    <!--
+        VIVO configuration for individual URIs and avatar location
+    -->
     <Param name="vivoBaseURI">http://localhost:8080/vivo/individual/</Param>
+    <Param name="vivoImageDir">/Library/Tomcat/webapps/vivo</Param>
 
     <Param name="queryObjects">users,publications,grants,activities,teaching-activities</Param>
+
+    <!-- Only get users that are marked as current members of staff -->
     <Param name="currentStaffOnly">true</Param>
-    <Param name="visibleLinksOnly">true</Param>
+
+    <!-- Take everything, including things marked as invisible (the VIVO visibility flag will be used if a relationship is marked invisible -->
+    <Param name="visibleLinksOnly">false</Param>
 
     <!-- Defaults to fetching users in all groups, but can specify group IDs to include or exclude
     <Param name="paramGroups">3</Param>
     <Param name="excludeGroups">5</Param> -->
 
+    <!--
+        Crosswalk mappings to use
+    -->
+    <Param name="xslTemplate">elements-to-vivo.xsl</Param>
+
+    <!--
+        Configuration of locations to put harvested data (RAW and translated)
+    -->
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
-    <Param name="xslTemplate">elements-to-vivo.xsl</Param>
 </Task>
