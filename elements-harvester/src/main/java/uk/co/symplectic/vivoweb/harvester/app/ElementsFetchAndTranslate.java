@@ -6,14 +6,9 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.app;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vivoweb.harvester.util.InitLog;
-import org.vivoweb.harvester.util.args.ArgDef;
-import org.vivoweb.harvester.util.args.ArgList;
-import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
