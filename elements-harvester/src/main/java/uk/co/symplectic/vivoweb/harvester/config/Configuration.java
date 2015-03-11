@@ -7,16 +7,17 @@
 package uk.co.symplectic.vivoweb.harvester.config;
 
 import org.apache.commons.lang.StringUtils;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.vivoweb.harvester.util.InitLog;
 import org.vivoweb.harvester.util.args.ArgDef;
 import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -312,16 +313,27 @@ public class Configuration {
         try {
             File file = new File(filename);
             if (file.exists()) {
-                SAXBuilder builder = new SAXBuilder();
-                Document doc = builder.build(file);
-                for (Element child :  (List<Element>)doc.getRootElement().getChildren()) {
-                    if ("fileDir".equals(child.getAttribute("name").getValue())) {
-                        return child.getTextNormalize();
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+
+                Document doc = db.parse(file);
+                if (doc != null) {
+                    doc.getDocumentElement().normalize();
+                    NodeList nodes = doc.getDocumentElement().getChildNodes();
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Node node = nodes.item(i);
+                        if (node.hasAttributes()) {
+                            Node nameAttr = node.getAttributes().getNamedItem("name");
+                            if (nameAttr != null && "fileDir".equals( nameAttr.getTextContent() )) {
+                                return node.getTextContent();
+                            }
+                        }
                     }
                 }
             }
-        } catch (JDOMException e) {
         } catch (IOException e) {
+        } catch (ParserConfigurationException e) {
+        } catch (SAXException e) {
         }
 
         return defValue;
