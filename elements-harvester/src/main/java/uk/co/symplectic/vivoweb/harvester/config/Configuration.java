@@ -64,8 +64,8 @@ public class Configuration {
     private static final String DEFAULT_IMAGE_DIR = "/Library/Tomcat/webapps/vivo";
     private static final String DEFAULT_BASE_URI = "http://localhost:8080/vivo/individual/";
 
-    private static final String DEFAULT_RAW_OUTPUT_DIR = "data/raw-records";
-    private static final String DEFAULT_RDF_OUTPUT_DIR = "data/translated-records";
+    private static final String DEFAULT_RAW_OUTPUT_DIR = "data/raw-records/";
+    private static final String DEFAULT_RDF_OUTPUT_DIR = "data/translated-records/";
 
     private static ArgParser parser = null;
     private static ArgList argList = null;
@@ -310,6 +310,28 @@ public class Configuration {
     }
 
     private static String getFileDirFromConfig(String filename, String defValue) {
+        String fileDir = getRawFileDirFromConfig(filename, defValue);
+
+        if (!StringUtils.isEmpty(fileDir)) {
+            if (fileDir.contains("/")) {
+                if (!fileDir.endsWith("/")) {
+                    fileDir = fileDir + "/";
+                }
+            } else if (fileDir.contains("\\")) {
+                if (!fileDir.endsWith("\\")) {
+                    fileDir = fileDir + "\\";
+                }
+            } else {
+                if (!fileDir.endsWith(File.separator)) {
+                    fileDir = fileDir + File.separator;
+                }
+            }
+        }
+
+        return fileDir;
+    }
+
+    private static String getRawFileDirFromConfig(String filename, String defValue) {
         try {
             File file = new File(filename);
             if (file.exists()) {
