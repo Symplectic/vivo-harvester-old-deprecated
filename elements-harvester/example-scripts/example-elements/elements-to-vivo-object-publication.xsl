@@ -95,6 +95,7 @@
                 <xsl:copy-of select="svfn:renderPropertyFromFieldOrFirst(.,'rdfs:label','title')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:abstract','abstract')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:doi','doi')" />
+                <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:edition','edition')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:issue','issue')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageStart','pagination')" />
                 <xsl:copy-of select="svfn:renderPropertyFromField(.,'bibo:pageEnd','pagination')" />
