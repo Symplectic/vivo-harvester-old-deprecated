@@ -62,6 +62,15 @@
         <!-- Generate the publication venue object. Custom XSLT 2 function that takes the current object, journal URI and journal title. -->
         <xsl:variable name="publicationVenueObject" select="svfn:renderPublicationVenueObject(.,$allLabels,$publicationVenueURI,$publicationVenueTitle,svfn:objectURI(.))" />
 
+        <!-- Attempt to get the name for a conference -->
+        <xsl:variable name="conferenceName" select="svfn:selectConferenceName(.)" />
+
+        <!-- Generate a conference object URI from the conference name -->
+        <xsl:variable name="conferenceURI" select="svfn:makeURI('conference-',$conferenceName)" />
+
+        <!-- Generate the conference object -->
+        <xsl:variable name="conferenceObject" select="svfn:renderConferenceObject(.,$conferenceURI,$conferenceName,svfn:objectURI(.))" />
+
         <!-- Get the authors -->
         <xsl:variable name="authors" select="svfn:getRecordField(.,'authors')" />
         <xsl:variable name="editors" select="svfn:getRecordField(.,'editors')" />
@@ -119,6 +128,7 @@
                 <xsl:if test="$filedDateObject/*"><vivo:dateFiled rdf:resource="{$filedDateURI}" /></xsl:if>
                 <xsl:if test="$publicationDateObject/*"><vivo:dateTimeValue rdf:resource="{$publicationDateURI}" /></xsl:if>
                 <xsl:if test="$publicationVenueObject/*"><vivo:hasPublicationVenue rdf:resource="{$publicationVenueURI}" /></xsl:if>
+                <xsl:if test="$conferenceObject/*"><bibo:presentedAt rdf:resource="{$conferenceURI}" /></xsl:if>
                 <xsl:if test="$arxivPdfUrl/* or $authorUrl/* or $publisherUrl">
                     <obo:ARG_2000028 rdf:resource="{concat(svfn:objectURI(.),'-webpages')}" />
                 </xsl:if>
@@ -139,6 +149,7 @@
         <xsl:copy-of select="$filedDateObject" />
         <xsl:copy-of select="$publicationDateObject" />
         <xsl:copy-of select="$publicationVenueObject" />
+        <xsl:copy-of select="$conferenceObject" />
 
         <xsl:if test="$arxivPdfUrl/* or $authorUrl/* or $publisherUrl">
             <xsl:call-template name="render_rdf_object">
@@ -244,6 +255,15 @@
         </xsl:for-each>
     </xsl:function>
 
+    <xsl:function name="svfn:selectConferenceName">
+        <xsl:param name="object" />
+        <xsl:variable name="conferenceName" select="svfn:getRecordField($object,'name-of-conference')" />
+        <xsl:choose>
+            <xsl:when test="$conferenceName/api:text"><xsl:copy-of select="string($conferenceName/api:text)" /></xsl:when>
+            <xsl:otherwise><xsl:copy-of select="string('')" /></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <!-- Select the journal title for the publication. Delegates to an internal function for iteration -->
     <xsl:function name="svfn:selectJournalTitle">
         <xsl:param name="object" />
@@ -298,6 +318,25 @@
                     <xsl:copy-of select="svfn:renderPropertyFromField($object,'bibo:eissn','eissn')" />
                     <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'science-metrix', $scimetDefinedBy)" />
                     <xsl:copy-of select="svfn:renderControlledSubjectLinks($allLabels, 'for', $forDefinedBy)" />
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
+    </xsl:function>
+
+    <xsl:function name="svfn:renderConferenceObject">
+        <xsl:param name="object" />
+        <xsl:param name="conferenceObjectURI" as="xs:string" />
+        <xsl:param name="conferenceName" as="xs:string" />
+        <xsl:param name="publicationURI" as="xs:string" />
+
+        <xsl:if test="$conferenceName">
+            <xsl:call-template name="render_rdf_object">
+                <xsl:with-param name="objectURI" select="$conferenceObjectURI" />
+                <xsl:with-param name="rdfNodes">
+                    <rdfs:label><xsl:value-of select="$conferenceName" /></rdfs:label>
+                    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Conference"/>
+                    <bibo:presents rdf:resource="{$publicationURI}" />
+                    <!-- obo:RO_0001025 rdf:resource="" / --><!-- location -->
                 </xsl:with-param>
             </xsl:call-template>
         </xsl:if>
