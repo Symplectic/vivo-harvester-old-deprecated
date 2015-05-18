@@ -52,7 +52,7 @@
                         <rdf:type rdf:resource="http://vivoweb.org/ontology/core#FacultyMember" />
                     </xsl:when>
                     <xsl:otherwise>
-                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#Staff" />
+                        <rdf:type rdf:resource="http://vivoweb.org/ontology/core#NonAcademic" />
                     </xsl:otherwise>
                 </xsl:choose>
                 <!-- rdf:type rdf:resource="http://vivoweb.org/harvester/excludeEntity" / -->
