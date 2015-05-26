@@ -6,12 +6,14 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.app;
 
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
+import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
@@ -108,6 +110,10 @@ public class ElementsFetchAndTranslate {
     }
 
     private static ElementsAPI getElementsAPI() {
+        if (Configuration.getIgnoreSSLErrors()) {
+            Protocol.registerProtocol("https", new Protocol("https", new IgnoreSSLErrorsProtocolSocketFactory(), 443));
+        }
+
         String apiEndpoint = Configuration.getApiEndpoint();
         String apiVersion = Configuration.getApiVersion();
 

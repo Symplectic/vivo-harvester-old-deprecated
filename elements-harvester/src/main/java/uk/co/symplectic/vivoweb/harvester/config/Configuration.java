@@ -55,6 +55,8 @@ public class Configuration {
     private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
     private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
 
+    private static final String ARG_IGNORE_SSL_ERRORS     = "ignoreSSLErrors";
+
     // Maximum of 25 is mandated by 4.6 and newer APIs since we request full detail for objects
     private static final int OBJECTS_PER_PAGE = 25;
 
@@ -101,6 +103,8 @@ public class Configuration {
 
         private String rawOutputDir = DEFAULT_RAW_OUTPUT_DIR;
         private String rdfOutputDir = DEFAULT_RDF_OUTPUT_DIR;
+
+        private static boolean ignoreSSLErrors = false;
     };
 
     private static ConfigurationValues values = new ConfigurationValues();
@@ -182,6 +186,8 @@ public class Configuration {
     public static String getRawOutputDir() { return values.rawOutputDir; }
     public static String getRdfOutputDir() { return values.rdfOutputDir; }
 
+    public static boolean getIgnoreSSLErrors() { return values.ignoreSSLErrors; }
+
     public static void parse(String appName, String[] args) throws IOException, UsageException {
         argList = null;
         parser = new ArgParser(appName);
@@ -216,6 +222,8 @@ public class Configuration {
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_IGNORE_SSL_ERRORS).setDescription("Ignore SSL Errors").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('z').setLongOpt(ARG_XSL_TEMPLATE).setDescription("XSL Template").withParameter(true, "CONFIG_FILE"));
 
@@ -254,6 +262,8 @@ public class Configuration {
 
             values.rawOutputDir = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
             values.rdfOutputDir = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
+
+            values.ignoreSSLErrors = getBoolean(ARG_IGNORE_SSL_ERRORS, false);
         }
     }
 
