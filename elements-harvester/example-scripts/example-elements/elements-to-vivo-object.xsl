@@ -36,5 +36,6 @@
     <xsl:include href="elements-to-vivo-object-grant.xsl" />
     <xsl:include href="elements-to-vivo-object-professional-activity.xsl" />
     <xsl:include href="elements-to-vivo-object-publication.xsl" />
+    <xsl:include href="elements-to-vivo-object-teaching-activity.xsl" />
     <xsl:include href="elements-to-vivo-object-user.xsl" />
 </xsl:stylesheet>
