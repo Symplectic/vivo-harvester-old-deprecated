@@ -46,6 +46,9 @@ public class ElementsAPI {
 
     private boolean isSecured = true;
 
+    private int maxRetries = 5;
+    private int retryDelayMillis = 500;
+
     /**
      * Factory method to obtain a handle to the API class, configured for a specific API version
      *
@@ -212,32 +215,46 @@ public class ElementsAPI {
      * @return
      */
     private ElementsFeedPagination executeQuery(String url, ElementsFeedEntryParser parser) throws IllegalStateException {
-        InputStream apiResponse = null;
-        try {
-            ElementsAPIHttpClient apiClient;
-            if (isSecured) {
-                apiClient = new ElementsAPIHttpClient(url, username, password);
-            } else {
-                apiClient = new ElementsAPIHttpClient(url);
-            }
+        int retryCount = 0;
+        do {
+            InputStream apiResponse = null;
+            try {
+                ElementsAPIHttpClient apiClient;
+                if (isSecured) {
+                    apiClient = new ElementsAPIHttpClient(url, username, password);
+                } else {
+                    apiClient = new ElementsAPIHttpClient(url);
+                }
 
-            apiResponse = apiClient.executeGetRequest();
-            return parseResponse(apiResponse, parser);
-        } catch (IOException e) {
-            log.error("IO Error handling API request", e);
-            throw new IllegalStateException("IO Error handling API request", e);
-        } catch (XMLStreamException e) {
-            log.error("XML Stream Error handling API request", e);
-            throw new IllegalStateException("XML Stream Error handling API request", e);
-        } finally {
-            if (apiResponse != null) {
-                try {
-                    apiResponse.close();
-                } catch (IOException e) {
+                apiResponse = apiClient.executeGetRequest();
+                return parseResponse(apiResponse, parser);
+            } catch (IOException e) {
+                log.error("IO Error handling API request", e);
+                if (++retryCount >= maxRetries) {
+                    throw new IllegalStateException("IO Error handling API request", e);
+                }
+            } catch (XMLStreamException e) {
+                log.error("XML Stream Error handling API request", e);
+                if (++retryCount >= maxRetries) {
+                    throw new IllegalStateException("XML Stream Error handling API request", e);
+                }
+            } finally {
+                if (apiResponse != null) {
+                    try {
+                        apiResponse.close();
+                    } catch (IOException e) {
 
+                    }
                 }
             }
-        }
+
+            try {
+                Thread.sleep(retryDelayMillis);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Interrupted whilst retrying query");
+            }
+
+        } while (true);
     }
 
     private ElementsFeedPagination parseResponse(InputStream response, ElementsFeedEntryParser parser) throws XMLStreamException {
