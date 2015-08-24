@@ -8,17 +8,11 @@ package uk.co.symplectic.translate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
 
 import javax.xml.transform.Templates;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Public interface to the Translation service.
@@ -26,7 +20,7 @@ import java.io.OutputStream;
  * Wraps the static implementation in an object, so that it can be mocked / substituted.
  */
 public final class TranslationService {
-    private static Logger log = LoggerFactory.getLogger(TranslationService.class);
+    private static final Logger log = LoggerFactory.getLogger(TranslationService.class);
 
     private TranslationServiceConfig config = new TranslationServiceConfig();
 
@@ -36,32 +30,12 @@ public final class TranslationService {
         config.setIgnoreFileNotFound(ignoreFlag);
     }
 
-    public Templates compileSource(Node domNode) {
-        return TranslationServiceImpl.compileSource(new DOMSource(domNode));
-    }
-
-    public Templates compileSource(InputStream stream) {
-        return TranslationServiceImpl.compileSource(new StreamSource(stream));
-    }
-
     public Templates compileSource(File file) {
         return TranslationServiceImpl.compileSource(new StreamSource(file));
     }
 
-    public void translate(File input, File output, TemplatesHolder translationTemplates) {
-        TranslationServiceImpl.translate(config, input, output, translationTemplates, null);
-    }
-
-    public void translate(File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        TranslationServiceImpl.translate(config, input, output, translationTemplates, callback);
-    }
-
-    public void translate(InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates) {
-        TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, null);
-    }
-
-    public void translate(InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        TranslationServiceImpl.translate(config, inputStream, outputStream, translationTemplates, callback);
+    public TranslationTask translate(TranslationSource input, TranslationResult output, TemplatesHolder translationTemplates, Map<String, String> params) {
+        return TranslationServiceImpl.translate(config, input, output, translationTemplates, params);
     }
 
     public static void shutdown() {

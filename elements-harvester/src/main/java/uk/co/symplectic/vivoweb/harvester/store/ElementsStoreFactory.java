@@ -11,6 +11,7 @@ import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 public class ElementsStoreFactory {
     private static ElementsObjectStore objectStore = null;
     private static ElementsRdfStore rdfStore = null;
+    private static ElementsTransferredRdfStore transferStore = null;
 
     public static ElementsObjectStore getObjectStore() {
         if (objectStore != null) {
@@ -28,6 +29,16 @@ public class ElementsStoreFactory {
         } else {
             synchronized (ElementsStoreFactory.class) {
                 return rdfStore != null ? rdfStore : (rdfStore = new ElementsRdfStore(Configuration.getRdfOutputDir()));
+            }
+        }
+    }
+
+    public static ElementsTransferredRdfStore getTransferredRdfStore() {
+        if (transferStore != null) {
+            return transferStore;
+        } else {
+            synchronized (ElementsStoreFactory.class) {
+                return transferStore != null ? transferStore : (transferStore = new ElementsTransferredRdfStore(Configuration.getTransferDir()));
             }
         }
     }

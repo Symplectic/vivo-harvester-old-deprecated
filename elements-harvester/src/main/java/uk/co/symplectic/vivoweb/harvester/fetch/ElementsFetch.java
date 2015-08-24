@@ -13,13 +13,13 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ElementsFetch {
@@ -37,8 +37,13 @@ public class ElementsFetch {
     // Default of 100 for optimal performance
     private int relationshipsPerPage = 100;
 
+    private Date modifiedSince = null;
+    private boolean elementsDeltas = false;
+
     private final List<ElementsObjectObserver> objectObservers = new ArrayList<ElementsObjectObserver>();
     private final List<ElementsRelationshipObserver> relationshipObservers = new ArrayList<ElementsRelationshipObserver>();
+
+    private final List<ElementsFetchObserver> fetchObservers = new ArrayList<ElementsFetchObserver>();
 
     private ElementsAPI elementsAPI = null;
 
@@ -50,12 +55,22 @@ public class ElementsFetch {
         this.elementsAPI = api;
     }
 
-    public void addObjectObserver(ElementsObjectObserver newObserver) {
+    public ElementsFetch addObjectObserver(ElementsObjectObserver newObserver) {
         objectObservers.add(newObserver);
+        return this;
     }
 
-    public void addRelationshipObserver(ElementsRelationshipObserver newObserver) {
+    public ElementsFetch addRelationshipObserver(ElementsRelationshipObserver newObserver) {
         relationshipObservers.add(newObserver);
+        return this;
+    }
+
+    public void setElementsDeltas(boolean pruning) {
+        this.elementsDeltas = pruning;
+    }
+
+    public void setModifiedSince(Date modifiedSince) {
+        this.modifiedSince = modifiedSince;
     }
 
     public void setGroupsToHarvest(String groupsToHarvest) {
@@ -74,6 +89,10 @@ public class ElementsFetch {
         this.relationshipsPerPage = relationshipsPerPage;
     }
 
+    public ElementsFetch addFetchObserver(ElementsFetchObserver newObserver) {
+        this.fetchObservers.add(newObserver);
+        return this;
+    }
     /**
      * Executes the task
      * @throws IOException error processing search
@@ -82,19 +101,31 @@ public class ElementsFetch {
         ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
         ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
 
+        ElementsAPIFeedObjectQuery deletedQuery = new ElementsAPIFeedObjectQuery();
         ElementsAPIFeedObjectQuery feedQuery = new ElementsAPIFeedObjectQuery();
+
+        // Ensure deleted query is just for deleted objects
+        deletedQuery.setDeletedObjects(true);
 
         // When retrieving objects, always get the full record
         feedQuery.setFullDetails(true);
 
         // Get N objects per request
+        deletedQuery.setPerPage(objectsPerPage);
         feedQuery.setPerPage(objectsPerPage);
 
         // Load all pages, not just one
+        deletedQuery.setProcessAllPages(true);
         feedQuery.setProcessAllPages(true);
 
         if (!StringUtils.isEmpty(groupsToHarvest)) {
+            deletedQuery.setGroups(groupsToHarvest);
             feedQuery.setGroups(groupsToHarvest);
+        }
+
+        if (modifiedSince != null) {
+            deletedQuery.setModifiedSince(modifiedSince);
+            feedQuery.setModifiedSince(modifiedSince);
         }
 
         // objectsToHarvest is a comma delimited list of object categories that we wish to pull
@@ -103,13 +134,12 @@ public class ElementsFetch {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
                 feedQuery.setCategory(eoCategory);
-                ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
+                elementsAPI.execute(feedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
 
-                for (ElementsObjectObserver objectObserver : objectObservers) {
-                    objectHandler.addObserver(objectObserver);
+                if (elementsDeltas) {
+                    deletedQuery.setCategory(eoCategory);
+                    elementsAPI.execute(deletedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
                 }
-
-                elementsAPI.execute(feedQuery, objectHandler);
             }
         }
 
@@ -118,20 +148,19 @@ public class ElementsFetch {
         relationshipFeedQuery.setPerPage(relationshipsPerPage);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
 
-        ElementsRelationshipHandler relationshipHandler = new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships);
-        for (ElementsRelationshipObserver relationshipObserver : relationshipObservers) {
-            relationshipHandler.addObserver(relationshipObserver);
+        // elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+
+        for (ElementsFetchObserver observer : fetchObservers) {
+            observer.postFetch();
         }
 
-        elementsAPI.execute(relationshipFeedQuery, relationshipHandler);
-
-        TranslationService.shutdown();
-
-        for (String category : objectsToHarvest.split("\\s*,\\s*")) {
-            ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
-            if (eoCategory != null && eoCategory != ElementsObjectCategory.USER) {
-                // Delete the RDF objects not marked to be kept
-                rdfStore.pruneExcept(eoCategory, objectsInRelationships.get(eoCategory));
+        if (!elementsDeltas) {
+            for (String category : objectsToHarvest.split("\\s*,\\s*")) {
+                ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
+                if (eoCategory != null && eoCategory != ElementsObjectCategory.USER) {
+                    // Delete the RDF objects not marked to be kept
+                    rdfStore.pruneExcept(eoCategory, objectsInRelationships.get(eoCategory));
+                }
             }
         }
     }

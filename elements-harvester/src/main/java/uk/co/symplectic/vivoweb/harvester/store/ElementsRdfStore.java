@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,16 +29,17 @@ public class ElementsRdfStore {
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
     private DeletionService deletionService = new DeletionService();
 
+    private boolean keepEmpty = false;
+
+    private final List<ElementsRdfStoreObserver> storeObservers = new ArrayList<ElementsRdfStoreObserver>();
+
     public ElementsRdfStore(String dir) {
         this.dir = new File(dir);
     }
 
-    public void setUseLegacyLayout(boolean layout) {
-        if (layout) {
-            layoutStrategy = new LegacyLayoutStrategy();
-        } else {
-            layoutStrategy = new DefaultLayoutStrategy();
-        }
+    public ElementsRdfStore addObserver(ElementsRdfStoreObserver newObserver) {
+        this.storeObservers.add(newObserver);
+        return this;
     }
 
     public void pruneExcept(ElementsObjectCategory category, Set<String> idsToKeep) {
@@ -81,25 +83,16 @@ public class ElementsRdfStore {
         }
     }
 
-    public File getObjectFile(List<XMLAttribute> attributeList) {
-        return layoutStrategy.getObjectFile(dir, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList));
-    }
-
-    public File getObjectFile(ElementsObjectCategory category, String id) {
-        return layoutStrategy.getObjectFile(dir, category, id);
+    public RdfTranslationResult getObjectTranslationResult(ElementsObjectInfo objectInfo) {
+        return new RdfTranslationResult(objectInfo, getObjectFile(objectInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
     }
 
     public File getObjectFile(ElementsObjectInfo objectInfo) {
         return layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId());
     }
 
-    public File getRelationshipFile(List<XMLAttribute> attributeList) {
-        return layoutStrategy.getRelationshipFile(dir, XMLUtils.getId(attributeList));
-
-    }
-
-    public File getRelationshipFile(String id) {
-        return layoutStrategy.getRelationshipFile(dir, id);
+    public RdfTranslationResult getRelationshipTranslationResult(ElementsRelationshipInfo relationshipInfo) {
+        return new RdfTranslationResult(relationshipInfo, getRelationshipFile(relationshipInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
     }
 
     public File getRelationshipFile(ElementsRelationshipInfo relationshipInfo) {
@@ -116,6 +109,10 @@ public class ElementsRdfStore {
                     writer.write(rdf);
                 } finally {
                     writer.close();
+                }
+
+                for (ElementsRdfStoreObserver observer : storeObservers) {
+                    observer.storedObjectExtraRdf(objectInfo, type, file);
                 }
             } catch (IOException ioe) {
                 // Log error

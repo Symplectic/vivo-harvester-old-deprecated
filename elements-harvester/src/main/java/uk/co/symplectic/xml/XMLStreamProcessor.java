@@ -25,58 +25,64 @@ public class XMLStreamProcessor {
             }
         }
 
-        while (xsr.hasNext()) {
-            for (XMLStreamObserver observer : observers) {
-                if (observer != null) {
-                    observer.observeEvent(xsr.getEventType(), new XMLStreamReaderProxy(xsr));
+        if (xsr.hasNext()) {
+            do {
+                for (XMLStreamObserver observer : observers) {
+                    if (observer != null) {
+                        observer.observeEvent(xsr.getEventType(), new XMLStreamReaderProxy(xsr));
+                    }
                 }
-            }
 
-            switch (xsr.getEventType()) {
-                case XMLStreamConstants.START_ELEMENT:
-                    if (currentElement != null) {
-                        for (XMLStreamObserver observer : observers) {
-                            if (observer != null) {
-                                observer.observeElement(currentElement, null);
+                switch (xsr.getEventType()) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        if (currentElement != null) {
+                            for (XMLStreamObserver observer : observers) {
+                                if (observer != null) {
+                                    observer.observeElement(currentElement, null);
+                                }
                             }
                         }
-                    }
 
-                    currentElement = XMLElement.create(xsr);
-                    elementTextBuilder = new StringBuilder();
-                    break;
+                        currentElement = XMLElement.create(xsr);
+                        elementTextBuilder = new StringBuilder();
+                        break;
 
-                case XMLStreamConstants.END_ELEMENT:
-                    if (currentElement != null) {
-                        String elementText = elementTextBuilder != null ? elementTextBuilder.toString() : null;
+                    case XMLStreamConstants.END_ELEMENT:
+                        if (currentElement != null) {
+                            String elementText = elementTextBuilder != null ? elementTextBuilder.toString() : null;
 
-                        for (XMLStreamObserver observer : observers) {
-                            if (observer != null) {
-                                observer.observeElement(currentElement, elementText);
+                            for (XMLStreamObserver observer : observers) {
+                                if (observer != null) {
+                                    observer.observeElement(currentElement, elementText);
+                                }
                             }
                         }
-                    }
 
-                    currentElement = null;
-                    elementTextBuilder = null;
+                        currentElement = null;
+                        elementTextBuilder = null;
+                        break;
+
+                    case XMLStreamConstants.CDATA:
+                    case XMLStreamConstants.CHARACTERS:
+                    case XMLStreamConstants.SPACE:
+                    case XMLStreamConstants.ENTITY_REFERENCE:
+                        if (elementTextBuilder != null) {
+                            elementTextBuilder.append(xsr.getText());
+                        }
+                        break;
+
+                    case XMLStreamConstants.PROCESSING_INSTRUCTION:
+                    case XMLStreamConstants.COMMENT:
+                        // skip these
+                        break;
+                }
+
+                if (xsr.hasNext()) {
+                    xsr.next();
+                } else {
                     break;
-
-                case XMLStreamConstants.CDATA:
-                case XMLStreamConstants.CHARACTERS:
-                case XMLStreamConstants.SPACE:
-                case XMLStreamConstants.ENTITY_REFERENCE:
-                    if (elementTextBuilder != null) {
-                        elementTextBuilder.append(xsr.getText());
-                    }
-                    break;
-
-                case XMLStreamConstants.PROCESSING_INSTRUCTION:
-                case XMLStreamConstants.COMMENT:
-                    // skip these
-                    break;
-            }
-
-            xsr.next();
+                }
+            } while (true);
         }
 
         for (XMLStreamObserver observer : observers) {

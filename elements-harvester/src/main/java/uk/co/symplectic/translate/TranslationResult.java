@@ -4,11 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  ******************************************************************************/
-package uk.co.symplectic.vivoweb.harvester.translate;
+package uk.co.symplectic.translate;
 
-import uk.co.symplectic.translate.TranslationTask;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import javax.xml.transform.Result;
+import java.io.IOException;
 
-public interface ElementsObjectTranslateStagesObserver {
-    void beingTranslated(final TranslationTask task, final ElementsObjectInfo info);
+public interface TranslationResult {
+    public Result result();
+
+    public void release() throws IOException;
 }

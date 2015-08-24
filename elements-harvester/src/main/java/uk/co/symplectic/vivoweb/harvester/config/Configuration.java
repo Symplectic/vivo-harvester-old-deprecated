@@ -12,6 +12,8 @@ import org.vivoweb.harvester.util.args.ArgDef;
 import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
+import org.vivoweb.harvester.util.repo.JenaConnect;
+import org.vivoweb.harvester.util.repo.MemJenaConnect;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -20,11 +22,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Configuration {
     private static final String ARG_RAW_OUTPUT_DIRECTORY = "rawOutput";
     private static final String ARG_RDF_OUTPUT_DIRECTORY = "rdfOutput";
+
+    private static final String ARG_TRANSFER_DIR     = "transferDir";
+    private static final String ARG_LIVE_TRIPLESTORE = "liveStore";
 
     private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
@@ -54,6 +61,7 @@ public class Configuration {
 
     private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
     private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
+    private static final String ARG_MAX_TRANSFER_THREADS  = "maxTransferThreads";
 
     private static final String ARG_IGNORE_SSL_ERRORS     = "ignoreSSLErrors";
 
@@ -66,6 +74,7 @@ public class Configuration {
     private static final String DEFAULT_IMAGE_DIR = "/Library/Tomcat/webapps/vivo";
     private static final String DEFAULT_BASE_URI = "http://localhost:8080/vivo/individual/";
 
+    private static final String DEFAULT_TRANSFER_DIR   = "transferred/";
     private static final String DEFAULT_RAW_OUTPUT_DIR = "data/raw-records/";
     private static final String DEFAULT_RDF_OUTPUT_DIR = "data/translated-records/";
 
@@ -75,6 +84,7 @@ public class Configuration {
     private static class ConfigurationValues {
         private int maxThreadsResource = 0;
         private int maxThreadsXsl = 0;
+        private int maxThreadsTransfer = 1;
 
         private String apiEndpoint;
         private String apiVersion;
@@ -103,19 +113,22 @@ public class Configuration {
 
         private String rawOutputDir = DEFAULT_RAW_OUTPUT_DIR;
         private String rdfOutputDir = DEFAULT_RDF_OUTPUT_DIR;
+        private String transferDir  = DEFAULT_TRANSFER_DIR;
 
         private static boolean ignoreSSLErrors = false;
+
+        private JenaConnect tripleStore = null;
+
+        private Map<String, String> xslParameters = new HashMap<String, String>();
     };
 
     private static ConfigurationValues values = new ConfigurationValues();
 
-    public static Integer getMaxThreadsResource() {
-        return values.maxThreadsResource;
-    }
+    public static Integer getMaxThreadsResource() { return values.maxThreadsResource; }
 
-    public static Integer getMaxThreadsXsl() {
-        return values.maxThreadsXsl;
-    }
+    public static Integer getMaxThreadsXsl() { return values.maxThreadsXsl; }
+
+    public static Integer getMaxThreadsTransfer() { return values.maxThreadsTransfer; }
 
     public static String getApiEndpoint() {
         return values.apiEndpoint;
@@ -185,6 +198,11 @@ public class Configuration {
 
     public static String getRawOutputDir() { return values.rawOutputDir; }
     public static String getRdfOutputDir() { return values.rdfOutputDir; }
+    public static String getTransferDir() { return values.transferDir; }
+
+    public static JenaConnect getTripleStore() { return values.tripleStore; }
+
+    public static Map<String, String> getXslParameters() { return values.xslParameters; }
 
     public static boolean getIgnoreSSLErrors() { return values.ignoreSSLErrors; }
 
@@ -193,6 +211,9 @@ public class Configuration {
         parser = new ArgParser(appName);
         parser.addArgument(new ArgDef().setShortOption('r').setLongOpt(ARG_RAW_OUTPUT_DIRECTORY).setDescription("Raw RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_TRANSFER_DIR).setDescription("Directory for holding RDF/XML for deltas").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_LIVE_TRIPLESTORE).setDescription("Live triple store (Elements deltas)").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
 
@@ -222,6 +243,7 @@ public class Configuration {
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_TRANSFER_THREADS).setDescription("Maximum number of Threads to use for the Triple Store loading").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_IGNORE_SSL_ERRORS).setDescription("Ignore SSL Errors").withParameter(true, "CONFIG_FILE"));
 
@@ -231,8 +253,9 @@ public class Configuration {
         argList = parser.parse(args);
 
         if (argList != null) {
-            values.maxThreadsResource = getInt(ARG_MAX_RESOURCE_THREADS, 0);
-            values.maxThreadsXsl      = getInt(ARG_MAX_XSL_THREADS, 0);
+            values.maxThreadsResource = getInt(ARG_MAX_RESOURCE_THREADS, values.maxThreadsResource);
+            values.maxThreadsXsl      = getInt(ARG_MAX_XSL_THREADS, values.maxThreadsXsl);
+            values.maxThreadsTransfer = getInt(ARG_MAX_TRANSFER_THREADS, values.maxThreadsTransfer);
 
             values.apiEndpoint = getString(ARG_ELEMENTS_API_ENDPOINT);
             values.apiVersion = getString(ARG_ELEMENTS_API_VERSION);
@@ -260,10 +283,25 @@ public class Configuration {
             values.vivoImageDir = getString(ARG_VIVO_IMAGE_DIR, DEFAULT_IMAGE_DIR);
             values.xslTemplate = getString(ARG_XSL_TEMPLATE);
 
+            values.transferDir = getFileDir(argList.get(ARG_TRANSFER_DIR), DEFAULT_TRANSFER_DIR);
             values.rawOutputDir = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
             values.rdfOutputDir = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
 
             values.ignoreSSLErrors = getBoolean(ARG_IGNORE_SSL_ERRORS, false);
+
+            if ("memory".equalsIgnoreCase(argList.get(ARG_LIVE_TRIPLESTORE))) {
+                values.tripleStore = new MemJenaConnect();
+            } else if (!StringUtils.isEmpty(argList.get(ARG_LIVE_TRIPLESTORE))){
+                values.tripleStore = JenaConnect.parseConfig(argList.get(ARG_LIVE_TRIPLESTORE));
+            }
+
+            if (!StringUtils.isEmpty(values.baseURI)) {
+                values.xslParameters.put("baseURI", values.baseURI);
+            }
+
+            if (!StringUtils.isEmpty(values.vivoImageDir)) {
+                values.xslParameters.put("recordDir", values.vivoImageDir);
+            }
         }
     }
 
@@ -319,9 +357,7 @@ public class Configuration {
         return "Error generating usage string";
     }
 
-    private static String getFileDirFromConfig(String filename, String defValue) {
-        String fileDir = getRawFileDirFromConfig(filename, defValue);
-
+    private static String getFileDir(String fileDir, String defValue) {
         if (!StringUtils.isEmpty(fileDir)) {
             if (fileDir.contains("/")) {
                 if (!fileDir.endsWith("/")) {
@@ -339,6 +375,10 @@ public class Configuration {
         }
 
         return fileDir;
+    }
+
+    private static String getFileDirFromConfig(String filename, String defValue) {
+        return getFileDir(getRawFileDirFromConfig(filename, defValue), defValue);
     }
 
     private static String getRawFileDirFromConfig(String filename, String defValue) {

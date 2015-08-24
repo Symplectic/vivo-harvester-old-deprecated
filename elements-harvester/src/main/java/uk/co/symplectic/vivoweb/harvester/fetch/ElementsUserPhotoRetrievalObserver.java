@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsAPI;
+import uk.co.symplectic.translate.TranslationTask;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
@@ -27,16 +28,39 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
 
     private ElementsAPI elementsApi;
 
-    public ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsRdfStore rdfStore, File vivoImageDir, String vivoBaseURI) {
-        this.elementsApi  = elementsApi;
+    private ElementsUserPhotoRetrievalObserver() { }
+
+    public static ElementsUserPhotoRetrievalObserver create() {
+        return new ElementsUserPhotoRetrievalObserver();
+    }
+
+    public ElementsUserPhotoRetrievalObserver setElementsAPI(ElementsAPI elementsApi) {
+        this.elementsApi = elementsApi;
+        return this;
+    }
+
+    public ElementsUserPhotoRetrievalObserver setObjectStore(ElementsObjectStore objectStore) {
         this.objectStore = objectStore;
+        return this;
+    }
+
+    public ElementsUserPhotoRetrievalObserver setRdfStore(ElementsRdfStore rdfStore) {
         this.rdfStore = rdfStore;
+        return this;
+    }
+
+    public ElementsUserPhotoRetrievalObserver setImageDir(File vivoImageDir) {
         this.vivoImageDir = vivoImageDir;
+        return this;
+    }
+
+    public ElementsUserPhotoRetrievalObserver setBaseURI(String vivoBaseURI) {
         this.vivoBaseURI = vivoBaseURI;
+        return this;
     }
 
     @Override
-    public void beingTranslated(ElementsObjectInfo objectInfo) {
+    public void beingTranslated(final TranslationTask task, final ElementsObjectInfo objectInfo) {
         if (objectInfo instanceof ElementsUserInfo) {
             ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
             if (!StringUtils.isEmpty(userInfo.getPhotoUrl())) {

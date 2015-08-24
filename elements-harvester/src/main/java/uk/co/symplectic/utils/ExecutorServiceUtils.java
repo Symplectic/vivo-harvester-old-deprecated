@@ -7,7 +7,6 @@
 package uk.co.symplectic.utils;
 
 import org.apache.commons.lang.StringUtils;
-import sun.nio.ch.ThreadPool;
 
 import java.util.HashMap;
 import java.util.Map;

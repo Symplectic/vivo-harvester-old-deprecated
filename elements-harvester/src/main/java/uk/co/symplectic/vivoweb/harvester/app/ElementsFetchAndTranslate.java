@@ -11,9 +11,15 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.args.UsageException;
+import org.vivoweb.harvester.util.repo.JenaConnect;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
+import uk.co.symplectic.translate.TranslationService;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetchObserver;
+import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
+import uk.co.symplectic.vivoweb.harvester.transfer.TransferElementsRdfStoreObserver;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
@@ -22,11 +28,16 @@ import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserv
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+import uk.co.symplectic.vivoweb.harvester.transfer.TransferService;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 public class ElementsFetchAndTranslate {
@@ -43,49 +54,123 @@ public class ElementsFetchAndTranslate {
         Throwable caught = null;
         try {
             try {
+                Date startTime = Calendar.getInstance().getTime();
                 Configuration.parse("ElementsFetchAndTranslate", args);
-
                 log.debug("ElementsFetchAndTranslate: Start");
 
-                setExecutorServiceMaxThreadsForPool("TranslationService",   Configuration.getMaxThreadsXsl());
+
+                setExecutorServiceMaxThreadsForPool("TranslationService", Configuration.getMaxThreadsXsl());
                 setExecutorServiceMaxThreadsForPool("ResourceFetchService", Configuration.getMaxThreadsResource());
+                setExecutorServiceMaxThreadsForPool("TransferService", Configuration.getMaxThreadsTransfer());
+
+                final ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
+                final ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
+                final ElementsTransferredRdfStore transferredRdfStore = ElementsStoreFactory.getTransferredRdfStore();
+                final JenaConnect tripleStore = Configuration.getTripleStore();
+
+                final boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
+                final boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();
+
+                final File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(Configuration.getVivoImageDir());
+
+                final String vivoBaseURI = Configuration.getBaseURI();
+                final String xslFilename = Configuration.getXslTemplate();
+
+                boolean useElementsDeltas = false;
+                Date lastExecuted = null;
+
+                if (tripleStore != null) {
+                    if (
+                        currentStaffOnly ||
+                        visibleLinksOnly ||
+                        !StringUtils.isEmpty(Configuration.getGroupsToExclude()) ) {
+
+                        System.err.println("Error: Unable to do direct transfer if limiting to:");
+                        System.err.println("");
+                        System.err.println("current staff");
+                        System.err.println("visible links");
+                        System.err.println("or excluding groups");
+
+                        System.exit(1);
+                    }
+
+                    if (!StringUtils.isEmpty(Configuration.getGroupsToHarvest())) {
+                        System.err.println("Warning: Restricting to groups may be unpredictable.");
+                    }
+
+                    rdfStore.addObserver(
+                            TransferElementsRdfStoreObserver.create()
+                                    .setTransferredRdfStore(transferredRdfStore)
+                                    .setTripleStore(tripleStore)
+                    );
+
+                    useElementsDeltas = true;
+                    lastExecuted = loadLastRun();
+                }
 
                 ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI();
 
-                ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
-                excludedUserFetcher.setGroupsToExclude(Configuration.getGroupsToExclude());
-                excludedUserFetcher.execute();
-                Set<String> excludedUsers = excludedUserFetcher.getExcludedUsers();
-
                 ElementsFetch fetcher = new ElementsFetch(elementsAPI);
+
+                fetcher.setElementsDeltas(useElementsDeltas);
+                fetcher.setModifiedSince(lastExecuted);
+
+                /** Define harvest scope **/
                 fetcher.setGroupsToHarvest(Configuration.getGroupsToHarvest());
                 fetcher.setObjectsToHarvest(Configuration.getObjectsToHarvest());
+
+                /** Set pagination **/
                 fetcher.setObjectsPerPage(Configuration.getApiObjectsPerPage());
                 fetcher.setRelationshipsPerPage(Configuration.getApiRelationshipsPerPage());
 
-                ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
-                ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
+                /** Add observers for Objects **/
+                fetcher.addObjectObserver(
+                        ElementsObjectTranslateObserver.create()
+                                .setRdfStore(rdfStore)
+                                .setKeepEmpty(useElementsDeltas)
+                                .setXslTemplate(xslFilename)
+                                .setXslParameters(Configuration.getXslParameters())
+                                .setCurrentStaffOnly(currentStaffOnly)
+                                .setExcludedUsers(getExcludedUsers(elementsAPI))
+                                .addObserver(
+                                        ElementsUserPhotoRetrievalObserver.create()
+                                                .setElementsAPI(elementsAPI)
+                                                .setObjectStore(objectStore)
+                                                .setRdfStore(rdfStore)
+                                                .setImageDir(vivoImageDir)
+                                                .setBaseURI(vivoBaseURI)
+                                )
+                );
 
-                boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
-                boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();
+                /** Add observers for Relationships **/
+                fetcher.addRelationshipObserver(
+                        ElementsRelationshipTranslateObserver.create()
+                                .setObjectStore(objectStore)
+                                .setRdfStore(rdfStore)
+                                .setKeepEmpty(useElementsDeltas)
+                                .setXslTemplate(xslFilename)
+                                .setXslParameters(Configuration.getXslParameters())
+                                .setCurrentStaffOnly(currentStaffOnly)
+                                .setVisibleLinksOnly(visibleLinksOnly)
+                );
 
-                String xslFilename = Configuration.getXslTemplate();
-                File vivoImageDir = ElementsFetchAndTranslate.getVivoImageDir(Configuration.getVivoImageDir());
-                String vivoBaseURI = Configuration.getBaseURI();
+                fetcher.addFetchObserver(new ElementsFetchObserver() {
+                    @Override
+                    public void postFetch() {
+                        TranslationService.shutdown();
+                        ResourceFetchService.shutdown();
+                        if (tripleStore != null) {
+                            TransferService.shutdown();
+                        }
+                    }
+                });
 
-                ElementsObjectTranslateObserver objectObserver = new ElementsObjectTranslateObserver(rdfStore, xslFilename);
-                objectObserver.setCurrentStaffOnly(currentStaffOnly);
-                objectObserver.setExcludedUsers(excludedUsers);
-                objectObserver.addObserver(new ElementsUserPhotoRetrievalObserver(elementsAPI, objectStore, rdfStore, vivoImageDir, vivoBaseURI));
-                fetcher.addObjectObserver(objectObserver);
-
-                ElementsRelationshipTranslateObserver relationshipObserver = new ElementsRelationshipTranslateObserver(objectStore, rdfStore, xslFilename);
-                relationshipObserver.setCurrentStaffOnly(currentStaffOnly);
-                relationshipObserver.setVisibleLinksOnly(visibleLinksOnly);
-                fetcher.addRelationshipObserver(relationshipObserver);
-
+                /** Run the harvest **/
                 fetcher.execute();
 
+                if (useElementsDeltas) {
+                    saveLastRun(startTime);
+                }
             } catch (IOException e) {
                 System.err.println("Caught IOExcpetion initialising ElementsFetchAndTranslate");
                 e.printStackTrace(System.err);
@@ -146,6 +231,17 @@ public class ElementsFetchAndTranslate {
         return api;
     }
 
+    private static Set<String> getExcludedUsers(ElementsAPI elementsAPI) throws IOException {
+        if (!StringUtils.isEmpty(Configuration.getGroupsToExclude())) {
+            ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
+            excludedUserFetcher.setGroupsToExclude(Configuration.getGroupsToExclude());
+            excludedUserFetcher.execute();
+            return excludedUserFetcher.getExcludedUsers();
+        }
+
+        return null;
+    }
+
     private static File getVivoImageDir(String imageDir) {
         File vivoImageDir = null;
         // TODO: This should be a required configuration parameter that specifies a path accessible by the VIVO web container
@@ -167,5 +263,30 @@ public class ElementsFetchAndTranslate {
         if (maxThreads > 0) {
             ExecutorServiceUtils.setMaxProcessorsForPool(poolName, maxThreads);
         }
+    }
+
+    private static DateFormat lastRunFormat = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
+    private static Date loadLastRun() throws IOException {
+        File runFile = new File("data/lastrun");
+        if (runFile.exists()) {
+            BufferedReader r = new BufferedReader(new FileReader(runFile.getAbsoluteFile()));
+            String date = r.readLine();
+            try {
+                return lastRunFormat.parse(date);
+            } catch (ParseException e) {
+                log.error("Unable to parse date: " + date);
+                System.exit(1);
+            } finally {
+                r.close();
+            }
+        }
+        return null;
+    }
+
+    private static void saveLastRun(Date ran) throws IOException {
+        File runFile = new File("data/lastrun");
+        Writer w = new BufferedWriter(new FileWriter(runFile.getAbsoluteFile()));
+        w.write(lastRunFormat.format(ran));
+        w.close();
     }
 }

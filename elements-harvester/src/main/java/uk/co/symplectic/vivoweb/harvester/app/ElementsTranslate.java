@@ -16,16 +16,13 @@ import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import org.vivoweb.harvester.util.repo.RecordStreamOrigin;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.TemplatesHolder;
-import uk.co.symplectic.translate.TranslationService;
+import uk.co.symplectic.translate.*;
+import uk.co.symplectic.vivoweb.harvester.config.Configuration;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
-import uk.co.symplectic.vivoweb.harvester.translate.ElementsDeleteEmptyTranslationCallback;
 
-import javax.xml.transform.Templates;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ElementsTranslate implements RecordStreamOrigin {
@@ -59,15 +56,15 @@ public class ElementsTranslate implements RecordStreamOrigin {
         ElementsRdfStore rdfStore = new ElementsRdfStore(rdfRecordStoreDir);
 
         for (File file : dir.listFiles()) {
-            File outFile;
+            TranslationResult output;
             if (category != null) {
-                outFile = rdfStore.getObjectFile(category, file.getName());
+                output = rdfStore.getObjectTranslationResult(ElementsObjectInfo.create(category, file.getName()));
             } else {
-                outFile = rdfStore.getRelationshipFile(file.getName());
+                output = rdfStore.getRelationshipTranslationResult(ElementsRelationshipInfo.create(file.getName()));
             }
 
-            if (outFile != null) {
-                translationService.translate(file, outFile, template, new ElementsDeleteEmptyTranslationCallback(outFile));
+            if (output != null) {
+                translationService.translate(new FileTranslationSource(file), output, template, Configuration.getXslParameters());
             }
         }
     }

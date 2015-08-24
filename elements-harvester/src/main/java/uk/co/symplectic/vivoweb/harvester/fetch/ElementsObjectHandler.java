@@ -35,8 +35,27 @@ public class ElementsObjectHandler implements ElementsAPIFeedObjectStreamHandler
         this.objectStore = objectStore;
     }
 
-    public void addObserver(ElementsObjectObserver newObserver) {
+    public ElementsObjectHandler addObserver(ElementsObjectObserver newObserver) {
         objectObservers.add(newObserver);
+        return this;
+    }
+
+    public ElementsObjectHandler addObservers(List<ElementsObjectObserver> newObservers) {
+        if (newObservers != null) {
+            for (ElementsObjectObserver newObserver : newObservers) {
+                objectObservers.add(newObserver);
+            }
+        }
+        return this;
+    }
+
+    public ElementsObjectHandler addObservers(ElementsObjectObserver... newObservers) {
+        if (newObservers != null) {
+            for (ElementsObjectObserver newObserver : newObservers) {
+                objectObservers.add(newObserver);
+            }
+        }
+        return this;
     }
 
     @Override

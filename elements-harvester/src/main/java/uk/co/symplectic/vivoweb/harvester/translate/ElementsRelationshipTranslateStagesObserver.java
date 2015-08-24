@@ -7,8 +7,8 @@
 package uk.co.symplectic.vivoweb.harvester.translate;
 
 import uk.co.symplectic.translate.TranslationTask;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 
-public interface ElementsObjectTranslateStagesObserver {
-    void beingTranslated(final TranslationTask task, final ElementsObjectInfo info);
+public interface ElementsRelationshipTranslateStagesObserver {
+    void beingTranslated(final TranslationTask task, final ElementsRelationshipInfo info);
 }

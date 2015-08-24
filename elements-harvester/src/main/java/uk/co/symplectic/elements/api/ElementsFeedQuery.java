@@ -6,7 +6,12 @@
  ******************************************************************************/
 package uk.co.symplectic.elements.api;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 abstract class ElementsFeedQuery {
+    private String modifiedSince = null;
     private boolean fullDetails = false;
     private boolean processAllPages = false;
     private int perPage = -1;
@@ -42,6 +47,10 @@ abstract class ElementsFeedQuery {
         return processAllPages;
     }
 
+    public String getModifiedSince() {
+        return modifiedSince;
+    }
+
     /**
      * Should the feed return full object details
      *
@@ -67,5 +76,14 @@ abstract class ElementsFeedQuery {
      */
     public void setProcessAllPages(boolean processAllPages) {
         this.processAllPages = processAllPages;
+    }
+
+    public void setModifiedSince(String modifiedSince) {
+        this.modifiedSince = modifiedSince;
+    }
+
+    private static DateFormat modifiedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    public void setModifiedSince(Date modifiedSince) {
+        this.modifiedSince = modifiedFormat.format(modifiedSince);
     }
 }

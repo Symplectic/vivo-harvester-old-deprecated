@@ -10,10 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
-import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 
 import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -21,11 +19,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 /**
  * Static implementation of an Executor based translation service.
@@ -69,155 +65,54 @@ final class TranslationServiceImpl {
         return factory;
     }
 
-    static void translate(TranslationServiceConfig config, File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.submit(new TranslateTask(config, input, output, translationTemplates, callback));
+    static TranslationTask translate(TranslationServiceConfig config, TranslationSource input, TranslationResult output, TemplatesHolder translationTemplates, Map<String, String> params) {
+         return new TranslationTask(wrapper.submit(new TranslateHandler(config, input, output, translationTemplates, params)));
     }
 
-    static void translate(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-        Future<Boolean> result = wrapper.submit(new TranslateTask(config, inputStream, outputStream, translationTemplates, callback));
-    }
-
-    static class TranslateTask implements Callable<Boolean> {
-        private File inputFile = null;
-        private File outputFile = null;
-
-        private InputStream inputStream = null;
-        private OutputStream outputStream = null;
+    static class TranslateHandler implements Callable<Boolean> {
+        private TranslationSource input;
+        private TranslationResult output;
 
         private TemplatesHolder templates;
 
-        private PostTranslateCallback postTranslateCallback;
-
         private TranslationServiceConfig config;
 
-        TranslateTask(TranslationServiceConfig config, InputStream inputStream, OutputStream outputStream, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
-            this.config = config == null ? new TranslationServiceConfig() : config;
-            this.inputFile = null;
-            this.outputFile = null;
-            this.inputStream  = inputStream;
-            this.outputStream = outputStream;
-            this.templates = translationTemplates;
-            this.postTranslateCallback = callback;
-        }
+        private Map<String, String> params;
 
-        TranslateTask(TranslationServiceConfig config, File input, File output, TemplatesHolder translationTemplates, PostTranslateCallback callback) {
+        TranslateHandler(TranslationServiceConfig config, TranslationSource input, TranslationResult output, TemplatesHolder translationTemplates, Map<String, String> params) {
             this.config = config == null ? new TranslationServiceConfig() : config;
-            this.inputFile = input;
-            this.outputFile = output;
+            this.input = input;
+            this.output = output;
             this.templates = translationTemplates;
-            this.postTranslateCallback = callback;
+            this.params = params;
         }
 
         @Override
         public Boolean call() throws Exception {
             Boolean retCode = Boolean.TRUE;
-            Exception caughtException = null;
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Source xmlSource = new StreamSource(getInputStream());
-            Result outputResult = new StreamResult(baos);
 
             try {
-                String baseURI = Configuration.getBaseURI();
-                String rawDir = Configuration.getRawOutputDir();
-
                 Transformer transformer = templates.getTemplates().newTransformer();
                 transformer.setErrorListener(new TranslateTaskErrorListener(config));
 
-                if (!StringUtils.isEmpty(baseURI)) {
-                    try { transformer.setParameter("baseURI", baseURI); } catch (RuntimeException re) { }
-                }
-
-                if (!StringUtils.isEmpty(rawDir)) {
-                    try { transformer.setParameter("recordDir", rawDir); } catch (RuntimeException re) { }
-                }
-
-                transformer.transform(xmlSource, outputResult);
-
-                String xml = baos.toString("utf-8");
-                if (!Configuration.getUseFullUTF8()) {
-                    xml = xml.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
-                }
-                getOutputStream().write(xml.getBytes("utf-8"));
-
-                if (outputStream != null) {
-                    outputStream.flush();
-                }
-            } catch (IOException e) {
-                log.error("Unable to write to output stream", e);
-                caughtException = e;
-                retCode = Boolean.FALSE;
-            } catch (TransformerException e) {
-                if (inputFile != null) {
-                    log.error("Unable to perform translation on " + inputFile.getAbsolutePath(), e);
-                } else {
-                    log.error("Unable to perform translation", e);
-                }
-                caughtException = e;
-                retCode = Boolean.FALSE;
-            } finally {
-                IOException caughtIOException = null;
-                try { releaseInputStream(); } catch (IOException e) { caughtIOException = e; }
-                try { releaseOutputStream(); } catch (IOException e) { caughtIOException = e; }
-
-                if (postTranslateCallback != null) {
-                    if (retCode) {
-                        postTranslateCallback.translationSuccess();
-                    } else {
-                        postTranslateCallback.translationFailure(caughtException);
+                if (params != null) {
+                    for (Map.Entry<String, String> param : params.entrySet()) {
+                        if (!StringUtils.isEmpty(param.getKey()) && !StringUtils.isEmpty(param.getValue())) {
+                            try { transformer.setParameter(param.getKey(), param.getValue()); } catch (RuntimeException re) { }
+                        }
                     }
                 }
 
-                if (caughtIOException != null) {
-                    throw caughtIOException;
-                }
+                transformer.transform(input.source(), output.result());
+            } catch (TransformerException e) {
+                log.error("Unable to perform translation on " + input.description(), e);
+                retCode = Boolean.FALSE;
+            } finally {
+                try { output.release(); } catch (IOException ie) { }
+                try { input.release(); } catch (IOException ie) { }
             }
 
             return retCode;
-        }
-
-        private InputStream getInputStream() {
-            if (inputStream != null) {
-                return inputStream;
-            } else if (inputFile != null) {
-                try {
-                    inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-                    return inputStream;
-                } catch (IOException e) {
-                    throw new IllegalStateException("Unable to open input stream", e);
-                }
-            }
-
-            return null;
-        }
-
-        private OutputStream getOutputStream() {
-            if (outputStream != null) {
-                return outputStream;
-            } else if (outputFile != null) {
-                try {
-                    outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-                    return outputStream;
-                } catch (IOException e) {
-                    throw new IllegalStateException("Unable to open output stream", e);
-                }
-            }
-
-            return null;
-        }
-
-        private void releaseInputStream() throws IOException {
-            if (inputFile != null && inputStream != null) {
-                inputStream.close();
-                inputStream = null;
-            }
-        }
-
-        private void releaseOutputStream() throws IOException {
-            if (outputFile != null && outputStream != null) {
-                outputStream.close();
-                outputStream = null;
-            }
         }
     }
 

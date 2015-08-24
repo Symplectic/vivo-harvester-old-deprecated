@@ -57,11 +57,9 @@ public class ElementsExcludedUsersFetch {
             excludedUsersQuery.setGroups(this.getGroupsToExclude());
             excludedUsersQuery.setCategory(ElementsObjectCategory.USER);
 
-            ElementsObjectHandler objectHandler = new ElementsObjectHandler(objectStore);
             ElementsObjectExcludeObserver objectObserver = new ElementsObjectExcludeObserver();
-            objectHandler.addObserver(objectObserver);
 
-            elementsAPI.execute(excludedUsersQuery, objectHandler);
+            elementsAPI.execute(excludedUsersQuery, new ElementsObjectHandler(objectStore).addObserver(objectObserver));
 
             this.excludedUserIds = objectObserver.getExcludedUsers();
         }

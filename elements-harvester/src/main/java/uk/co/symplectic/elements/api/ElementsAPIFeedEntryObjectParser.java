@@ -52,14 +52,16 @@ class ElementsAPIFeedEntryObjectParser implements ElementsFeedEntryParser {
                 case XMLStreamConstants.START_ELEMENT:
                     prefix = entryReader.getPrefix();
                     name = entryReader.getLocalName();
-                    if ("api".equals(prefix) && "object".equals(name)) {
-                        List<XMLAttribute> attributes = StAXUtils.getAttributes(entryReader);
+                    if ("api".equals(prefix)) {
+                        if ("object".equals(name) || "deleted-object".equals(name)) {
+                            List<XMLAttribute> attributes = StAXUtils.getAttributes(entryReader);
 
-                        if (streamHandler != null) {
-                            streamHandler.handle(attributes, new XMLStreamFragmentReader(entryReader), encoding, version);
-                        } else if (entryHasFullDetails) {
-                        } else {
-                            // Extract URL for details
+                            if (streamHandler != null) {
+                                streamHandler.handle(attributes, new XMLStreamFragmentReader(entryReader), encoding, version);
+                            } else if (entryHasFullDetails) {
+                            } else {
+                                // Extract URL for details
+                            }
                         }
                     }
                     break;

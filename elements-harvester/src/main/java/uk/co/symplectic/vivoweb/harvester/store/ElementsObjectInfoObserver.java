@@ -42,10 +42,12 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
 
     @Override
     public void observeElement(XMLElement element, String elementText) {
-        if ("api".equals(element.getPrefix()) && "object".equals(element.getLocalName())) {
-            objectInfo = ElementsObjectInfo.create(XMLUtils.getObjectCategory(element.getAttributes()), XMLUtils.getId(element.getAttributes()));
-            if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
-                ((ElementsUserInfo)objectInfo).setUsername(XMLUtils.getUsername(element.getAttributes()));
+        if ("api".equals(element.getPrefix())) {
+            if ("object".equals(element.getLocalName()) || "deleted-object".equals(element.getLocalName())) {
+                objectInfo = ElementsObjectInfo.create(XMLUtils.getObjectCategory(element.getAttributes()), XMLUtils.getId(element.getAttributes()));
+                if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
+                    ((ElementsUserInfo)objectInfo).setUsername(XMLUtils.getUsername(element.getAttributes()));
+                }
             }
         } else {
             if (objectInfo.getCategory() == ElementsObjectCategory.USER) {

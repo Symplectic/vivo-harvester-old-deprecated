@@ -9,7 +9,7 @@ package uk.co.symplectic.elements.api;
 public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
     private ElementsObjectCategory category = null;
     private String groups = null;
-    private String modifiedSince = null;
+    private boolean deletedObjects = false;
 
     public ElementsAPIFeedObjectQuery() {
         super();
@@ -23,9 +23,7 @@ public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
         return groups;
     }
 
-    public String getModifiedSince() {
-        return modifiedSince;
-    }
+    public boolean getDeletedObjects() { return deletedObjects; }
 
     public void setCategory(ElementsObjectCategory category) {
         this.category = category;
@@ -35,7 +33,5 @@ public class ElementsAPIFeedObjectQuery extends ElementsFeedQuery {
         this.groups = groups;
     }
 
-    public void setModifiedSince(String modifiedSince) {
-        this.modifiedSince = modifiedSince;
-    }
+    public void setDeletedObjects(boolean deletedObjects) { this.deletedObjects = deletedObjects;}
 }

@@ -50,11 +50,6 @@ public class ElementsRecordHandler extends RecordHandler {
 	private String fileDir;
 
 	/**
-	 * The directory to store record metadata files in
-	 */
-	private String metaDir;
-
-	/**
 	 * Default Constructor
 	 */
 	public ElementsRecordHandler() {
@@ -83,11 +78,6 @@ public class ElementsRecordHandler extends RecordHandler {
 			FileAide.createFolder(fileDir);
 		}
 		this.fileDir = fileDir;
-		this.metaDir = fileDir+"/.metadata";
-		if(!FileAide.exists(this.metaDir)) {
-			log.debug("Directory '" + fileDir + "/.metadata' Does Not Exist, attempting to create");
-			FileAide.createFolder(this.metaDir);
-		}
 	}
 
 	@Override

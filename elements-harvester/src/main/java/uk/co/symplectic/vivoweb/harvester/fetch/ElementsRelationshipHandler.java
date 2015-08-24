@@ -40,8 +40,27 @@ public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipS
         this.objectsInRelationships = objectsInRelationships;
     }
 
-    public void addObserver(ElementsRelationshipObserver newObserver) {
+    public ElementsRelationshipHandler addObserver(ElementsRelationshipObserver newObserver) {
         relationshipObservers.add(newObserver);
+        return this;
+    }
+
+    public ElementsRelationshipHandler addObservers(List<ElementsRelationshipObserver> newObservers) {
+        if (newObservers != null) {
+            for (ElementsRelationshipObserver newObserver : newObservers) {
+                relationshipObservers.add(newObserver);
+            }
+        }
+        return this;
+    }
+
+    public ElementsRelationshipHandler addObservers(ElementsRelationshipObserver... newObservers) {
+        if (newObservers != null) {
+            for (ElementsRelationshipObserver newObserver : newObservers) {
+                relationshipObservers.add(newObserver);
+            }
+        }
+        return this;
     }
 
     @Override

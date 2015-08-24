@@ -8,8 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.translate;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.TemplatesHolder;
-import uk.co.symplectic.translate.TranslationService;
+import uk.co.symplectic.translate.*;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
@@ -18,6 +17,7 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
@@ -31,24 +31,66 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private final TranslationService translationService = new TranslationService();
     private TemplatesHolder templatesHolder = null;
 
-    public ElementsObjectTranslateObserver(ElementsRdfStore rdfStore, String xslFilename) {
+    private boolean keepEmpty = false;
+
+    private Map<String, String> xslParameters = null;
+
+    private ElementsObjectTranslateObserver() { }
+
+    public static ElementsObjectTranslateObserver create() {
+        return new ElementsObjectTranslateObserver();
+    }
+
+    public ElementsObjectTranslateObserver setRdfStore(ElementsRdfStore rdfStore) {
         this.rdfStore = rdfStore;
+        return this;
+    }
+
+    public ElementsObjectTranslateObserver setKeepEmpty(boolean keepEmpty) {
+        this.keepEmpty = keepEmpty;
+        return this;
+    }
+
+    public ElementsObjectTranslateObserver setXslTemplate(String xslFilename) {
         if (!StringUtils.isEmpty(xslFilename)) {
             templatesHolder = new TemplatesHolder(xslFilename);
             translationService.setIgnoreFileNotFound(true);
         }
+        return this;
     }
 
-    public void addObserver(ElementsObjectTranslateStagesObserver newObserver) {
-        objectObservers.add(newObserver);
+    public ElementsObjectTranslateObserver setXslParameters(Map<String, String> xslParameters) {
+        this.xslParameters = xslParameters;
+        return this;
     }
 
-    public void setCurrentStaffOnly(boolean currentStaffOnly) {
+    public ElementsObjectTranslateObserver addObserver(ElementsObjectTranslateStagesObserver newObserver) {
+        if (newObserver != null) {
+            objectObservers.add(newObserver);
+        }
+        return this;
+    }
+
+    public ElementsObjectTranslateObserver addObservers(ElementsObjectTranslateStagesObserver... newObservers) {
+        if (newObservers != null) {
+            for (ElementsObjectTranslateStagesObserver newObserver : newObservers) {
+                if (newObserver != null) {
+                    objectObservers.add(newObserver);
+                }
+            }
+        }
+
+        return this;
+    }
+
+    public ElementsObjectTranslateObserver setCurrentStaffOnly(boolean currentStaffOnly) {
         this.currentStaffOnly = currentStaffOnly;
+        return this;
     }
 
-    public void setExcludedUsers(Set<String> excludedUsers) {
+    public ElementsObjectTranslateObserver setExcludedUsers(Set<String> excludedUsers) {
         this.excludedUsers = excludedUsers;
+        return this;
     }
 
     public void observe(ElementsStoredObject object) {
@@ -60,14 +102,12 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
             if (currentStaffOnly) {
                 translateObject = userInfo.getIsCurrentStaff();
             }
-            if (excludedUsers.contains(userInfo.getId())) {
+            if (excludedUsers != null && excludedUsers.contains(userInfo.getId())) {
                 translateObject = false;  //override if user is in an excluded group
             }
         }
 
         if (translateObject) {
-            File outFile = rdfStore.getObjectFile(object.getObjectInfo());
-
             /**
              * Note that the translation service is designed to be asynchronous. Which means, when the translate() method
              * call returns, we are not guaranteed that the translation will have completed (in fact, we can be almost certain
@@ -81,10 +121,15 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
              *
              * In this case, we supply an object that will clean up any empty translation output.
              */
-            translationService.translate(object.getFile(), outFile, templatesHolder, new ElementsDeleteEmptyTranslationCallback(outFile));
+            TranslationTask task = translationService.translate(
+                    object.getTranslationSource(),
+                    rdfStore.getObjectTranslationResult(object.getObjectInfo()).setKeepEmpty(keepEmpty),
+                    templatesHolder,
+                    xslParameters
+            );
 
             for (ElementsObjectTranslateStagesObserver objectObserver : objectObservers) {
-                objectObserver.beingTranslated(object.getObjectInfo());
+                objectObserver.beingTranslated(task, object.getObjectInfo());
             }
         }
     }

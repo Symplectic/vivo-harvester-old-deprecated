@@ -14,6 +14,10 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
     public String buildObjectFeedQuery(String endpointUrl, ElementsAPIFeedObjectQuery feedQuery) {
         URLBuilder queryUrl = new URLBuilder(endpointUrl);
 
+        if (feedQuery.getDeletedObjects()) {
+            queryUrl.appendPath("deleted");
+        }
+
         if (feedQuery.getCategory() != null) {
             queryUrl.appendPath(feedQuery.getCategory().getPlural());
         } else {
@@ -33,7 +37,11 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
         }
 
         if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {
-            queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
+            if (feedQuery.getDeletedObjects()) {
+                queryUrl.addParam("deleted-since", feedQuery.getModifiedSince());
+            } else {
+                queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
+            }
         }
 
         return queryUrl.toString();
@@ -51,6 +59,10 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
 
         if (feedQuery.getPerPage() > 0) {
             queryUrl.addParam("per-page", Integer.toString(feedQuery.getPerPage(), feedQuery.getFullDetails() ? 25 : 100));  //v4.6 introduced a new maximum per page of 25 for full detail
+        }
+
+        if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {
+            queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
         }
 
         return queryUrl.toString();
