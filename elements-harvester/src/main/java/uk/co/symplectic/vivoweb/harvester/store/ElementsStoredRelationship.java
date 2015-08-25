@@ -6,7 +6,8 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
-import uk.co.symplectic.translate.FileTranslationSource;
+import uk.co.symplectic.translate.TranslationSource;
+import uk.co.symplectic.vivoweb.harvester.cache.CacheAwareFileTranslationSource;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLStreamProcessor;
@@ -38,8 +39,8 @@ public class ElementsStoredRelationship {
         this.relationshipInfo = relationshipInfo;
     }
 
-    public FileTranslationSource getTranslationSource() {
-        return new FileTranslationSource(file);
+    public TranslationSource getTranslationSource() {
+        return new CacheAwareFileTranslationSource(file);
     }
 
     public File getFile() {

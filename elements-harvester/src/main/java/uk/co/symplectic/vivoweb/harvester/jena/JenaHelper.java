@@ -8,12 +8,22 @@ package uk.co.symplectic.vivoweb.harvester.jena;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 
 import java.io.*;
 
 public class JenaHelper {
+    private static CachingService cachingService = new CachingService();
+
     public static Model loadRdfXml(File rdfXml) throws IOException {
-        InputStream is = new BufferedInputStream(new FileInputStream(rdfXml));
+        String xml = cachingService.get(rdfXml);
+        InputStream is;
+        if (xml != null) {
+            is = new ByteArrayInputStream(xml.getBytes("utf-8"));
+        } else {
+            is = new BufferedInputStream(new FileInputStream(rdfXml));
+        }
+
         Model model = ModelFactory.createDefaultModel();
         model.read(is, null);
         is.close();

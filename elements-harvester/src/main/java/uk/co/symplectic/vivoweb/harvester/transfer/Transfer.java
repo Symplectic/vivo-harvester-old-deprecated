@@ -24,8 +24,6 @@ final class Transfer {
     }
 
     public boolean transfer(JenaWrapper outputStore, File transferredRdf, File translatedRdf) throws Exception {
-        log.trace("Transferring: " + transferredRdf.toPath());
-
         Model transferredModel = null;
         try {
             if (transferredRdf != null && transferredRdf.exists() && transferredRdf.length() > 3) {

@@ -14,6 +14,7 @@ abstract class ElementsFeedQuery {
     private String modifiedSince = null;
     private boolean fullDetails = false;
     private boolean processAllPages = false;
+    private boolean deleted = false;
     private int perPage = -1;
 
     ElementsFeedQuery() {
@@ -51,6 +52,8 @@ abstract class ElementsFeedQuery {
         return modifiedSince;
     }
 
+    public boolean getDeleted() { return deleted; }
+
     /**
      * Should the feed return full object details
      *
@@ -86,4 +89,6 @@ abstract class ElementsFeedQuery {
     public void setModifiedSince(Date modifiedSince) {
         this.modifiedSince = modifiedFormat.format(modifiedSince);
     }
+
+    public void setDeleted(boolean deleted) { this.deleted = deleted;}
 }

@@ -38,6 +38,7 @@
             -->
             <includes>
                 <include>uk.co.symplectic:elements-vivo-harvester</include>
+                <include>net.sf.ehcache:ehcache</include>
             </includes>
         </dependencySet>
     </dependencySets>

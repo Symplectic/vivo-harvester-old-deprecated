@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.args.UsageException;
-import org.vivoweb.harvester.util.repo.JenaConnect;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
@@ -40,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class ElementsFetchAndTranslate {
     /**
@@ -172,6 +172,12 @@ public class ElementsFetchAndTranslate {
                 if (useElementsDeltas) {
                     saveLastRun(startTime);
                 }
+
+                long execution = Calendar.getInstance().getTimeInMillis() - startTime.getTime();
+                long execHours = TimeUnit.HOURS.convert(execution, TimeUnit.MILLISECONDS);
+                long execMin = TimeUnit.MINUTES.convert(execution, TimeUnit.MILLISECONDS) - (execHours * 60);
+                long execSec = TimeUnit.SECONDS.convert(execution, TimeUnit.MILLISECONDS) - ((execHours * 60) + execMin) * 60;
+                System.out.println("Completed in " + execHours + " hours " + execMin + " minutes and " + execSec + " secs.");
             } catch (IOException e) {
                 System.err.println("Caught IOExcpetion initialising ElementsFetchAndTranslate");
                 e.printStackTrace(System.err);

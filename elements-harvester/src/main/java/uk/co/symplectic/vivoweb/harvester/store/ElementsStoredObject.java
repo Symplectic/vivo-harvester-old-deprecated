@@ -7,8 +7,8 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.FileTranslationSource;
 import uk.co.symplectic.translate.TranslationSource;
+import uk.co.symplectic.vivoweb.harvester.cache.CacheAwareFileTranslationSource;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfoCache;
 import uk.co.symplectic.xml.StAXUtils;
@@ -53,7 +53,7 @@ public class ElementsStoredObject {
     }
 
     public TranslationSource getTranslationSource() {
-        return new FileTranslationSource(file);
+        return new CacheAwareFileTranslationSource(file);
     }
 
     public File getFile() {

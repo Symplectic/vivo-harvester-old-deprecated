@@ -42,14 +42,7 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
 
     @Override
     public void observeElement(XMLElement element, String elementText) {
-        if ("api".equals(element.getPrefix())) {
-            if ("object".equals(element.getLocalName()) || "deleted-object".equals(element.getLocalName())) {
-                objectInfo = ElementsObjectInfo.create(XMLUtils.getObjectCategory(element.getAttributes()), XMLUtils.getId(element.getAttributes()));
-                if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
-                    ((ElementsUserInfo)objectInfo).setUsername(XMLUtils.getUsername(element.getAttributes()));
-                }
-            }
-        } else {
+        if (objectInfo != null) {
             if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
                 ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
                 if ("api".equals(element.getPrefix()) && "photo".equals(element.getLocalName())) {
@@ -62,6 +55,13 @@ public class ElementsObjectInfoObserver implements XMLStreamObserver {
                     }
                 } else if ("api".equals(element.getPrefix()) && "is-current-staff".equals(element.getLocalName())) {
                     userInfo.setIsCurrentStaff(Boolean.parseBoolean(elementText));
+                }
+            }
+        } else if ("api".equals(element.getPrefix())) {
+            if ("object".equals(element.getLocalName()) || "deleted-object".equals(element.getLocalName())) {
+                objectInfo = ElementsObjectInfo.create(XMLUtils.getObjectCategory(element.getAttributes()), XMLUtils.getId(element.getAttributes()));
+                if (objectInfo.getCategory() == ElementsObjectCategory.USER) {
+                    ((ElementsUserInfo)objectInfo).setUsername(XMLUtils.getUsername(element.getAttributes()));
                 }
             }
         }

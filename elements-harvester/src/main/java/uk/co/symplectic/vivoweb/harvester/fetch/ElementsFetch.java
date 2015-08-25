@@ -105,7 +105,7 @@ public class ElementsFetch {
         ElementsAPIFeedObjectQuery feedQuery = new ElementsAPIFeedObjectQuery();
 
         // Ensure deleted query is just for deleted objects
-        deletedQuery.setDeletedObjects(true);
+        deletedQuery.setDeleted(true);
 
         // When retrieving objects, always get the full record
         feedQuery.setFullDetails(true);
@@ -136,7 +136,8 @@ public class ElementsFetch {
                 feedQuery.setCategory(eoCategory);
                 elementsAPI.execute(feedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
 
-                if (elementsDeltas) {
+                // If we are only processing changes, we need to get the deleted relationships
+                if (modifiedSince != null) {
                     deletedQuery.setCategory(eoCategory);
                     elementsAPI.execute(deletedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
                 }
@@ -150,6 +151,12 @@ public class ElementsFetch {
             relationshipFeedQuery.setPerPage(relationshipsPerPage);
 
             elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+
+            // If we are only processing changes, we need to get the deleted relationships
+            if (modifiedSince != null) {
+                relationshipFeedQuery.setDeleted(true);
+                elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+            }
         }
 
         for (ElementsFetchObserver observer : fetchObservers) {

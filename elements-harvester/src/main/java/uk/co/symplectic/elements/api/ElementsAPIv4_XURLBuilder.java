@@ -14,7 +14,7 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
     public String buildObjectFeedQuery(String endpointUrl, ElementsAPIFeedObjectQuery feedQuery) {
         URLBuilder queryUrl = new URLBuilder(endpointUrl);
 
-        if (feedQuery.getDeletedObjects()) {
+        if (feedQuery.getDeleted()) {
             queryUrl.appendPath("deleted");
         }
 
@@ -37,7 +37,7 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
         }
 
         if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {
-            if (feedQuery.getDeletedObjects()) {
+            if (feedQuery.getDeleted()) {
                 queryUrl.addParam("deleted-since", feedQuery.getModifiedSince());
             } else {
                 queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
@@ -53,6 +53,10 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
 
         queryUrl.appendPath("relationships");
 
+        if (feedQuery.getDeleted()) {
+            queryUrl.appendPath("deleted");
+        }
+
         if (feedQuery.getFullDetails()) {
             queryUrl.addParam("detail", "full");
         }
@@ -62,7 +66,11 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
         }
 
         if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {
-            queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
+            if (feedQuery.getDeleted()) {
+                queryUrl.addParam("deleted-since", feedQuery.getModifiedSince());
+            } else {
+                queryUrl.addParam("modified-since", feedQuery.getModifiedSince());
+            }
         }
 
         return queryUrl.toString();

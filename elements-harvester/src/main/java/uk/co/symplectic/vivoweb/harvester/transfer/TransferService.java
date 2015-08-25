@@ -19,8 +19,8 @@ public class TransferService {
 
     //private TransferServiceConfig config = new TransferServiceConfig();
 
-    public void transfer(JenaWrapper outputStore, File rdfToRemove, File rdfToLoad) {
-        TransferServiceImpl.transfer(outputStore, rdfToRemove, rdfToLoad);
+    public void transfer(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
+        TransferServiceImpl.transfer(outputStore, transferredRdf, translatedRdf);
     }
 
     public static void shutdown() {

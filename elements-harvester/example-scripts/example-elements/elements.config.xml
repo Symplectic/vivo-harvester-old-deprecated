@@ -9,7 +9,7 @@
     <!--
         Elements API configuration
     -->
-    <Param name="apiEndpoint">https://elementshost:8091/standard/v4.9</Param>
+    <Param name="apiEndpoint">http://elementshost:8091/standard/v4.9</Param>
     <Param name="apiVersion">4.9</Param>
 
     <!-- Username and Password are required for secure (https:) API endpoints -->
@@ -22,10 +22,12 @@
     <Param name="vivoBaseURI">http://localhost:8080/vivo/individual/</Param>
     <Param name="vivoImageDir">/Library/Tomcat/webapps/vivo</Param>
 
-    <Param name="queryObjects">users,publications,grants,activities,teaching-activities</Param>
+    <!-- Param name="queryObjects">users,publications,grants,activities,teaching-activities</Param -->
+    <Param name="queryObjects">users</Param>
 
     <!-- Only get users that are marked as current members of staff -->
-    <Param name="currentStaffOnly">true</Param>
+    <!-- Param name="currentStaffOnly">true</Param -->
+    <Param name="currentStaffOnly">false</Param>
 
     <!-- Take everything, including things marked as invisible (the VIVO visibility flag will be used if a relationship is marked invisible -->
     <Param name="visibleLinksOnly">false</Param>
@@ -44,4 +46,9 @@
     -->
     <Param name="rawOutput">raw-records.config.xml</Param>
     <Param name="rdfOutput">translated-records.config.xml</Param>
+
+    <Param name="transferDir">transfered/</Param>
+    <!-- Param name="liveStore">memory</Param -->
+    <!-- Param name="liveStore">matched-data.model.xml</Param -->
+    <Param name="liveStore">vivo.model.xml</Param>
 </Task>

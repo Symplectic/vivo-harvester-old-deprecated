@@ -9,10 +9,9 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.DeletionService;
+import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
-import uk.co.symplectic.xml.XMLAttribute;
-import uk.co.symplectic.xml.XMLUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,6 +27,7 @@ public class ElementsRdfStore {
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
     private DeletionService deletionService = new DeletionService();
+    private CachingService cachingService = new CachingService();
 
     private boolean keepEmpty = false;
 
@@ -110,6 +110,8 @@ public class ElementsRdfStore {
                 } finally {
                     writer.close();
                 }
+
+                cachingService.put(file, rdf);
 
                 for (ElementsRdfStoreObserver observer : storeObservers) {
                     observer.storedObjectExtraRdf(objectInfo, type, file);

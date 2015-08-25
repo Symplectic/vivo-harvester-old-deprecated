@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.translate.TranslationResult;
+import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
@@ -23,6 +24,7 @@ import java.util.List;
 
 public class RdfTranslationResult implements TranslationResult {
     private static final Logger log = LoggerFactory.getLogger(RdfTranslationResult.class);
+    private static CachingService cachingService = new CachingService();
     private File output;
 
     private ElementsObjectInfo objectInfo = null;
@@ -74,6 +76,7 @@ public class RdfTranslationResult implements TranslationResult {
         }
 
         if (keepEmpty || !StringUtils.isEmpty(xml)) {
+            cachingService.put(output, xml);
             OutputStream outputStream = null;
             try {
                 outputStream = new BufferedOutputStream(new FileOutputStream(output));

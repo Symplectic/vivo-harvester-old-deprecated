@@ -7,6 +7,7 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfoCache;
 import uk.co.symplectic.xml.XMLAttribute;
@@ -18,15 +19,12 @@ import uk.co.symplectic.xml.XMLStreamProcessor;
 import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
 public class ElementsObjectStore {
+    private final static CachingService cachingService = new CachingService();
     private File dir = null;
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
@@ -75,6 +73,7 @@ public class ElementsObjectStore {
     private void store(File outputFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
         Writer writer = null;
         try {
+            Writer stringWriter = new StringWriter();
             writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             XMLStreamProcessor processor = new XMLStreamProcessor();
             processor.process(reader,
@@ -84,8 +83,15 @@ public class ElementsObjectStore {
                             docVersion,
                             Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"))
                     ),
+                    new XMLStreamCopyToWriterObserver(stringWriter,
+                            layoutStrategy.getRootNodeForType(type),
+                            docEncoding,
+                            docVersion,
+                            Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"))
+                    ),
                     observer);
 
+            cachingService.put(outputFile, stringWriter.toString());
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         } finally {
