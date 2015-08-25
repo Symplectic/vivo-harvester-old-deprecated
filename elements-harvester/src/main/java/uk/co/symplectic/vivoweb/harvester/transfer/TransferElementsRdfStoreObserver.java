@@ -7,6 +7,7 @@
 package uk.co.symplectic.vivoweb.harvester.transfer;
 
 import org.vivoweb.harvester.util.repo.JenaConnect;
+import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStoreObserver;
@@ -17,7 +18,7 @@ import java.io.File;
 public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserver {
     private TransferElementsRdfStoreObserver() { }
 
-    private JenaConnect outputStore;
+    private JenaWrapper outputStore;
     private ElementsTransferredRdfStore transferredRdfStore;
 
     private TransferService transferService = new TransferService();
@@ -32,7 +33,7 @@ public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserve
 
     }
 
-    public TransferElementsRdfStoreObserver setTripleStore(JenaConnect outputStore) {
+    public TransferElementsRdfStoreObserver setTripleStore(JenaWrapper outputStore) {
         this.outputStore = outputStore;
         return this;
     }

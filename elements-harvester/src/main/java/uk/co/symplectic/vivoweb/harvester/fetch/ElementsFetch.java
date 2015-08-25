@@ -143,12 +143,14 @@ public class ElementsFetch {
             }
         }
 
-        ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
-        relationshipFeedQuery.setProcessAllPages(true);
-        relationshipFeedQuery.setPerPage(relationshipsPerPage);
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
+        if (objectsToHarvest.contains(",")) {
+            ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
+            relationshipFeedQuery.setProcessAllPages(true);
+            relationshipFeedQuery.setPerPage(relationshipsPerPage);
 
-        // elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+            elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+        }
 
         for (ElementsFetchObserver observer : fetchObservers) {
             observer.postFetch();

@@ -18,6 +18,7 @@ import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetchObserver;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
+import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
 import uk.co.symplectic.vivoweb.harvester.transfer.TransferElementsRdfStoreObserver;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
@@ -66,7 +67,7 @@ public class ElementsFetchAndTranslate {
                 final ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
                 final ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
                 final ElementsTransferredRdfStore transferredRdfStore = ElementsStoreFactory.getTransferredRdfStore();
-                final JenaConnect tripleStore = Configuration.getTripleStore();
+                final JenaWrapper tripleStore = Configuration.getTripleStore();
 
                 final boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
                 final boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();

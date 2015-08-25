@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.repo.JenaConnect;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
+import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -23,17 +24,17 @@ final public class TransferServiceImpl {
 
     private TransferServiceImpl() { }
 
-    static void transfer(JenaConnect outputStore, File transferredRdf, File translatedRdf) {
+    static void transfer(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
         wrapper.submit(new TransferHandler(outputStore, transferredRdf, translatedRdf));
     }
 
     static class TransferHandler implements Callable<Boolean> {
-        private JenaConnect outputStore;
+        private JenaWrapper outputStore;
 
         private File transferredRdf;
         private File translatedRdf;
 
-        TransferHandler(JenaConnect outputStore, File transferredRdf, File translatedRdf) {
+        TransferHandler(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
             this.outputStore = outputStore;
             this.transferredRdf = transferredRdf;
             this.translatedRdf = translatedRdf;

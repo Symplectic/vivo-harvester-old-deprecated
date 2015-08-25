@@ -9,6 +9,7 @@ package uk.co.symplectic.vivoweb.harvester.transfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.repo.JenaConnect;
+import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 
 import java.io.File;
 import java.util.concurrent.Future;
@@ -18,7 +19,7 @@ public class TransferService {
 
     //private TransferServiceConfig config = new TransferServiceConfig();
 
-    public void transfer(JenaConnect outputStore, File rdfToRemove, File rdfToLoad) {
+    public void transfer(JenaWrapper outputStore, File rdfToRemove, File rdfToLoad) {
         TransferServiceImpl.transfer(outputStore, rdfToRemove, rdfToLoad);
     }
 

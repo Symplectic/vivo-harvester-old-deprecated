@@ -149,8 +149,10 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
                 relationshipObserver.beingTranslated(task, relationship.getRelationshipInfo());
             }
 
-            for (ElementsObjectId id : relationshipInfo.getObjectIds()) {
-                objectsInRelationships.add(id.getCategory(), id.getId());
+            if (objectsInRelationships != null) {
+                for (ElementsObjectId id : relationshipInfo.getObjectIds()) {
+                    objectsInRelationships.add(id.getCategory(), id.getId());
+                }
             }
         }
     }
