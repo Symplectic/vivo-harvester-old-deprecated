@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.repo.JenaConnect;
+import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.jena.JenaHelper;
 import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 
 final class Transfer {
     private static final Logger log = LoggerFactory.getLogger(Transfer.class);
+    private static final CachingService cachingService = new CachingService();
 
     public Transfer() {
     }
@@ -74,6 +76,7 @@ final class Transfer {
             if (translatedModel != null) {
                 translatedModel.close();
             }
+            cachingService.remove(translatedRdf);
         }
 
         return true;

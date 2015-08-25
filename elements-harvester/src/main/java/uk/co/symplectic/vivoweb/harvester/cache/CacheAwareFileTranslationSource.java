@@ -44,6 +44,7 @@ public class CacheAwareFileTranslationSource implements TranslationSource {
         if (inputStream != null) {
             inputStream.close();
         }
+        cachingService.remove(inputFile);
     }
 
     @Override
