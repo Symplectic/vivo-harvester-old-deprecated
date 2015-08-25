@@ -507,8 +507,8 @@
                             <xsl:when test="$records[$position]='scopus' and ($fieldName='abstract')">
                                 <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
                             </xsl:when>
-                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]">
-                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
+                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]][1]/api:native/api:field[@name=$fieldName]">
+                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]][1]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
@@ -521,8 +521,8 @@
                             <xsl:when test="$records[$position]='scopus' and ($fieldName='abstract')">
                                 <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
                             </xsl:when>
-                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]]/api:native">
-                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]]/api:native/api:field[@name=$fieldName]" />
+                            <xsl:when test="$object/api:records/api:record[@source-name=$records[$position]][1]/api:native">
+                                <xsl:copy-of select="$object/api:records/api:record[@source-name=$records[$position]][1]/api:native/api:field[@name=$fieldName]" />
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:copy-of select="svfn:_getRecordField($object,$fieldName,$records,$select-by,$position+1,$useDefault)" />
