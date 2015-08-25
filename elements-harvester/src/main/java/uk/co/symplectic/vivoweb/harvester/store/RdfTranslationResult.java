@@ -81,6 +81,7 @@ public class RdfTranslationResult implements TranslationResult {
             try {
                 outputStream = new BufferedOutputStream(new FileOutputStream(output));
                 outputStream.write(xml.getBytes("utf-8"));
+                outputStream.flush();
             } finally {
                 if (outputStream != null) {
                     outputStream.close();

@@ -66,7 +66,7 @@ final class Transfer {
                 try {
                     Files.move(translatedRdf.toPath(), transferredRdf.toPath());
                 } catch (Exception e) {
-                    log.error("Unable to move file " + transferredRdf.toPath() + " to " + translatedRdf.toPath(), e);
+                    log.error("Unable to move file " + translatedRdf.toPath() + " to " + transferredRdf.toPath(), e);
                     outputStore.remove(translatedModel);
                 }
             } else if (translatedRdf.exists()) {
