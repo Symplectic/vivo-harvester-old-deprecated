@@ -204,6 +204,8 @@ public class Configuration {
 
     public static Model getTripleStore() { return values.tripleStore; }
 
+    public static boolean getUseElementsDeltas() { return values.tripleStore != null; }
+
     public static Map<String, String> getXslParameters() { return values.xslParameters; }
 
     public static boolean getIgnoreSSLErrors() { return values.ignoreSSLErrors; }

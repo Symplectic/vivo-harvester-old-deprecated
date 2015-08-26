@@ -6,6 +6,8 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 
 public class ElementsStoreFactory {
@@ -37,10 +39,16 @@ public class ElementsStoreFactory {
         if (transferStore != null) {
             return transferStore;
         } else {
-            synchronized (ElementsStoreFactory.class) {
-                return transferStore != null ? transferStore :
-                        (transferStore = new ElementsTransferredRdfStore(Configuration.getTripleStore(), Configuration.getTransferDir()));
+            Model tripleStore  = Configuration.getTripleStore();
+            String transferDir = Configuration.getTransferDir();
+            if (tripleStore != null && !StringUtils.isEmpty(transferDir)) {
+                synchronized (ElementsStoreFactory.class) {
+                    return transferStore != null ? transferStore :
+                            (transferStore = new ElementsTransferredRdfStore(tripleStore, transferDir));
+                }
             }
         }
+
+        return null;
     }
 }

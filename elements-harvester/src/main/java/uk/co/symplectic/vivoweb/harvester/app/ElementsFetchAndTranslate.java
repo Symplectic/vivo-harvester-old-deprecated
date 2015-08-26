@@ -55,20 +55,24 @@ public class ElementsFetchAndTranslate {
         Throwable caught = null;
         try {
             try {
+                // Store the time we started running
                 Date startTime = Calendar.getInstance().getTime();
+
+                // Load the configuration
                 Configuration.parse("ElementsFetchAndTranslate", args);
                 log.debug("ElementsFetchAndTranslate: Start");
 
-
+                // Set the background thread pool sizes
                 setExecutorServiceMaxThreadsForPool("TranslationService", Configuration.getMaxThreadsXsl());
                 setExecutorServiceMaxThreadsForPool("ResourceFetchService", Configuration.getMaxThreadsResource());
                 setExecutorServiceMaxThreadsForPool("TransferService", Configuration.getMaxThreadsTransfer());
 
+                // Obtain the stores we are using
                 final ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
                 final ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
                 final ElementsTransferredRdfStore transferredRdfStore = ElementsStoreFactory.getTransferredRdfStore();
-                final Model tripleStore = Configuration.getTripleStore();
 
+                // Obtain bits of configuration
                 final boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
                 final boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();
 
@@ -77,10 +81,10 @@ public class ElementsFetchAndTranslate {
                 final String vivoBaseURI = Configuration.getBaseURI();
                 final String xslFilename = Configuration.getXslTemplate();
 
-                boolean useElementsDeltas = false;
+                boolean useElementsDeltas = Configuration.getUseElementsDeltas();
                 Date lastExecuted = null;
 
-                if (tripleStore != null) {
+                if (useElementsDeltas) {
                     if (
                         currentStaffOnly ||
                         visibleLinksOnly ||
@@ -104,7 +108,6 @@ public class ElementsFetchAndTranslate {
                                     .setTransferredRdfStore(transferredRdfStore)
                     );
 
-                    useElementsDeltas = true;
                     lastExecuted = loadLastRun();
                 }
 
@@ -159,7 +162,7 @@ public class ElementsFetchAndTranslate {
                     public void postFetch() {
                         TranslationService.shutdown();
                         ResourceFetchService.shutdown();
-                        if (tripleStore != null) {
+                        if (transferredRdfStore != null) {
                             TransferService.shutdown();
                         }
                     }
