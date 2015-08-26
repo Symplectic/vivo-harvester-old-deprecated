@@ -7,16 +7,9 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfoCache;
-import uk.co.symplectic.xml.XMLAttribute;
-import uk.co.symplectic.xml.XMLNamespace;
-import uk.co.symplectic.xml.XMLStreamCopyToWriterObserver;
-import uk.co.symplectic.xml.XMLStreamFragmentReader;
-import uk.co.symplectic.xml.XMLStreamObserver;
-import uk.co.symplectic.xml.XMLStreamProcessor;
-import uk.co.symplectic.xml.XMLUtils;
+import uk.co.symplectic.xml.*;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -24,7 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ElementsObjectStore {
-    private final static CachingService cachingService = new CachingService();
+    private final static List<XMLNamespace> namespaces = Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"));
+    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
     private File dir = null;
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
@@ -71,37 +65,35 @@ public class ElementsObjectStore {
     }
 
     private void store(File outputFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
-        Writer writer = null;
         try {
-            Writer stringWriter = new StringWriter();
-            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Writer memoryWriter = new OutputStreamWriter(baos, "utf-8");
+
             XMLStreamProcessor processor = new XMLStreamProcessor();
             processor.process(reader,
-                    new XMLStreamCopyToWriterObserver(writer,
+                    new XMLStreamCopyToWriterObserver(memoryWriter,
                             layoutStrategy.getRootNodeForType(type),
                             docEncoding,
                             docVersion,
-                            Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"))
-                    ),
-                    new XMLStreamCopyToWriterObserver(stringWriter,
-                            layoutStrategy.getRootNodeForType(type),
-                            docEncoding,
-                            docVersion,
-                            Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"))
+                            namespaces
                     ),
                     observer);
 
-            cachingService.put(outputFile, stringWriter.toString());
+            memoryWriter.flush();
+
+            byte[] xml = baos.toByteArray();
+            OutputStream os = new FileOutputStream(outputFile);
+            try {
+                os.write(xml);
+            } finally {
+                os.close();
+            }
+
+            if (fileMemStore != null) {
+                fileMemStore.put(outputFile, xml);
+            }
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
         }
     }
 

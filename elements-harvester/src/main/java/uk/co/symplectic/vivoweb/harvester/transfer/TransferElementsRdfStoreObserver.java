@@ -6,8 +6,6 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.transfer;
 
-import org.vivoweb.harvester.util.repo.JenaConnect;
-import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStoreObserver;
@@ -15,10 +13,13 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
 
 import java.io.File;
 
+/**
+ * Observer to transfer data into a triple store when it is written to the RDF store
+ */
 public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserver {
     private TransferElementsRdfStoreObserver() { }
 
-    private JenaWrapper outputStore;
+    // Location for RDF/XML that has been loaded into the triple store
     private ElementsTransferredRdfStore transferredRdfStore;
 
     private TransferService transferService = new TransferService();
@@ -33,23 +34,18 @@ public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserve
 
     }
 
-    public TransferElementsRdfStoreObserver setTripleStore(JenaWrapper outputStore) {
-        this.outputStore = outputStore;
-        return this;
-    }
-
     @Override
     public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) {
-        transferService.transfer(outputStore, transferredRdfStore.getObjectFile(objectInfo), storedRdf);
+        transferService.transfer(transferredRdfStore, objectInfo, storedRdf);
     }
 
     @Override
     public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) {
-        transferService.transfer(outputStore, transferredRdfStore.getObjectExtraFile(objectInfo, type), storedRdf);
+        transferService.transfer(transferredRdfStore, objectInfo, type, storedRdf);
     }
 
     @Override
-    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfoInfo, File storedRdf) {
-        transferService.transfer(outputStore, transferredRdfStore.getRelationshipFile(relationshipInfoInfo), storedRdf);
+    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) {
+        transferService.transfer(transferredRdfStore, relationshipInfo, storedRdf);
     }
 }

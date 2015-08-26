@@ -8,13 +8,14 @@ package uk.co.symplectic.vivoweb.harvester.translate;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.*;
+import uk.co.symplectic.translate.TemplatesHolder;
+import uk.co.symplectic.translate.TranslationService;
+import uk.co.symplectic.translate.TranslationTask;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

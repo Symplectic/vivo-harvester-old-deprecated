@@ -8,15 +8,12 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.utils.ImageUtils;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private ElementsUserInfo userInfo = null;
@@ -66,8 +63,9 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             ImageUtils.writeFile(ImageUtils.getScaledInstance(image, VIVO_THUMBNAIL_WIDTH, targetHeight, true), new File(thumbnailDir, uriUserName + ".thumbnail.jpg"), "jpeg");
 
             // Write out XML
-            Writer photoXml = new StringWriter();
+            ByteArrayOutputStream photoOS = new ByteArrayOutputStream();
             try {
+                Writer photoXml = new OutputStreamWriter(photoOS, "utf-8");
                 photoXml.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 photoXml.write("<rdf:RDF xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:score=\"http://vivoweb.org/ontology/score#\" xmlns:vitro=\"http://vitro.mannlib.cornell.edu/ns/vitro/0.7#\" xmlns:bibo=\"http://purl.org/ontology/bibo/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:ufVivo=\"http://vivo.ufl.edu/ontology/vivo-ufl/\" xmlns:owlPlus=\"http://www.w3.org/2006/12/owl2-xml#\" xmlns:svo=\"http://www.symplectic.co.uk/vivo/\" xmlns:skos=\"http://www.w3.org/2008/05/skos#\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema#\" xmlns:api=\"http://www.symplectic.co.uk/publications/api\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:vitro-public=\"http://vitro.mannlib.cornell.edu/ns/vitro/public#\" xmlns:vocab=\"http://purl.org/vocab/vann/\" xmlns:core=\"http://vivoweb.org/ontology/core#\" xmlns:swvocab=\"http://www.w3.org/2003/06/sw-vocab-status/ns#\">");
 
@@ -103,8 +101,9 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 photoXml.write("</rdf:Description>");
 
                 photoXml.write("</rdf:RDF>");
+                photoXml.flush();
 
-                rdfStore.writeObjectExtra(userInfo, "photo", photoXml.toString());
+                rdfStore.writeObjectExtra(userInfo, "photo", photoOS.toByteArray());
             } catch (IOException e) {
 
             } finally {

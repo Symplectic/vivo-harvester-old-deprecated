@@ -38,18 +38,13 @@ public class FileTranslationResult implements TranslationResult {
 
     @Override
     public void release() throws IOException {
-        String xml;
-        try {
-            xml = baos.toString("utf-8");
-        } catch (UnsupportedEncodingException uee) {
-            throw new IllegalStateException("Something serious went wrong, can't parse utf-8");
-        }
+        byte[] xml = baos.toByteArray();
 
-        if (keepEmpty || !StringUtils.isEmpty(xml)) {
+        if (keepEmpty || xml.length > 0) {
             OutputStream outputStream = null;
             try {
                 outputStream = new BufferedOutputStream(new FileOutputStream(output));
-                outputStream.write(xml.getBytes("utf-8"));
+                outputStream.write(xml);
             } finally {
                 if (outputStream != null) {
                     outputStream.close();

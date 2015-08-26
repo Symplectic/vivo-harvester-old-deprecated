@@ -9,15 +9,10 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import uk.co.symplectic.utils.DeletionService;
-import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +22,7 @@ public class ElementsRdfStore {
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
     private DeletionService deletionService = new DeletionService();
-    private CachingService cachingService = new CachingService();
+    private FileTempMemStore fileMemStore = new FileTempMemStore();
 
     private boolean keepEmpty = false;
 
@@ -99,19 +94,19 @@ public class ElementsRdfStore {
         return layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId());
     }
 
-    public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, String rdf) {
+    public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, byte[] rdf) {
         File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type);
 
         if (file != null) {
             try {
-                Writer writer = new BufferedWriter(new FileWriter(file));
+                OutputStream os = new FileOutputStream(file);
                 try {
-                    writer.write(rdf);
+                    os.write(rdf);
                 } finally {
-                    writer.close();
+                    os.close();
                 }
 
-                cachingService.put(file, rdf);
+                fileMemStore.put(file, rdf);
 
                 for (ElementsRdfStoreObserver observer : storeObservers) {
                     observer.storedObjectExtraRdf(objectInfo, type, file);

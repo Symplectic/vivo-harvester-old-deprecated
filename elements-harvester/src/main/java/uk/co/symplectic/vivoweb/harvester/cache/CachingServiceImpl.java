@@ -24,17 +24,17 @@ public class CachingServiceImpl {
         }
     }
 
-    public static void put(String key, String value) {
+    public static void put(String key, Object value) {
         if (cache != null) {
             cache.put(new Element(key, value));
         }
     }
 
-    public static String get(String key) {
+    public static Object get(String key) {
         if (cache != null) {
             Element element = cache.get(key);
             if (element != null) {
-                return (String)element.getObjectValue();
+                return element.getObjectValue();
             }
         }
 

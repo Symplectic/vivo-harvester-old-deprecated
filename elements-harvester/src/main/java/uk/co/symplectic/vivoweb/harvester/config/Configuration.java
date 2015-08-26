@@ -6,6 +6,7 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.config;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.lang.StringUtils;
 import org.vivoweb.harvester.util.InitLog;
 import org.vivoweb.harvester.util.args.ArgDef;
@@ -14,16 +15,16 @@ import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import org.vivoweb.harvester.util.repo.JenaConnect;
 import org.vivoweb.harvester.util.repo.MemJenaConnect;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,7 +119,7 @@ public class Configuration {
 
         private static boolean ignoreSSLErrors = false;
 
-        private JenaWrapper tripleStore = null;
+        private Model tripleStore = null;
 
         private Map<String, String> xslParameters = new HashMap<String, String>();
     };
@@ -201,7 +202,7 @@ public class Configuration {
     public static String getRdfOutputDir() { return values.rdfOutputDir; }
     public static String getTransferDir() { return values.transferDir; }
 
-    public static JenaWrapper getTripleStore() { return values.tripleStore; }
+    public static Model getTripleStore() { return values.tripleStore; }
 
     public static Map<String, String> getXslParameters() { return values.xslParameters; }
 
@@ -291,12 +292,9 @@ public class Configuration {
             values.ignoreSSLErrors = getBoolean(ARG_IGNORE_SSL_ERRORS, false);
 
             if ("memory".equalsIgnoreCase(argList.get(ARG_LIVE_TRIPLESTORE))) {
-                values.tripleStore = new JenaWrapper(new MemJenaConnect());
+                values.tripleStore = new MemJenaConnect().getJenaModel();
             } else if (!StringUtils.isEmpty(argList.get(ARG_LIVE_TRIPLESTORE))) {
-                JenaConnect jc = JenaConnect.parseConfig(argList.get(ARG_LIVE_TRIPLESTORE));
-                if (jc != null) {
-                    values.tripleStore = new JenaWrapper(jc);
-                }
+                values.tripleStore = JenaConnect.parseConfig(argList.get(ARG_LIVE_TRIPLESTORE)).getJenaModel();
             }
 
             if (!StringUtils.isEmpty(values.baseURI)) {

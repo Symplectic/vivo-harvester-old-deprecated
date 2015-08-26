@@ -6,24 +6,13 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.fetch;
 
-import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectStreamHandler;
-import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.translate.TranslationService;
-import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
 import uk.co.symplectic.xml.XMLAttribute;
 import uk.co.symplectic.xml.XMLStreamFragmentReader;
-import uk.co.symplectic.xml.XMLUtils;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.Templates;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 

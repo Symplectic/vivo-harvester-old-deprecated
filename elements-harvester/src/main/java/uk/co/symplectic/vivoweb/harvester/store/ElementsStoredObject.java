@@ -7,8 +7,8 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.translate.FileTranslationSource;
 import uk.co.symplectic.translate.TranslationSource;
-import uk.co.symplectic.vivoweb.harvester.cache.CacheAwareFileTranslationSource;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfoCache;
 import uk.co.symplectic.xml.StAXUtils;
@@ -17,14 +17,10 @@ import uk.co.symplectic.xml.XMLStreamProcessor;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class ElementsStoredObject {
+    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
     private File file;
     private ElementsObjectCategory category;
     private String id;
@@ -53,11 +49,11 @@ public class ElementsStoredObject {
     }
 
     public TranslationSource getTranslationSource() {
-        return new CacheAwareFileTranslationSource(file);
-    }
+        if (fileMemStore != null) {
+            return fileMemStore.translationSource(file);
+        }
 
-    public File getFile() {
-        return file;
+        return new FileTranslationSource(file);
     }
 
     public ElementsObjectCategory getCategory() {

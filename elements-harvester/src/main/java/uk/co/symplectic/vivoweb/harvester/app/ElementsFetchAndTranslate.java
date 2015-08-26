@@ -6,6 +6,7 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.app;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -15,19 +16,18 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
 import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
 import uk.co.symplectic.translate.TranslationService;
-import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetchObserver;
-import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
-import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
-import uk.co.symplectic.vivoweb.harvester.transfer.TransferElementsRdfStoreObserver;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsExcludedUsersFetch;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetch;
+import uk.co.symplectic.vivoweb.harvester.fetch.ElementsFetchObserver;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsUserPhotoRetrievalObserver;
+import uk.co.symplectic.vivoweb.harvester.fetch.resources.ResourceFetchService;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
+import uk.co.symplectic.vivoweb.harvester.transfer.TransferElementsRdfStoreObserver;
 import uk.co.symplectic.vivoweb.harvester.transfer.TransferService;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
@@ -67,7 +67,7 @@ public class ElementsFetchAndTranslate {
                 final ElementsObjectStore objectStore = ElementsStoreFactory.getObjectStore();
                 final ElementsRdfStore rdfStore = ElementsStoreFactory.getRdfStore();
                 final ElementsTransferredRdfStore transferredRdfStore = ElementsStoreFactory.getTransferredRdfStore();
-                final JenaWrapper tripleStore = Configuration.getTripleStore();
+                final Model tripleStore = Configuration.getTripleStore();
 
                 final boolean currentStaffOnly = Configuration.getCurrentStaffOnly();
                 final boolean visibleLinksOnly = Configuration.getVisibleLinksOnly();
@@ -102,7 +102,6 @@ public class ElementsFetchAndTranslate {
                     rdfStore.addObserver(
                             TransferElementsRdfStoreObserver.create()
                                     .setTransferredRdfStore(transferredRdfStore)
-                                    .setTripleStore(tripleStore)
                     );
 
                     useElementsDeltas = true;

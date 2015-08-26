@@ -10,9 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.translate.TranslationResult;
-import uk.co.symplectic.vivoweb.harvester.cache.CachingService;
 import uk.co.symplectic.vivoweb.harvester.config.Configuration;
-import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 
@@ -24,7 +22,7 @@ import java.util.List;
 
 public class RdfTranslationResult implements TranslationResult {
     private static final Logger log = LoggerFactory.getLogger(RdfTranslationResult.class);
-    private static CachingService cachingService = new CachingService();
+    private static FileTempMemStore fileMemStore = new FileTempMemStore();
     private File output;
 
     private ElementsObjectInfo objectInfo = null;
@@ -64,29 +62,34 @@ public class RdfTranslationResult implements TranslationResult {
 
     @Override
     public void release() throws IOException {
-        String xml;
-        try {
-            xml = baos.toString("utf-8");
-        } catch (UnsupportedEncodingException uee) {
-            throw new IllegalStateException("Something serious went wrong, can't parse utf-8");
-        }
+        byte[] arr = null;
 
-        if (!Configuration.getUseFullUTF8()) {
+        if (Configuration.getUseFullUTF8()) {
+            arr = baos.toByteArray();
+        } else {
+            String xml;
+            try {
+                xml = baos.toString("utf-8");
+            } catch (UnsupportedEncodingException uee) {
+                throw new IllegalStateException("Something serious went wrong, can't parse utf-8");
+            }
+
             xml = xml.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
+            arr = xml.getBytes("utf-8");
         }
 
-        if (keepEmpty || !StringUtils.isEmpty(xml)) {
-            cachingService.put(output, xml);
+        if (keepEmpty || (arr != null && arr.length > 0)) {
             OutputStream outputStream = null;
             try {
-                outputStream = new BufferedOutputStream(new FileOutputStream(output));
-                outputStream.write(xml.getBytes("utf-8"));
-                outputStream.flush();
+                outputStream = new FileOutputStream(output);
+                outputStream.write(arr);
             } finally {
                 if (outputStream != null) {
                     outputStream.close();
                 }
             }
+
+            fileMemStore.put(output, arr);
 
             for (ElementsRdfStoreObserver observer : storeObservers) {
                 if (objectInfo != null) {

@@ -38,7 +38,8 @@ public class ElementsStoreFactory {
             return transferStore;
         } else {
             synchronized (ElementsStoreFactory.class) {
-                return transferStore != null ? transferStore : (transferStore = new ElementsTransferredRdfStore(Configuration.getTransferDir()));
+                return transferStore != null ? transferStore :
+                        (transferStore = new ElementsTransferredRdfStore(Configuration.getTripleStore(), Configuration.getTransferDir()));
             }
         }
     }

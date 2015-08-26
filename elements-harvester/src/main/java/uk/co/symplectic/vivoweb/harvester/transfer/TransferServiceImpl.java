@@ -8,41 +8,85 @@ package uk.co.symplectic.vivoweb.harvester.transfer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vivoweb.harvester.util.repo.JenaConnect;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
-import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
 
 import java.io.File;
 import java.util.concurrent.Callable;
 
 final public class TransferServiceImpl {
     private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
-
     private static final ExecutorServiceUtils.ExecutorServiceWrapper wrapper = ExecutorServiceUtils.newFixedThreadPool("TransferService");
-
-    private static final Transfer transferCmd = new Transfer();
 
     private TransferServiceImpl() { }
 
-    static void transfer(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
-        wrapper.submit(new TransferHandler(outputStore, transferredRdf, translatedRdf));
+    static void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+        wrapper.submit(new TransferObjectHandler(outputStore, objectInfo, translatedRdf));
     }
 
-    static class TransferHandler implements Callable<Boolean> {
-        private JenaWrapper outputStore;
+    static void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+        wrapper.submit(new TransferObjectExtraHandler(outputStore, objectInfo, type, translatedRdf));
+    }
 
-        private File transferredRdf;
+    static void transfer(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+        wrapper.submit(new TransferRelationshipHandler(outputStore, relationshipInfo, translatedRdf));
+    }
+
+    static class TransferObjectHandler implements Callable<Boolean> {
+        private ElementsTransferredRdfStore outputStore;
         private File translatedRdf;
 
-        TransferHandler(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
-            this.outputStore = outputStore;
-            this.transferredRdf = transferredRdf;
+        private ElementsObjectInfo objectInfo;
+
+        TransferObjectHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+            this.outputStore   = outputStore;
+            this.objectInfo    = objectInfo;
             this.translatedRdf = translatedRdf;
         }
 
-        @Override
         public Boolean call() throws Exception {
-            return transferCmd.transfer(outputStore, transferredRdf, translatedRdf);
+            outputStore.replaceObjectRdf(objectInfo, translatedRdf);
+            return true;
+        }
+    }
+
+    static class TransferObjectExtraHandler implements Callable<Boolean> {
+        private ElementsTransferredRdfStore outputStore;
+        private File translatedRdf;
+
+        private ElementsObjectInfo objectInfo;
+        private String type;
+
+        TransferObjectExtraHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+            this.outputStore   = outputStore;
+            this.objectInfo    = objectInfo;
+            this.type          = type;
+            this.translatedRdf = translatedRdf;
+        }
+
+        public Boolean call() throws Exception {
+            outputStore.replaceObjectExtraRdf(objectInfo, type, translatedRdf);
+            return true;
+        }
+    }
+
+    static class TransferRelationshipHandler implements Callable<Boolean> {
+        private ElementsTransferredRdfStore outputStore;
+        private File translatedRdf;
+
+        private ElementsRelationshipInfo relationshipInfo;
+
+        TransferRelationshipHandler(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+            this.outputStore      = outputStore;
+            this.relationshipInfo = relationshipInfo;
+            this.translatedRdf    = translatedRdf;
+        }
+
+        public Boolean call() throws Exception {
+            outputStore.replaceRelationshipRdf(relationshipInfo, translatedRdf);
+            return true;
         }
     }
 

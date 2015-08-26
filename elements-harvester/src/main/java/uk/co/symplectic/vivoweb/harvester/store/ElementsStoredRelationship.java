@@ -6,8 +6,8 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
+import uk.co.symplectic.translate.FileTranslationSource;
 import uk.co.symplectic.translate.TranslationSource;
-import uk.co.symplectic.vivoweb.harvester.cache.CacheAwareFileTranslationSource;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.xml.StAXUtils;
 import uk.co.symplectic.xml.XMLStreamProcessor;
@@ -15,14 +15,10 @@ import uk.co.symplectic.xml.XMLStreamProcessor;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class ElementsStoredRelationship {
+    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
     private File file;
     private String id;
 
@@ -40,11 +36,11 @@ public class ElementsStoredRelationship {
     }
 
     public TranslationSource getTranslationSource() {
-        return new CacheAwareFileTranslationSource(file);
-    }
+        if (fileMemStore != null) {
+            return fileMemStore.translationSource(file);
+        }
 
-    public File getFile() {
-        return file;
+        return new FileTranslationSource(file);
     }
 
     public String getId() {

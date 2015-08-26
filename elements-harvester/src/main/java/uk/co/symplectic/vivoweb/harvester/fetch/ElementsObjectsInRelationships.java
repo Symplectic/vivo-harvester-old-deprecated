@@ -9,7 +9,6 @@ package uk.co.symplectic.vivoweb.harvester.fetch;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

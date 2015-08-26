@@ -8,19 +8,27 @@ package uk.co.symplectic.vivoweb.harvester.transfer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vivoweb.harvester.util.repo.JenaConnect;
-import uk.co.symplectic.vivoweb.harvester.jena.JenaWrapper;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
+import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
+import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
 
 import java.io.File;
-import java.util.concurrent.Future;
 
 public class TransferService {
     private static final Logger log = LoggerFactory.getLogger(TransferService.class);
 
     //private TransferServiceConfig config = new TransferServiceConfig();
 
-    public void transfer(JenaWrapper outputStore, File transferredRdf, File translatedRdf) {
-        TransferServiceImpl.transfer(outputStore, transferredRdf, translatedRdf);
+    public void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+        TransferServiceImpl.transfer(outputStore, objectInfo, translatedRdf);
+    }
+
+    public void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+        TransferServiceImpl.transfer(outputStore, objectInfo, type, translatedRdf);
+    }
+
+    public void transfer(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+        TransferServiceImpl.transfer(outputStore, relationshipInfo, translatedRdf);
     }
 
     public static void shutdown() {

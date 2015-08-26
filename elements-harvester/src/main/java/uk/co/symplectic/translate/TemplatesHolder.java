@@ -7,10 +7,7 @@
 package uk.co.symplectic.translate;
 
 import javax.xml.transform.Templates;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 public class TemplatesHolder {
     private final TranslationService translationService = new TranslationService();
