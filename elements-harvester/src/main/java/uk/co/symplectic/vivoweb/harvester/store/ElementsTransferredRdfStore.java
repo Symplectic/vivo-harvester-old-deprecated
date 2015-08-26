@@ -26,7 +26,7 @@ public class ElementsTransferredRdfStore {
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
 
-    private FileTempMemStore fileMemStore = new FileTempMemStore();
+    private FileTempCache fileMemStore = new FileTempCache();
 
     public ElementsTransferredRdfStore(Model outputStore, String dir) {
         this.tripleStore = outputStore;

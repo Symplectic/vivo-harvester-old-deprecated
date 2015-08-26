@@ -18,26 +18,28 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 
 public class ElementsStoredRelationship {
-    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
+    private FileTempCache tempCache;
     private File file;
     private String id;
 
     private ElementsRelationshipInfo relationshipInfo = null;
 
-    ElementsStoredRelationship(File file, String id) {
+    ElementsStoredRelationship(FileTempCache tempCache, File file, String id) {
+        this.tempCache = tempCache;
         this.file = file;
         this.id = id;
     }
 
-    ElementsStoredRelationship(File file, String id, ElementsRelationshipInfo relationshipInfo) {
+    ElementsStoredRelationship(FileTempCache tempCache, File file, String id, ElementsRelationshipInfo relationshipInfo) {
+        this.tempCache = tempCache;
         this.file = file;
         this.id = id;
         this.relationshipInfo = relationshipInfo;
     }
 
     public TranslationSource getTranslationSource() {
-        if (fileMemStore != null) {
-            return fileMemStore.translationSource(file);
+        if (tempCache != null) {
+            return tempCache.translationSource(file);
         }
 
         return new FileTranslationSource(file);

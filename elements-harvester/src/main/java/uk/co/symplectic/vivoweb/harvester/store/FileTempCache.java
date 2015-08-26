@@ -8,20 +8,17 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.translate.TranslationSource;
 import uk.co.symplectic.vivoweb.harvester.cache.CachingServiceImpl;
-import uk.co.symplectic.xml.*;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.List;
 
-public class FileTempMemStore {
+public class FileTempCache {
     private static boolean isEnabled = true;
 
     public static void setEnabled(boolean isEnabled) {
-        FileTempMemStore.isEnabled = isEnabled;
+        FileTempCache.isEnabled = isEnabled;
     }
 
     public void put(File file, byte[] xml) {
@@ -47,11 +44,11 @@ public class FileTempMemStore {
     }
 
     private static class CacheAwareFileTranslationSource implements TranslationSource {
-        private FileTempMemStore fileMemStore;
+        private FileTempCache fileMemStore;
         private File inputFile;
         private InputStream inputStream = null;
 
-        CacheAwareFileTranslationSource(FileTempMemStore fileMemStore, File inputFile) {
+        CacheAwareFileTranslationSource(FileTempCache fileMemStore, File inputFile) {
             this.fileMemStore = fileMemStore;
             this.inputFile = inputFile;
         }

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ElementsObjectStore {
     private final static List<XMLNamespace> namespaces = Arrays.asList(new XMLNamespace("", "http://www.symplectic.co.uk/vivo/"), new XMLNamespace("api", "http://www.symplectic.co.uk/publications/api"));
-    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
+    private final static FileTempCache tempCache = new FileTempCache();
     private File dir = null;
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
@@ -41,12 +41,12 @@ public class ElementsObjectStore {
 
     public ElementsStoredObject retrieveObject(ElementsObjectCategory category, String id) {
         File objectFile = getObjectFile(category, id);
-        return objectFile == null ? null : new ElementsStoredObject(objectFile, category, id);
+        return objectFile == null ? null : new ElementsStoredObject(tempCache, objectFile, category, id);
     }
 
     public ElementsStoredRelationship retrieveRelationship(String id) {
         File relationshipFile = getRelationshipFile(id);
-        return relationshipFile == null ? null : new ElementsStoredRelationship(relationshipFile, id);
+        return relationshipFile == null ? null : new ElementsStoredRelationship(tempCache, relationshipFile, id);
     }
 
     public ElementsStoredObject storeObject(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
@@ -54,14 +54,14 @@ public class ElementsObjectStore {
         ElementsObjectInfoObserver infoObserver = new ElementsObjectInfoObserver();
         store(file, reader, "object", docEncoding, docVersion, infoObserver);
         ElementsObjectInfoCache.put(infoObserver.getObjectInfo());
-        return new ElementsStoredObject(file, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList), infoObserver.getObjectInfo());
+        return new ElementsStoredObject(tempCache, file, XMLUtils.getObjectCategory(attributeList), XMLUtils.getId(attributeList), infoObserver.getObjectInfo());
     }
 
     public ElementsStoredRelationship storeRelationship(List<XMLAttribute> attributeList, XMLStreamFragmentReader reader, String docEncoding, String docVersion) throws XMLStreamException {
         File file = getRelationshipFile(XMLUtils.getId(attributeList));
         ElementsRelationshipInfoObserver infoObserver = new ElementsRelationshipInfoObserver();
         store(file, reader, "relationship", docEncoding, docVersion, infoObserver);
-        return new ElementsStoredRelationship(file, XMLUtils.getId(attributeList), infoObserver.getRelationshipInfo());
+        return new ElementsStoredRelationship(tempCache, file, XMLUtils.getId(attributeList), infoObserver.getRelationshipInfo());
     }
 
     private void store(File outputFile, XMLStreamFragmentReader reader, String type, String docEncoding, String docVersion, XMLStreamObserver observer) throws XMLStreamException {
@@ -89,8 +89,8 @@ public class ElementsObjectStore {
                 os.close();
             }
 
-            if (fileMemStore != null) {
-                fileMemStore.put(outputFile, xml);
+            if (tempCache != null) {
+                tempCache.put(outputFile, xml);
             }
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);

@@ -6,7 +6,6 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.translate.TranslationResult;
@@ -22,7 +21,7 @@ import java.util.List;
 
 public class RdfTranslationResult implements TranslationResult {
     private static final Logger log = LoggerFactory.getLogger(RdfTranslationResult.class);
-    private static FileTempMemStore fileMemStore = new FileTempMemStore();
+    private FileTempCache fileMemStore;
     private File output;
 
     private ElementsObjectInfo objectInfo = null;
@@ -34,11 +33,13 @@ public class RdfTranslationResult implements TranslationResult {
 
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    RdfTranslationResult(ElementsObjectInfo objectInfo, File output) {
+    RdfTranslationResult(FileTempCache fileMemStore, ElementsObjectInfo objectInfo, File output) {
+        this.fileMemStore = fileMemStore;
         this.output = output;
         this.objectInfo = objectInfo;
     }
-    RdfTranslationResult(ElementsRelationshipInfo relationshipInfo, File output) {
+    RdfTranslationResult(FileTempCache fileMemStore, ElementsRelationshipInfo relationshipInfo, File output) {
+        this.fileMemStore = fileMemStore;
         this.output = output;
         this.relationshipInfo = relationshipInfo;
     }
@@ -89,7 +90,9 @@ public class RdfTranslationResult implements TranslationResult {
                 }
             }
 
-            fileMemStore.put(output, arr);
+            if (fileMemStore != null) {
+                fileMemStore.put(output, arr);
+            }
 
             for (ElementsRdfStoreObserver observer : storeObservers) {
                 if (objectInfo != null) {

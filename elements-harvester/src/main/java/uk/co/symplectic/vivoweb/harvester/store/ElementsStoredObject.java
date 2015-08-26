@@ -20,20 +20,22 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 
 public class ElementsStoredObject {
-    private final static FileTempMemStore fileMemStore = new FileTempMemStore();
+    private FileTempCache tempCache;
     private File file;
     private ElementsObjectCategory category;
     private String id;
 
     private ElementsObjectInfo objectInfo = null;
 
-    ElementsStoredObject(File file, ElementsObjectCategory category, String id) {
+    ElementsStoredObject(FileTempCache tempCache, File file, ElementsObjectCategory category, String id) {
+        this.tempCache = tempCache;
         this.file = file;
         this.category = category;
         this.id = id;
     }
 
-    ElementsStoredObject(File file, ElementsObjectCategory category, String id, ElementsObjectInfo objectInfo) {
+    ElementsStoredObject(FileTempCache tempCache, File file, ElementsObjectCategory category, String id, ElementsObjectInfo objectInfo) {
+        this.tempCache = tempCache;
         this.file = file;
         this.category = category;
         this.id = id;
@@ -49,8 +51,8 @@ public class ElementsStoredObject {
     }
 
     public TranslationSource getTranslationSource() {
-        if (fileMemStore != null) {
-            return fileMemStore.translationSource(file);
+        if (tempCache != null) {
+            return tempCache.translationSource(file);
         }
 
         return new FileTranslationSource(file);

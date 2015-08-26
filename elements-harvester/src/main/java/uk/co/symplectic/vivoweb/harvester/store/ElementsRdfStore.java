@@ -22,7 +22,7 @@ public class ElementsRdfStore {
 
     private LayoutStrategy layoutStrategy = new DefaultLayoutStrategy();
     private DeletionService deletionService = new DeletionService();
-    private FileTempMemStore fileMemStore = new FileTempMemStore();
+    private FileTempCache fileMemStore = new FileTempCache();
 
     private boolean keepEmpty = false;
 
@@ -79,7 +79,7 @@ public class ElementsRdfStore {
     }
 
     public RdfTranslationResult getObjectTranslationResult(ElementsObjectInfo objectInfo) {
-        return new RdfTranslationResult(objectInfo, getObjectFile(objectInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
+        return new RdfTranslationResult(fileMemStore, objectInfo, getObjectFile(objectInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
     }
 
     public File getObjectFile(ElementsObjectInfo objectInfo) {
@@ -87,7 +87,7 @@ public class ElementsRdfStore {
     }
 
     public RdfTranslationResult getRelationshipTranslationResult(ElementsRelationshipInfo relationshipInfo) {
-        return new RdfTranslationResult(relationshipInfo, getRelationshipFile(relationshipInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
+        return new RdfTranslationResult(fileMemStore, relationshipInfo, getRelationshipFile(relationshipInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
     }
 
     public File getRelationshipFile(ElementsRelationshipInfo relationshipInfo) {
