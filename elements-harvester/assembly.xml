@@ -30,14 +30,22 @@
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <scope>runtime</scope>
             <!--
-                Each dependency that needs to be in the final package needs to be explicitly stated here
-
-                This includes the project artifact, which must always be present.
-
-                DO NOT INCLUDE org.vivoweb:harvester - this will be in the main VIVO harvester distribution
+                Project dependency only
             -->
             <includes>
                 <include>uk.co.symplectic:elements-vivo-harvester</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/bin/dependency</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <scope>runtime</scope>
+            <!--
+                Each dependency that needs to be in the final package needs to be explicitly stated here
+                DO NOT INCLUDE org.vivoweb:harvester - this will be in the main VIVO harvester distribution
+            -->
+            <includes>
                 <include>net.sf.ehcache:ehcache</include>
             </includes>
         </dependencySet>
