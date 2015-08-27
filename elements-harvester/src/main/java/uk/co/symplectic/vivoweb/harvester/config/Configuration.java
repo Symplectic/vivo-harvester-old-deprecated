@@ -59,7 +59,6 @@ public class Configuration {
     private static final String ARG_API_RELS_PER_PAGE     = "relationshipsPerPage";
 
     private static final String ARG_API_SOCKET_TIMEOUT    = "apiSocketTimeout";
-    private static final String ARG_API_REQUEST_DELAY     = "apiRequestDelay";
 
     private static final String ARG_MAX_XSL_THREADS       = "maxXslThreads";
     private static final String ARG_MAX_RESOURCE_THREADS  = "maxResourceThreads";
@@ -95,7 +94,6 @@ public class Configuration {
         private String apiPassword;
 
         private int apiSoTimeout = 0;
-        private int apiRequestDelay = -1;
 
         private int apiObjectsPerPage  = OBJECTS_PER_PAGE;
         private int apiRelationshipsPerPage  = RELATIONSHIPS_PER_PAGE;
@@ -153,10 +151,6 @@ public class Configuration {
 
     public static int getApiSoTimeout() {
         return values.apiSoTimeout;
-    }
-
-    public static int getApiRequestDelay() {
-        return values.apiRequestDelay;
     }
 
     public static int getApiObjectsPerPage() {
@@ -250,7 +244,6 @@ public class Configuration {
         parser.addArgument(new ArgDef().setLongOpt(ARG_API_RELS_PER_PAGE).setDescription("Relationships Per Page").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_API_SOCKET_TIMEOUT).setDescription("HTTP Socket Timeout").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_API_REQUEST_DELAY).setDescription("API Request Delay").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_XSL_THREADS).setDescription("Maximum number of Threads to use for the XSL Translation").withParameter(true, "CONFIG_FILE"));
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_RESOURCE_THREADS).setDescription("Maximum number of Threads to use for the Resource (photo) downloads").withParameter(true, "CONFIG_FILE"));
@@ -275,7 +268,6 @@ public class Configuration {
             values.apiPassword = getString(ARG_ELEMENTS_API_PASSWORD);
 
             values.apiSoTimeout = getInt(ARG_API_SOCKET_TIMEOUT, 0);
-            values.apiRequestDelay = getInt(ARG_API_REQUEST_DELAY, -1);
 
             values.groupsToExclude = getString(ARG_API_EXCLUDE_GROUPS);
 

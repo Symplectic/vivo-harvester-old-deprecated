@@ -49,9 +49,6 @@ public class ElementsAPIHttpClient {
             client.setParams(params);
         }
 
-        // Ensure we do not send request too frequently
-        // regulateRequestFrequency();
-
         // Issue get request
         GetMethod getMethod = new GetMethod(url);
         client.executeMethod(getMethod);
@@ -80,30 +77,5 @@ public class ElementsAPIHttpClient {
         }
 
         throw lastError;
-    }
-
-    public static void setRequestDelay(int millis) {
-        intervalInMSecs = millis;
-    }
-
-    /**
-     * Delay method - ensure that requests are not sent too frequently to the Elements API,
-     * by calling this method prior to executing the HttpClient request.
-     */
-    private static Date lastRequest = null;
-    private static int intervalInMSecs = 250;
-    private static synchronized void regulateRequestFrequency() {
-        try {
-            if (lastRequest != null) {
-                Date current = new Date();
-                if (lastRequest.getTime() + intervalInMSecs > current.getTime()) {
-                    Thread.sleep(intervalInMSecs - (current.getTime() - lastRequest.getTime()));
-                }
-            }
-        } catch (InterruptedException ie) {
-            // Ignore an interrupt
-        } finally {
-            lastRequest = new Date();
-        }
     }
 }

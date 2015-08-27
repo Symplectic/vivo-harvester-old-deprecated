@@ -194,10 +194,12 @@ public class ElementsFetchAndTranslate {
                 /** Run the harvest **/
                 fetcher.execute();
 
+                /** Using deltas, so store the last rn time (which is actually the time we started) **/
                 if (useElementsDeltas) {
                     saveLastRun(startTime);
                 }
 
+                /** Output our run time **/
                 long execution = Calendar.getInstance().getTimeInMillis() - startTime.getTime();
                 long execHours = TimeUnit.HOURS.convert(execution, TimeUnit.MILLISECONDS);
                 long execMin = TimeUnit.MINUTES.convert(execution, TimeUnit.MILLISECONDS) - (execHours * 60);
@@ -226,6 +228,10 @@ public class ElementsFetchAndTranslate {
         }
     }
 
+    /**
+     * Helper method to give us a configured ElementsAPI instance to use
+     * @return
+     */
     private static ElementsAPI getElementsAPI() {
         if (Configuration.getIgnoreSSLErrors()) {
             Protocol.registerProtocol("https", new Protocol("https", new IgnoreSSLErrorsProtocolSocketFactory(), 443));
@@ -236,11 +242,6 @@ public class ElementsFetchAndTranslate {
             ElementsAPIHttpClient.setSoTimeout(soTimeout);
         }
 
-        int requestDelay = Configuration.getApiRequestDelay();
-        if (requestDelay > -1 && requestDelay < (5 * 60 * 1000)) {
-            ElementsAPIHttpClient.setRequestDelay(requestDelay);
-        }
-
         ElementsAPI api = ElementsAPI.getAPI(Configuration.getApiVersion(), Configuration.getApiEndpoint());
         api.setUsername(Configuration.getApiUsername());
         api.setPassword(Configuration.getApiPassword());
@@ -248,6 +249,12 @@ public class ElementsFetchAndTranslate {
         return api;
     }
 
+    /**
+     * Helper method to get users that we are excluding from the harvest
+     * @param elementsAPI
+     * @return
+     * @throws IOException
+     */
     private static Set<String> getExcludedUsers(ElementsAPI elementsAPI) throws IOException {
         if (!StringUtils.isEmpty(Configuration.getGroupsToExclude())) {
             ElementsExcludedUsersFetch excludedUserFetcher = new ElementsExcludedUsersFetch(elementsAPI);
@@ -259,9 +266,13 @@ public class ElementsFetchAndTranslate {
         return null;
     }
 
+    /**
+     * Helper method to get the image dir, making sure that it exists
+     * @param imageDir
+     * @return
+     */
     private static File getVivoImageDir(String imageDir) {
         File vivoImageDir = null;
-        // TODO: This should be a required configuration parameter that specifies a path accessible by the VIVO web container
         if (!StringUtils.isEmpty(imageDir)) {
             vivoImageDir = new File(imageDir);
             if (vivoImageDir.exists()) {
@@ -276,13 +287,25 @@ public class ElementsFetchAndTranslate {
         return vivoImageDir;
     }
 
+    /**
+     * Helper method to set the thread limits for the executor pools (background services)
+     * @param poolName
+     * @param maxThreads
+     */
     private static void setExecutorServiceMaxThreadsForPool(String poolName, int maxThreads) {
         if (maxThreads > 0) {
             ExecutorServiceUtils.setMaxProcessorsForPool(poolName, maxThreads);
         }
     }
 
+    /** Format of the last run time string **/
     private static DateFormat lastRunFormat = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
+
+    /**
+     * Get the last run time
+     * @return
+     * @throws IOException
+     */
     private static Date loadLastRun() throws IOException {
         File runFile = new File("data/lastrun");
         if (runFile.exists()) {
@@ -300,6 +323,11 @@ public class ElementsFetchAndTranslate {
         return null;
     }
 
+    /**
+     * Save the last run time
+     * @return
+     * @throws IOException
+     */
     private static void saveLastRun(Date ran) throws IOException {
         File runFile = new File("data/lastrun");
         Writer w = new BufferedWriter(new FileWriter(runFile.getAbsoluteFile()));
@@ -307,6 +335,9 @@ public class ElementsFetchAndTranslate {
         w.close();
     }
 
+    /**
+     * Helper class for throttling the Elements API requests, based on the size of the queue
+     */
     private static class ServiceLimitAPIThrottle implements ElementsAPIThrottle {
         private long maxTranslationQueueSize = -1;
         private long maxTransferQueueSize    = -1;
