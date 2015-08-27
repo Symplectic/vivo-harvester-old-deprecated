@@ -17,9 +17,15 @@ public class CachingServiceImpl {
     private CachingServiceImpl() { }
 
     static {
-        if (Runtime.getRuntime().maxMemory() > 102400) {
+        long maxBytes      = 1024 * 1024 * 1024; // 1 Gig
+        long reservedBytes = 200  * 1024 * 1024; // 200 Meg
+
+        // Ensure that the runtime thinks we have more than 200 Meg available
+        if (Runtime.getRuntime().maxMemory() > reservedBytes) {
             cache = new Cache("cachingService", 0, false, true, 0, 0);
-            cache.getCacheConfiguration().setMaxBytesLocalHeap(Runtime.getRuntime().maxMemory() - 102400);
+
+            // Ensure that the cache can't grow to configured memory - 200Meg, or 1 Gig total, whichever is less
+            cache.getCacheConfiguration().setMaxBytesLocalHeap(Math.min(maxBytes, Runtime.getRuntime().maxMemory() - reservedBytes));
             cacheManager.addCache(cache);
         }
     }

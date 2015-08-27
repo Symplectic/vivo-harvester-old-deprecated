@@ -49,6 +49,8 @@ public class ElementsAPI {
     private int maxRetries = 5;
     private int retryDelayMillis = 500;
 
+    private ElementsAPIThrottle apiThrottle;
+
     /**
      * Factory method to obtain a handle to the API class, configured for a specific API version
      *
@@ -152,6 +154,9 @@ public class ElementsAPI {
                 }
 
                 queryUrl = pagination.getNextURL();
+                if (apiThrottle != null) {
+                    apiThrottle.requestDelay();
+                }
                 pagination = executeQuery(queryUrl, parser);
             }
         }
@@ -175,6 +180,9 @@ public class ElementsAPI {
         ElementsFeedPagination pagination = executeQuery(queryUrl, parser);
         if (pagination != null && relationshipFeedQuery.getProcessAllPages()) {
             while (pagination.getNextURL() != null) {
+                if (apiThrottle != null) {
+                    apiThrottle.requestDelay();
+                }
                 pagination = executeQuery(pagination.getNextURL(), parser);
             }
         }
@@ -317,12 +325,19 @@ public class ElementsAPI {
         return pagination;
     }
 
-    public void setUsername(String username) {
+    public ElementsAPI setUsername(String username) {
         this.username = username;
+        return this;
     }
 
-    public void setPassword(String password) {
+    public ElementsAPI setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public ElementsAPI setAPIThrottle(ElementsAPIThrottle apiThrottle) {
+        this.apiThrottle = apiThrottle;
+        return this;
     }
 
     private ElementsAPI(String version) {
@@ -344,6 +359,12 @@ public class ElementsAPI {
             this.url = url;
         } else {
             this.url = url + "/";
+        }
+
+        if (url.toLowerCase().startsWith("http://")) {
+            this.isSecured = false;
+        } else {
+            this.isSecured = true;
         }
     }
 

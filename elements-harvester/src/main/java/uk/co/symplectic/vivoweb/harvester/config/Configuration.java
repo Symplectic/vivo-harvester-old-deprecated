@@ -121,6 +121,9 @@ public class Configuration {
 
         private Model tripleStore = null;
 
+        private long maxTransferQueueSize = 1000;
+        private long maxTranslationQueueSize = 1000;
+
         private Map<String, String> xslParameters = new HashMap<String, String>();
     };
 
@@ -209,6 +212,10 @@ public class Configuration {
     public static Map<String, String> getXslParameters() { return values.xslParameters; }
 
     public static boolean getIgnoreSSLErrors() { return values.ignoreSSLErrors; }
+
+    public static long getMaxTransferQueueSize() { return values.maxTransferQueueSize; }
+
+    public static long getMaxTranslationQueueSize() { return values.maxTranslationQueueSize; }
 
     public static void parse(String appName, String[] args) throws IOException, UsageException {
         argList = null;

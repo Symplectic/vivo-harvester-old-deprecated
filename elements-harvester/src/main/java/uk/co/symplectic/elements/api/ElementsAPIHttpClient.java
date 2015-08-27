@@ -50,7 +50,7 @@ public class ElementsAPIHttpClient {
         }
 
         // Ensure we do not send request too frequently
-        regulateRequestFrequency();
+        // regulateRequestFrequency();
 
         // Issue get request
         GetMethod getMethod = new GetMethod(url);

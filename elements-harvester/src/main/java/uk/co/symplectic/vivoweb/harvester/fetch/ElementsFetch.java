@@ -65,28 +65,34 @@ public class ElementsFetch {
         return this;
     }
 
-    public void setElementsDeltas(boolean pruning) {
+    public ElementsFetch setElementsDeltas(boolean pruning) {
         this.elementsDeltas = pruning;
+        return this;
     }
 
-    public void setModifiedSince(Date modifiedSince) {
+    public ElementsFetch setModifiedSince(Date modifiedSince) {
         this.modifiedSince = modifiedSince;
+        return this;
     }
 
-    public void setGroupsToHarvest(String groupsToHarvest) {
+    public ElementsFetch setGroupsToHarvest(String groupsToHarvest) {
         this.groupsToHarvest = groupsToHarvest;
+        return this;
     }
 
-    public void setObjectsToHarvest(String objectsToHarvest) {
+    public ElementsFetch setObjectsToHarvest(String objectsToHarvest) {
         this.objectsToHarvest = objectsToHarvest;
+        return this;
     }
 
-    public void setObjectsPerPage(int objectsPerPage) {
+    public ElementsFetch setObjectsPerPage(int objectsPerPage) {
         this.objectsPerPage = objectsPerPage;
+        return this;
     }
 
-    public void setRelationshipsPerPage(int relationshipsPerPage) {
+    public ElementsFetch setRelationshipsPerPage(int relationshipsPerPage) {
         this.relationshipsPerPage = relationshipsPerPage;
+        return this;
     }
 
     public ElementsFetch addFetchObserver(ElementsFetchObserver newObserver) {

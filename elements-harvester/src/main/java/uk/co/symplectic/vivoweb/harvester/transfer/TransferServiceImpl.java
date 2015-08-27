@@ -91,6 +91,9 @@ final public class TransferServiceImpl {
     }
 
 
+    static long getQueueSize() {
+        return wrapper.getQueueSize(); }
+
     static void shutdown() {
         wrapper.shutdown();
     }

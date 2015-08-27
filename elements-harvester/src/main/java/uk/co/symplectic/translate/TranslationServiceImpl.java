@@ -110,6 +110,9 @@ final class TranslationServiceImpl {
         }
     }
 
+    static long getQueueSize() {
+        return wrapper.getQueueSize(); }
+
     static void shutdown() {
         wrapper.shutdown();
     }

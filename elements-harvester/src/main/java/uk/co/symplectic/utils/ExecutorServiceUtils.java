@@ -175,6 +175,10 @@ public final class ExecutorServiceUtils {
             return shutdownParams;
         }
 
+        public long getQueueSize() {
+            return ExecutorServiceUtils.getQueueSize(service);
+        }
+
         public void shutdown() {
             if (!shutdownCalled) {
                 shutdownCalled = true;

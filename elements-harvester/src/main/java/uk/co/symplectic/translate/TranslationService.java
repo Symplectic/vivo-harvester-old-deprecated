@@ -38,6 +38,8 @@ public final class TranslationService {
         return TranslationServiceImpl.translate(config, input, output, translationTemplates, params);
     }
 
+    public static long getQueueSize() { return TranslationServiceImpl.getQueueSize(); }
+
     public static void shutdown() {
         TranslationServiceImpl.shutdown();
     }

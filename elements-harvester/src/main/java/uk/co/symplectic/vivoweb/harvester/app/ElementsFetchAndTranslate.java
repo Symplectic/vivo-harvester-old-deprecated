@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.util.args.UsageException;
 import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIHttpClient;
+import uk.co.symplectic.elements.api.ElementsAPIThrottle;
 import uk.co.symplectic.elements.api.IgnoreSSLErrorsProtocolSocketFactory;
 import uk.co.symplectic.translate.TranslationService;
 import uk.co.symplectic.utils.ExecutorServiceUtils;
@@ -81,10 +82,18 @@ public class ElementsFetchAndTranslate {
                 final String vivoBaseURI = Configuration.getBaseURI();
                 final String xslFilename = Configuration.getXslTemplate();
 
+                final ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI();
+
+                // Max queue sizes for throttling
+                final long maxTransferQueueSize = Configuration.getMaxTransferQueueSize();
+                final long maxTranslationQueueSize = Configuration.getMaxTranslationQueueSize();
+
+                // Are we using deltas from Elements (e.g. direct upload to triple store)
                 boolean useElementsDeltas = Configuration.getUseElementsDeltas();
                 Date lastExecuted = null;
 
                 if (useElementsDeltas) {
+                    // Check that the configuration is consistent with deltas
                     if (
                         currentStaffOnly ||
                         visibleLinksOnly ||
@@ -103,18 +112,31 @@ public class ElementsFetchAndTranslate {
                         System.err.println("Warning: Restricting to groups may be unpredictable.");
                     }
 
+                    // Add an observer to the RDF (translated) store, that will transfer data to the triple store
                     rdfStore.addObserver(
                             TransferElementsRdfStoreObserver.create()
                                     .setTransferredRdfStore(transferredRdfStore)
                     );
 
+                    // Get the time of last execution
                     lastExecuted = loadLastRun();
-                }
 
-                ElementsAPI elementsAPI = ElementsFetchAndTranslate.getElementsAPI();
+                    // Add a throttle to the API, ensuring that neither the translation or transfer service can get overwhelmed
+                    elementsAPI.setAPIThrottle(new ServiceLimitAPIThrottle()
+                                    .setTranslationQueueSize(maxTranslationQueueSize)
+                                    .setTransferQueueSize(maxTransferQueueSize)
+                    );
+                } else {
+                    // We are not using the transfer service, so...
+                    // Add a throttle to the API, ensuring that neither the translation service can get overwhelmed
+                    elementsAPI.setAPIThrottle(new ServiceLimitAPIThrottle()
+                            .setTranslationQueueSize(maxTranslationQueueSize)
+                    );
+                }
 
                 ElementsFetch fetcher = new ElementsFetch(elementsAPI);
 
+                /** Add Elements deltas options **/
                 fetcher.setElementsDeltas(useElementsDeltas);
                 fetcher.setModifiedSince(lastExecuted);
 
@@ -157,6 +179,7 @@ public class ElementsFetchAndTranslate {
                                 .setVisibleLinksOnly(visibleLinksOnly)
                 );
 
+                /** Add observer to ensure we wait for the services to finish **/
                 fetcher.addFetchObserver(new ElementsFetchObserver() {
                     @Override
                     public void postFetch() {
@@ -208,19 +231,6 @@ public class ElementsFetchAndTranslate {
             Protocol.registerProtocol("https", new Protocol("https", new IgnoreSSLErrorsProtocolSocketFactory(), 443));
         }
 
-        String apiEndpoint = Configuration.getApiEndpoint();
-        String apiVersion = Configuration.getApiVersion();
-
-        String apiUsername = Configuration.getApiUsername();
-        String apiPassword = Configuration.getApiPassword();
-
-        boolean apiIsSecure;
-        if (apiEndpoint != null && apiEndpoint.toLowerCase().startsWith("http://")) {
-            apiIsSecure = false;
-        } else {
-            apiIsSecure = true;
-        }
-
         int soTimeout = Configuration.getApiSoTimeout();
         if (soTimeout > 4999 && soTimeout < (30 * 60 * 1000)) {
             ElementsAPIHttpClient.setSoTimeout(soTimeout);
@@ -231,11 +241,9 @@ public class ElementsFetchAndTranslate {
             ElementsAPIHttpClient.setRequestDelay(requestDelay);
         }
 
-        ElementsAPI api = ElementsAPI.getAPI(apiVersion, apiEndpoint, apiIsSecure);
-        if (apiIsSecure) {
-            api.setUsername(apiUsername);
-            api.setPassword(apiPassword);
-        }
+        ElementsAPI api = ElementsAPI.getAPI(Configuration.getApiVersion(), Configuration.getApiEndpoint());
+        api.setUsername(Configuration.getApiUsername());
+        api.setPassword(Configuration.getApiPassword());
 
         return api;
     }
@@ -297,5 +305,59 @@ public class ElementsFetchAndTranslate {
         Writer w = new BufferedWriter(new FileWriter(runFile.getAbsoluteFile()));
         w.write(lastRunFormat.format(ran));
         w.close();
+    }
+
+    private static class ServiceLimitAPIThrottle implements ElementsAPIThrottle {
+        private long maxTranslationQueueSize = -1;
+        private long maxTransferQueueSize    = -1;
+
+        ServiceLimitAPIThrottle() {
+        }
+
+        ServiceLimitAPIThrottle setTranslationQueueSize(long size) {
+            maxTranslationQueueSize = size;
+            return this;
+        }
+
+        ServiceLimitAPIThrottle setTransferQueueSize(long size) {
+            maxTransferQueueSize = size;
+            return this;
+        }
+
+
+        @Override
+        public void requestDelay() {
+            int count = 0;
+            while (isOverloaded()) {
+                if (++count % 10 == 0) {
+                    StringBuilder msg = new StringBuilder();
+                    msg.append("Waiting on");
+                    if (isTranslationOverloaded()) {
+                        msg.append(" TranslationService (" + TranslationService.getQueueSize() + ")");
+                    }
+                    if (isTransferOverloaded()) {
+                        msg.append(" TransferService (" + TransferService.getQueueSize() + ")");
+                    }
+                    System.err.println(msg.toString());
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }
+
+        private boolean isOverloaded() {
+            return isTranslationOverloaded() || isTransferOverloaded();
+        }
+
+        private boolean isTranslationOverloaded() {
+            return maxTranslationQueueSize > 0 && TranslationService.getQueueSize() > maxTranslationQueueSize;
+        }
+
+        private boolean isTransferOverloaded() {
+            return maxTransferQueueSize > 0 && TransferService.getQueueSize() > maxTransferQueueSize;
+        }
     }
 }

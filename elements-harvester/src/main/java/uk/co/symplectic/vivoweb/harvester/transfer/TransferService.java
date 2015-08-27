@@ -31,6 +31,10 @@ public class TransferService {
         TransferServiceImpl.transfer(outputStore, relationshipInfo, translatedRdf);
     }
 
+    public static long getQueueSize() {
+        return TransferServiceImpl.getQueueSize();
+    }
+
     public static void shutdown() {
         TransferServiceImpl.shutdown();
     }
