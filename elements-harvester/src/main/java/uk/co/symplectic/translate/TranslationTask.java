@@ -30,25 +30,6 @@ public class TranslationTask {
         return translateResult.isCancelled();
     }
 
-    public Boolean checkResult() {
-        return checkResult(50);
-    }
-
-    public Boolean checkResult(long timeout) {
-        try {
-            return translateResult.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (ExecutionException ee) {
-            log.error("Execution problem whilst getting result", ee);
-            throw new IllegalStateException(ee);
-        } catch (InterruptedException ie) {
-            log.error("Interrupted execution whilst getting result", ie);
-            throw new IllegalStateException(ie);
-        } catch (TimeoutException te) {
-            log.trace("Timeout attempting to check for result", te);
-            return null;
-        }
-    }
-
     public Boolean waitForResult() {
         try {
             return translateResult.get();

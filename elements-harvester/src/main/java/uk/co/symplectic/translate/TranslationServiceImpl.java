@@ -102,8 +102,12 @@ final class TranslationServiceImpl {
                 log.error("Unable to perform translation on " + input.description(), e);
                 retCode = Boolean.FALSE;
             } finally {
-                try { output.release(); } catch (IOException ie) { }
-                try { input.release(); } catch (IOException ie) { }
+                try { output.release(); } catch (IOException ie) {
+                    log.error("Unable to release translation output", ie);
+                }
+                try { input.release(); } catch (IOException ie) {
+                    log.error("Unable to release translation input", ie);
+                }
             }
 
             return retCode;
