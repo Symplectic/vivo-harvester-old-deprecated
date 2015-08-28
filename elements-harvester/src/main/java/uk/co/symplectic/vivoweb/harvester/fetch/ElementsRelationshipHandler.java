@@ -24,10 +24,10 @@ public class ElementsRelationshipHandler implements ElementsAPIFeedRelationshipS
 
     private ElementsObjectsInRelationships objectsInRelationships = null;
 
-    private ElementsAPI elementsApi;
+    //private ElementsAPI elementsApi;
 
     ElementsRelationshipHandler(ElementsAPI elementsApi, ElementsObjectStore objectStore, ElementsObjectsInRelationships objectsInRelationships) {
-        this.elementsApi = elementsApi;
+        //this.elementsApi = elementsApi;
         this.objectStore = objectStore;
         this.objectsInRelationships = objectsInRelationships;
     }

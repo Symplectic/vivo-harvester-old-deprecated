@@ -65,7 +65,7 @@ public class URLBuilder {
         return urlBuilder.toString();
     }
 
-    class URLParam {
+    static class URLParam {
         private String name;
         private String value;
 

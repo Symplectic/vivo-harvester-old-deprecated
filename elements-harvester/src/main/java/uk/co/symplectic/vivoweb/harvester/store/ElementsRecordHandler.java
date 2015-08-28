@@ -120,7 +120,7 @@ public class ElementsRecordHandler extends RecordHandler {
 			if(!FileAide.exists(fo)) {
 				throw new IllegalArgumentException("Record " + recID + " does not exist!");
 			}
-			br = new BufferedReader(new InputStreamReader(FileAide.getInputStream(fo)));
+			br = new BufferedReader(new InputStreamReader(FileAide.getInputStream(fo), "utf-8"));
 			String line;
 			while((line = br.readLine()) != null) {
 				sb.append(line);

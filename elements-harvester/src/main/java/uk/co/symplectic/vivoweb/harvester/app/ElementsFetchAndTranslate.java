@@ -299,7 +299,7 @@ public class ElementsFetchAndTranslate {
     }
 
     /** Format of the last run time string **/
-    private static DateFormat lastRunFormat = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
+    private static String lastRunFormatStr = "MMM dd yyyy HH:mm:ss";
 
     /**
      * Get the last run time
@@ -309,10 +309,10 @@ public class ElementsFetchAndTranslate {
     private static Date loadLastRun() throws IOException {
         File runFile = new File("data/lastrun");
         if (runFile.exists()) {
-            BufferedReader r = new BufferedReader(new FileReader(runFile.getAbsoluteFile()));
+            BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(runFile), "utf-8"));
             String date = r.readLine();
             try {
-                return lastRunFormat.parse(date);
+                return new SimpleDateFormat(lastRunFormatStr).parse(date);
             } catch (ParseException e) {
                 log.error("Unable to parse date: " + date);
                 System.exit(1);
@@ -330,8 +330,8 @@ public class ElementsFetchAndTranslate {
      */
     private static void saveLastRun(Date ran) throws IOException {
         File runFile = new File("data/lastrun");
-        Writer w = new BufferedWriter(new FileWriter(runFile.getAbsoluteFile()));
-        w.write(lastRunFormat.format(ran));
+        Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(runFile), "utf-8"));
+        w.write(new SimpleDateFormat(lastRunFormatStr).format(ran));
         w.close();
     }
 

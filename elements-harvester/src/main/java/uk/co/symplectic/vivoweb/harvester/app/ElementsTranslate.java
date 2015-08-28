@@ -58,16 +58,19 @@ public class ElementsTranslate implements RecordStreamOrigin {
     private void processDir(ElementsObjectCategory category, File dir) {
         ElementsRdfStore rdfStore = new ElementsRdfStore(rdfRecordStoreDir);
 
-        for (File file : dir.listFiles()) {
-            TranslationResult output;
-            if (category != null) {
-                output = rdfStore.getObjectTranslationResult(ElementsObjectInfo.create(category, file.getName()));
-            } else {
-                output = rdfStore.getRelationshipTranslationResult(ElementsRelationshipInfo.create(file.getName()));
-            }
+        File[] fileList = dir.listFiles();
+        if (fileList != null) {
+            for (File file : fileList) {
+                TranslationResult output;
+                if (category != null) {
+                    output = rdfStore.getObjectTranslationResult(ElementsObjectInfo.create(category, file.getName()));
+                } else {
+                    output = rdfStore.getRelationshipTranslationResult(ElementsRelationshipInfo.create(file.getName()));
+                }
 
-            if (output != null) {
-                translationService.translate(new FileTranslationSource(file), output, template, Configuration.getXslParameters());
+                if (output != null) {
+                    translationService.translate(new FileTranslationSource(file), output, template, Configuration.getXslParameters());
+                }
             }
         }
     }
