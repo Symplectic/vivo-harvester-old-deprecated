@@ -54,12 +54,17 @@ public final class ResourceFetchServiceImpl {
         public Boolean call() throws Exception {
             Boolean retCode = Boolean.TRUE;
 
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(outputFile));
-            retCode = api.fetchResource(url, os);
-            os.close();
+            OutputStream os = new FileOutputStream(outputFile);
+            try {
+                retCode = api.fetchResource(url, os);
+            } finally {
+                os.close();
+            }
 
             if (postFetchCallback != null) {
-                postFetchCallback.fetchSuccess(outputFile);
+                if (retCode) {
+                    postFetchCallback.fetchSuccess(outputFile);
+                }
             }
 
             return retCode;

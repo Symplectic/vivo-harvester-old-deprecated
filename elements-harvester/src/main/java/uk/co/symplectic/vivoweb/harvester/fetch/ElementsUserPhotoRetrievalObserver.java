@@ -20,23 +20,19 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTranslateStagesObserver {
+    private final ElementsAPI elementsApi;
     private final ResourceFetchService fetchService = new ResourceFetchService();
     private ElementsObjectStore objectStore = null;
     private ElementsRdfStore rdfStore = null;
     private File vivoImageDir = null;
     private String vivoBaseURI = null;
 
-    private ElementsAPI elementsApi;
-
-    private ElementsUserPhotoRetrievalObserver() { }
-
-    public static ElementsUserPhotoRetrievalObserver create() {
-        return new ElementsUserPhotoRetrievalObserver();
+    private ElementsUserPhotoRetrievalObserver(ElementsAPI elementsApi) {
+        this.elementsApi = elementsApi;
     }
 
-    public ElementsUserPhotoRetrievalObserver setElementsAPI(ElementsAPI elementsApi) {
-        this.elementsApi = elementsApi;
-        return this;
+    public static ElementsUserPhotoRetrievalObserver create(ElementsAPI elementsApi) {
+        return new ElementsUserPhotoRetrievalObserver(elementsApi);
     }
 
     public ElementsUserPhotoRetrievalObserver setObjectStore(ElementsObjectStore objectStore) {
@@ -63,14 +59,10 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
     public void beingTranslated(final TranslationTask task, final ElementsObjectInfo objectInfo) {
         if (objectInfo instanceof ElementsUserInfo) {
             ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
-            if (!StringUtils.isEmpty(userInfo.getPhotoUrl())) {
-                if (elementsApi != null) {
-                    fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(objectInfo, "photo"),
-                            new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, vivoBaseURI, null)
-                    );
-                } else {
-                    // Log missing API object
-                }
+            if (!StringUtils.isEmpty(userInfo.getPhotoUrl()) && elementsApi != null) {
+                fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(objectInfo, "photo"),
+                        new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, vivoBaseURI, null)
+                );
             }
         }
     }

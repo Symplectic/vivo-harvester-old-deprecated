@@ -158,8 +158,7 @@ public class ElementsFetchAndTranslate {
                                 .setCurrentStaffOnly(currentStaffOnly)
                                 .setExcludedUsers(getExcludedUsers(elementsAPI))
                                 .addObserver(
-                                        ElementsUserPhotoRetrievalObserver.create()
-                                                .setElementsAPI(elementsAPI)
+                                        ElementsUserPhotoRetrievalObserver.create(elementsAPI)
                                                 .setObjectStore(objectStore)
                                                 .setRdfStore(rdfStore)
                                                 .setImageDir(vivoImageDir)

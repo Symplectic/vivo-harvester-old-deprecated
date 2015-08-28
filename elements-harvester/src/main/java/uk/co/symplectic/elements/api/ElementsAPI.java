@@ -202,7 +202,9 @@ public class ElementsAPI {
 
             apiResponse = apiClient.executeGetRequest();
             IOUtils.copy(apiResponse, outputStream);
+            return true;
         } catch (IOException e) {
+            return false;
         } finally {
             if (apiResponse != null) {
                 try {
@@ -212,8 +214,6 @@ public class ElementsAPI {
                 }
             }
         }
-
-        return true;
     }
 
     /**

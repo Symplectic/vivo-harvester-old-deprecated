@@ -15,25 +15,27 @@ import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
+class ElementsUserPhotosFetchCallback implements PostFetchCallback {
     private ElementsUserInfo userInfo = null;
     private ElementsRdfStore rdfStore = null;
     private File vivoImageDir;
     private String imageUrlBase = "/harvestedImages/";
 
-    // TODO: This should be a required configuration parameter, and not optional with a default value
-    private String baseUrl      = "http://vivo.symplectic.co.uk/individual/";
+    private String baseUrl;
 
     private static int VIVO_THUMBNAIL_WIDTH = 200;
     private static int VIVO_THUMBNAIL_HEIGHT = 200;
 
-    public ElementsUserPhotosFetchCallback(ElementsUserInfo userInfo, ElementsRdfStore rdfStore, File vivoImageDir, String vivoBaseURI, String imageUrlBase) {
+    ElementsUserPhotosFetchCallback(ElementsUserInfo userInfo, ElementsRdfStore rdfStore, File vivoImageDir, String vivoBaseURI, String imageUrlBase) {
+        if (StringUtils.isEmpty(vivoBaseURI)) {
+            throw new IllegalStateException("VIVO Base URL must be set");
+        }
+
         this.userInfo = userInfo;
         this.rdfStore = rdfStore;
         this.vivoImageDir = vivoImageDir;
-        if (!StringUtils.isEmpty(vivoBaseURI)) {
-            this.baseUrl = vivoBaseURI;
-        }
+        this.baseUrl = vivoBaseURI;
+
         // TODO: The only caller of this method hard-codes this parameter to a null value
         if (imageUrlBase != null) {
             this.imageUrlBase = imageUrlBase;
@@ -48,7 +50,9 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             // Write out full size image
             File fullImageDir = new File(new File(vivoImageDir, "harvestedImages"), "fullImages");
             if (!fullImageDir.exists()) {
-                fullImageDir.mkdirs();
+                if (!fullImageDir.mkdirs() && !fullImageDir.exists()) {
+                    return;
+                }
             }
 
             ImageUtils.writeFile(image, new File(fullImageDir, uriUserName + ".jpg"), "jpeg");
@@ -56,7 +60,9 @@ public class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             // Write out thumbnail
             File thumbnailDir = new File(new File(vivoImageDir, "harvestedImages"), "thumbnails");
             if (!thumbnailDir.exists()) {
-                thumbnailDir.mkdirs();
+                if (!thumbnailDir.mkdirs() && !thumbnailDir.exists()) {
+                    return ;
+                }
             }
 
             int targetHeight = ImageUtils.getTargetHeight(image.getWidth(), image.getHeight(), VIVO_THUMBNAIL_WIDTH);
