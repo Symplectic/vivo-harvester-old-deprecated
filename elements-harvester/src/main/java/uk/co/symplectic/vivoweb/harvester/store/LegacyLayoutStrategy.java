@@ -24,7 +24,9 @@ public class LegacyLayoutStrategy implements LayoutStrategy {
         }
 
         if (!storeDir.exists()) {
-            storeDir.mkdirs();
+            if (!storeDir.mkdirs() && !storeDir.exists()) {
+                throw new IllegalStateException();
+            }
         }
 
         if (!StringUtils.isEmpty(type)) {
@@ -41,7 +43,9 @@ public class LegacyLayoutStrategy implements LayoutStrategy {
         }
 
         if (!storeDir.exists()) {
-            storeDir.mkdirs();
+            if (!storeDir.mkdirs() && !storeDir.exists()) {
+                throw new IllegalStateException();
+            }
         }
 
         return new File(storeDir, category.getSingular() + "-" + resourceLabel + id);
@@ -54,7 +58,9 @@ public class LegacyLayoutStrategy implements LayoutStrategy {
         }
 
         if (!storeDir.exists()) {
-            storeDir.mkdirs();
+            if (!storeDir.mkdirs() && !storeDir.exists()) {
+                throw new IllegalStateException();
+            }
         }
 
         return new File(storeDir, "relationship" + id);

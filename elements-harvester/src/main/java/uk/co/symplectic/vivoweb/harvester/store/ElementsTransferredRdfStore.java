@@ -115,7 +115,9 @@ public class ElementsTransferredRdfStore {
             } else {
                 // The translated data was empty, so just remove the file
                 if (translatedRdf != null && translatedRdf.exists()) {
-                    translatedRdf.delete();
+                    if (!translatedRdf.delete()) {
+                        log.error("Unable to remove unused translated RDF/XML");
+                    }
                 }
             }
         } finally {

@@ -47,7 +47,9 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
 
         file = new File(file, category.getSingular() + "-" + resourceLabel);
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs() && !file.exists()) {
+                throw new IllegalStateException();
+            }
         }
 
         return new File(file, id);
@@ -62,7 +64,9 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
 
         file = new File(file, "relationship");
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs() && !file.exists()) {
+                throw new IllegalStateException();
+            }
         }
 
         return new File(file, id);

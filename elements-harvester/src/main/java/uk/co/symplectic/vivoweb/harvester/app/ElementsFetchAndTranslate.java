@@ -279,7 +279,9 @@ public class ElementsFetchAndTranslate {
                     vivoImageDir = null;
                 }
             } else {
-                vivoImageDir.mkdirs();
+                if (!vivoImageDir.mkdirs() && !vivoImageDir.exists()) {
+                    vivoImageDir = null;
+                }
             }
         }
 
