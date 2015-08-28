@@ -11,25 +11,23 @@ import java.io.File;
 
 public class TemplatesHolder {
     private final TranslationService translationService = new TranslationService();
+    private final ThreadLocal<Templates> myTemplates;
 
-    private String xslFilename;
-    private ThreadLocal<Templates> myTemplates = new ThreadLocal<Templates>();
-
-    public TemplatesHolder(String xslFilename) {
-        this.xslFilename = xslFilename;
+    public TemplatesHolder(final String xslFilename) {
+        myTemplates = new ThreadLocal<Templates>() {
+            @Override
+            protected Templates initialValue() {
+                File xslFile = new File(xslFilename);
+                if (xslFile.exists()) {
+                    return translationService.compileSource(xslFile);
+                } else {
+                    throw new IllegalStateException("XSL Translation file not found: " + xslFilename);
+                }
+            }
+        };
     }
 
     public Templates getTemplates() {
-        if (myTemplates.get() == null) {
-            File xslFile = new File(xslFilename);
-            if (xslFile.exists()) {
-                Templates template = translationService.compileSource(xslFile);
-                myTemplates.set(template);
-            } else {
-                throw new IllegalStateException("XSL Translation file not found: " + xslFilename);
-            }
-        }
-
         return myTemplates.get();
     }
 }
