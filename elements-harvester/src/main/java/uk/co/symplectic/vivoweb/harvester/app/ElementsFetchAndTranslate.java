@@ -312,7 +312,11 @@ public class ElementsFetchAndTranslate {
             BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(runFile), "utf-8"));
             String date = r.readLine();
             try {
-                return new SimpleDateFormat(lastRunFormatStr).parse(date);
+                if (date != null) {
+                    return new SimpleDateFormat(lastRunFormatStr).parse(date);
+                } else{
+                    throw new ParseException("Last run file was not valid", 0);
+                }
             } catch (ParseException e) {
                 log.error("Unable to parse date: " + date);
                 System.exit(1);

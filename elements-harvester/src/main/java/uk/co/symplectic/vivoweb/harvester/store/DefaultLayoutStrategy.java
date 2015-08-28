@@ -26,7 +26,9 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
 
         file = new File(file, category.getSingular());
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs()) {
+                throw new IllegalStateException();
+            }
         }
 
         if (!StringUtils.isEmpty(type)) {

@@ -21,11 +21,11 @@ public final class ResourceFetchService {
 
     }
 
-    public void fetchElements(ElementsAPI api, String url, File outputFile) throws MalformedURLException {
+    public void fetchElements(ElementsAPI api, String url, File outputFile) {
         ResourceFetchServiceImpl.fetchElements(api, url, outputFile, null);
     }
 
-    public void fetchElements(ElementsAPI api, String url, File outputFile, PostFetchCallback callback) throws MalformedURLException {
+    public void fetchElements(ElementsAPI api, String url, File outputFile, PostFetchCallback callback) {
         ResourceFetchServiceImpl.fetchElements(api, url, outputFile, callback);
     }
 

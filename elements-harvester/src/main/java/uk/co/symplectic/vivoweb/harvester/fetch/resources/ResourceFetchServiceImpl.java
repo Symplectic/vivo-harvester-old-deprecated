@@ -27,16 +27,12 @@ public final class ResourceFetchServiceImpl {
 
     private ResourceFetchServiceImpl() {}
 
-    static void fetchElements(ElementsAPI api, String url, File outputFile, PostFetchCallback callback) throws MalformedURLException {
-        // Attempt to validate the URL by creating a URL object
-        // (This is just to throw a MalformedURLException - we don't need the url object)
-        URL validateUrl = new URL(url);
-
-        Future<Boolean> result = wrapper.submit(new ElementsFetchTask(api, url, outputFile, callback));
+    static void fetchElements(ElementsAPI api, String url, File outputFile, PostFetchCallback callback) {
+        wrapper.submit(new ElementsFetchTask(api, url, outputFile, callback));
     }
 
     static void fetchExternal(String url, File outputFile, PostFetchCallback callback) throws MalformedURLException {
-        Future<Boolean> result = wrapper.submit(new ExternalFetchTask(new URL(url), outputFile, callback));
+        wrapper.submit(new ExternalFetchTask(new URL(url), outputFile, callback));
     }
 
     static class ElementsFetchTask implements Callable<Boolean> {
@@ -70,17 +66,19 @@ public final class ResourceFetchServiceImpl {
         }
     }
 
+    /**
+     * Task for obtaining external resources.
+     * Note that this is a stub for compilation, but has not been implemented yet
+     */
     static class ExternalFetchTask implements Callable<Boolean> {
-        private URL url;
-
-        private File outputFile;
-
-        private PostFetchCallback postFetchCallback;
+        // private URL url;
+        // private File outputFile;
+        // private PostFetchCallback postFetchCallback;
 
         ExternalFetchTask(URL url, File outputFile, PostFetchCallback callback) {
-            this.url = url;
-            this.outputFile = outputFile;
-            this.postFetchCallback = callback;
+            // this.url = url;
+            // this.outputFile = outputFile;
+            // this.postFetchCallback = callback;
         }
 
         @Override

@@ -15,6 +15,7 @@ import java.net.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -57,13 +58,9 @@ public class IgnoreSSLErrorsProtocolSocketFactory implements SecureProtocolSocke
         return getSSLContext().getSocketFactory().createSocket(host, port);
     }
 
-    private SSLContext getSSLContext() {
+    private synchronized SSLContext getSSLContext() {
         if (this.sslcontext == null) {
-            synchronized (this) {
-                if (this.sslcontext == null) {
-                    this.sslcontext = createSSLContext();
-                }
-            }
+            this.sslcontext = createSSLContext();
         }
 
         return this.sslcontext;
@@ -72,43 +69,23 @@ public class IgnoreSSLErrorsProtocolSocketFactory implements SecureProtocolSocke
     private static SSLContext createSSLContext() {
         try {
             SSLContext context = SSLContext.getInstance("SSL");
-            context.init(null, new TrustManager[] {new IgnoreSSLErrorsX509TrustManager()}, null);
+            context.init(null, new TrustManager[] {new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
             return context;
         } catch (Exception e) {
             throw new HttpClientError(e.toString());
-        }
-    }
-
-    static class IgnoreSSLErrorsX509TrustManager implements X509TrustManager {
-        private X509TrustManager standardTrustManager = null;
-
-        IgnoreSSLErrorsX509TrustManager() throws NoSuchAlgorithmException, KeyStoreException {
-            super();
-            TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            factory.init((KeyStore)null);
-            TrustManager[] trustmanagers = factory.getTrustManagers();
-            if (trustmanagers.length == 0) {
-                throw new NoSuchAlgorithmException("no trust manager found");
-            }
-        }
-
-        @Override
-        public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
-            standardTrustManager.checkClientTrusted(certificates, authType);
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
-            if ((certificates != null) && (certificates.length == 1)) {
-                certificates[0].checkValidity();
-            } else {
-                standardTrustManager.checkServerTrusted(certificates, authType);
-            }
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return this.standardTrustManager.getAcceptedIssuers();
         }
     }
 }

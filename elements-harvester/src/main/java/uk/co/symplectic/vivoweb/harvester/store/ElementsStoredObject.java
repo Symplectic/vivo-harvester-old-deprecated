@@ -42,14 +42,6 @@ public class ElementsStoredObject {
         this.objectInfo = objectInfo;
     }
 
-    public ElementsObjectInfo getObjectInfo() {
-        if (objectInfo == null) {
-            parseObjectInfo();
-        }
-
-        return objectInfo;
-    }
-
     public TranslationSource getTranslationSource() {
         if (tempCache != null) {
             return tempCache.translationSource(file);
@@ -66,8 +58,10 @@ public class ElementsStoredObject {
         return id;
     }
 
-    private synchronized void parseObjectInfo() {
-        if (objectInfo == null) {
+    public synchronized ElementsObjectInfo getObjectInfo() {
+        if (objectInfo != null) {
+            return objectInfo;
+        } else {
             objectInfo = ElementsObjectInfoCache.get(category, id);
 
             if (objectInfo == null && file != null && file.exists()) {
@@ -95,5 +89,7 @@ public class ElementsStoredObject {
                 }
             }
         }
+
+        return objectInfo;
     }
 }

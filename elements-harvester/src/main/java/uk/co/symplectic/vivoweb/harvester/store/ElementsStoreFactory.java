@@ -15,40 +15,30 @@ public class ElementsStoreFactory {
     private static ElementsRdfStore rdfStore = null;
     private static ElementsTransferredRdfStore transferStore = null;
 
-    public static ElementsObjectStore getObjectStore() {
-        if (objectStore != null) {
-            return objectStore;
-        } else {
-            synchronized (ElementsStoreFactory.class) {
-                return objectStore != null ? objectStore : (objectStore = new ElementsObjectStore(Configuration.getRawOutputDir()));
-            }
+    public synchronized static ElementsObjectStore getObjectStore() {
+        if (objectStore == null) {
+            objectStore = new ElementsObjectStore(Configuration.getRawOutputDir());
         }
+
+        return objectStore;
     }
 
-    public static ElementsRdfStore getRdfStore() {
-        if (rdfStore != null) {
-            return rdfStore;
-        } else {
-            synchronized (ElementsStoreFactory.class) {
-                return rdfStore != null ? rdfStore : (rdfStore = new ElementsRdfStore(Configuration.getRdfOutputDir()));
-            }
+    public synchronized static ElementsRdfStore getRdfStore() {
+        if (rdfStore == null) {
+            rdfStore = new ElementsRdfStore(Configuration.getRdfOutputDir());
         }
+        return rdfStore;
     }
 
-    public static ElementsTransferredRdfStore getTransferredRdfStore() {
-        if (transferStore != null) {
-            return transferStore;
-        } else {
+    public synchronized static ElementsTransferredRdfStore getTransferredRdfStore() {
+        if (transferStore == null) {
             Model tripleStore  = Configuration.getTripleStore();
             String transferDir = Configuration.getTransferDir();
             if (tripleStore != null && !StringUtils.isEmpty(transferDir)) {
-                synchronized (ElementsStoreFactory.class) {
-                    return transferStore != null ? transferStore :
-                            (transferStore = new ElementsTransferredRdfStore(tripleStore, transferDir));
-                }
+                transferStore = new ElementsTransferredRdfStore(tripleStore, transferDir);
             }
         }
 
-        return null;
+        return transferStore;
     }
 }

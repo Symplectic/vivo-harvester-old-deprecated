@@ -65,13 +65,9 @@ public class ElementsUserPhotoRetrievalObserver implements ElementsObjectTransla
             ElementsUserInfo userInfo = (ElementsUserInfo)objectInfo;
             if (!StringUtils.isEmpty(userInfo.getPhotoUrl())) {
                 if (elementsApi != null) {
-                    try {
-                        fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(objectInfo, "photo"),
-                                new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, vivoBaseURI, null)
-                        );
-                    } catch (MalformedURLException mue) {
-                        // Log error
-                    }
+                    fetchService.fetchElements(elementsApi, userInfo.getPhotoUrl(), objectStore.generateResourceHandle(objectInfo, "photo"),
+                            new ElementsUserPhotosFetchCallback(userInfo, rdfStore, vivoImageDir, vivoBaseURI, null)
+                    );
                 } else {
                     // Log missing API object
                 }

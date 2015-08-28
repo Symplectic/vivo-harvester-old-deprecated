@@ -49,16 +49,10 @@ public class ElementsStoredRelationship {
         return id;
     }
 
-    public ElementsRelationshipInfo getRelationshipInfo() {
-        if (relationshipInfo == null) {
-            parseRelationshipInfo();
-        }
-
-        return relationshipInfo;
-    }
-
-    private synchronized void parseRelationshipInfo() {
-        if (relationshipInfo == null) {
+    public synchronized ElementsRelationshipInfo getRelationshipInfo() {
+        if (relationshipInfo != null) {
+            return relationshipInfo;
+        } else {
             if (file != null && file.exists()) {
                 InputStream inputStream = null;
                 try {
@@ -82,5 +76,7 @@ public class ElementsStoredRelationship {
                 }
             }
         }
+
+        return relationshipInfo;
     }
 }

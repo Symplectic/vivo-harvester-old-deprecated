@@ -33,7 +33,7 @@ class ElementsAPIv4_XURLBuilder implements ElementsAPIURLBuilder {
         }
 
         if (feedQuery.getPerPage() > 0) {
-            queryUrl.addParam("per-page", Integer.toString(feedQuery.getPerPage(), feedQuery.getFullDetails() ? 25 : 100));  //v4.6 introduced a new maximum per page of 25 for full detail
+            queryUrl.addParam("per-page", Integer.toString(feedQuery.getPerPage()));
         }
 
         if (!StringUtils.isEmpty(feedQuery.getModifiedSince())) {

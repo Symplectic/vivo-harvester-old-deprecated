@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StAXUtils {
-    private static XMLInputFactory xmlInputFactory = null;
-    private static XMLOutputFactory xmlOutputFactory = null;
+    private static XMLInputFactory  xmlInputFactory  = XMLInputFactory.newFactory();
+    private static XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
 
     public static List<XMLAttribute> getAttributes(XMLStreamReader xsr) {
         if (xsr.getEventType() != XMLStreamConstants.START_ELEMENT) {
@@ -36,26 +36,10 @@ public final class StAXUtils {
     }
 
     public static XMLInputFactory getXMLInputFactory() {
-        if (xmlInputFactory == null) {
-            synchronized (StAXUtils.class) {
-                if (xmlInputFactory == null) {
-                    xmlInputFactory = XMLInputFactory.newFactory();
-                }
-            }
-        }
-
         return xmlInputFactory;
     }
 
     public static XMLOutputFactory getXMLOutputFactory() {
-        if (xmlOutputFactory == null) {
-            synchronized (StAXUtils.class) {
-                if (xmlOutputFactory == null) {
-                    xmlOutputFactory = XMLOutputFactory.newFactory();
-                }
-            }
-        }
-
         return xmlOutputFactory;
     }
 }

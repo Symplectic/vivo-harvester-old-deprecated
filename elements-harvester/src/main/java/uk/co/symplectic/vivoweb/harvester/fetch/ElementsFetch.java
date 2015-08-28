@@ -71,7 +71,7 @@ public class ElementsFetch {
     }
 
     public ElementsFetch setModifiedSince(Date modifiedSince) {
-        this.modifiedSince = modifiedSince;
+        this.modifiedSince = modifiedSince == null ? null : new Date(modifiedSince.getTime());
         return this;
     }
 

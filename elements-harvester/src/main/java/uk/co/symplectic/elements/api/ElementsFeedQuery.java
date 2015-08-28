@@ -85,9 +85,8 @@ abstract class ElementsFeedQuery {
         this.modifiedSince = modifiedSince;
     }
 
-    private static DateFormat modifiedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     public void setModifiedSince(Date modifiedSince) {
-        this.modifiedSince = modifiedFormat.format(modifiedSince);
+        this.modifiedSince = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(modifiedSince);
     }
 
     public void setDeleted(boolean deleted) { this.deleted = deleted;}

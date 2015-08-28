@@ -62,7 +62,7 @@ public class ElementsTransferredRdfStore {
             }
 
             // If a file exists in the previously transferred directory
-            if (transferredRdf.exists()) {
+            if (transferredRdf != null && transferredRdf.exists()) {
                 // Delete the file
                 boolean deleted = false;
                 try {
@@ -114,7 +114,7 @@ public class ElementsTransferredRdfStore {
                 }
             } else {
                 // The translated data was empty, so just remove the file
-                if (translatedRdf.exists()) {
+                if (translatedRdf != null && translatedRdf.exists()) {
                     translatedRdf.delete();
                 }
             }
