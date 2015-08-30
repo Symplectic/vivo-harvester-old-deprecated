@@ -8,7 +8,6 @@ package uk.co.symplectic.vivoweb.harvester.config;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.lang.StringUtils;
-import org.vivoweb.harvester.util.InitLog;
 import org.vivoweb.harvester.util.args.ArgDef;
 import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
@@ -19,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.co.symplectic.vivoweb.harvester.util.InitLog;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
