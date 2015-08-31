@@ -32,6 +32,7 @@ import uk.co.symplectic.vivoweb.harvester.transfer.TransferElementsRdfStoreObser
 import uk.co.symplectic.vivoweb.harvester.transfer.TransferService;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
+import uk.co.symplectic.vivoweb.harvester.util.Statistics;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -204,6 +205,7 @@ public class ElementsFetchAndTranslate {
                 long execMin = TimeUnit.MINUTES.convert(execution, TimeUnit.MILLISECONDS) - (execHours * 60);
                 long execSec = TimeUnit.SECONDS.convert(execution, TimeUnit.MILLISECONDS) - ((execHours * 60) + execMin) * 60;
                 System.out.println("Completed in " + execHours + " hours " + execMin + " minutes and " + execSec + " secs.");
+                Statistics.print(System.out);
             } catch (IOException e) {
                 System.err.println("Caught IOExcpetion initialising ElementsFetchAndTranslate");
                 e.printStackTrace(System.err);

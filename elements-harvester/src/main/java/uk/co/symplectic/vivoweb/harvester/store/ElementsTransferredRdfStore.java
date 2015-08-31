@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
+import uk.co.symplectic.vivoweb.harvester.util.Statistics;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -34,18 +35,21 @@ public class ElementsTransferredRdfStore {
     }
 
     public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) throws Exception {
-        transfer(layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId()), storedRdf);
+        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId()), storedRdf);
     }
 
     public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) throws Exception {
-        transfer(layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type), storedRdf);
+        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type), storedRdf);
     }
 
     public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) throws Exception {
-        transfer(layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId()), storedRdf);
+        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId()), storedRdf);
     }
 
-    private boolean transfer(File transferredRdf, File translatedRdf) throws Exception {
+    private boolean transfer(String category, File transferredRdf, File translatedRdf) throws Exception {
+        boolean wasRemoved = false;
+        boolean wasAdded = false;
+
         // Jena model for data that has previously been loaded into the triple store
         Model transferredModel = null;
         try {
@@ -58,6 +62,7 @@ public class ElementsTransferredRdfStore {
             if (transferredModel != null) {
                 synchronized (tripleStore) {
                     tripleStore.remove(transferredModel);
+                    wasRemoved = true;
                 }
             }
 
@@ -75,6 +80,7 @@ public class ElementsTransferredRdfStore {
                 if (!deleted && transferredModel != null) {
                     synchronized (tripleStore) {
                         tripleStore.add(transferredModel);
+                        wasRemoved = false;
                     }
                     return false;
                 }
@@ -98,6 +104,7 @@ public class ElementsTransferredRdfStore {
             if (translatedModel != null) {
                 synchronized (tripleStore) {
                     tripleStore.add(translatedModel);
+                    wasAdded = true;
                 }
                 try {
                     // We've added the new data, so move the incoming file to the previously transferred store
@@ -109,6 +116,7 @@ public class ElementsTransferredRdfStore {
                     if (!transferredRdf.exists()) {
                         synchronized (tripleStore) {
                             tripleStore.remove(translatedModel);
+                            wasAdded = false;
                         }
                     }
                 }
@@ -124,6 +132,16 @@ public class ElementsTransferredRdfStore {
             // We no longer need the model of data to add, so free the resources
             if (translatedModel != null) {
                 translatedModel.close();
+            }
+
+            if (category != null) {
+                if (wasRemoved && wasAdded) {
+                    Statistics.updated(category);
+                } else if (wasRemoved) {
+                    Statistics.removed(category);
+                } else if (wasAdded) {
+                    Statistics.added(category);
+                }
             }
         }
 

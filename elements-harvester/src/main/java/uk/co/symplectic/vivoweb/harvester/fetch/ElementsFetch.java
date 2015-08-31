@@ -13,9 +13,8 @@ import uk.co.symplectic.elements.api.ElementsAPI;
 import uk.co.symplectic.elements.api.ElementsAPIFeedObjectQuery;
 import uk.co.symplectic.elements.api.ElementsAPIFeedRelationshipQuery;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsStoreFactory;
+import uk.co.symplectic.vivoweb.harvester.store.*;
+import uk.co.symplectic.vivoweb.harvester.util.Statistics;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -139,29 +138,34 @@ public class ElementsFetch {
         for (String category : objectsToHarvest.split("\\s*,\\s*")) {
             ElementsObjectCategory eoCategory = ElementsObjectCategory.valueOf(category);
             if (eoCategory != null) {
+                Statistics.register(eoCategory.getPlural());
                 feedQuery.setCategory(eoCategory);
-                elementsAPI.execute(feedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
+                elementsAPI.execute(feedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers).addObserver(ObjectStatisticsObserver.modifiedCounter()));
 
                 // If we are only processing changes, we need to get the deleted relationships
                 if (modifiedSince != null) {
                     deletedQuery.setCategory(eoCategory);
-                    elementsAPI.execute(deletedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers));
+                    elementsAPI.execute(deletedQuery, new ElementsObjectHandler(objectStore).addObservers(objectObservers).addObserver(ObjectStatisticsObserver.deletedCounter()));
                 }
             }
         }
 
         ElementsObjectsInRelationships objectsInRelationships = new ElementsObjectsInRelationships();
         if (objectsToHarvest.contains(",")) {
+            Statistics.register(Statistics.RELATIONSHIPS);
             ElementsAPIFeedRelationshipQuery relationshipFeedQuery = new ElementsAPIFeedRelationshipQuery();
             relationshipFeedQuery.setProcessAllPages(true);
             relationshipFeedQuery.setPerPage(relationshipsPerPage);
+            if (modifiedSince != null) {
+                relationshipFeedQuery.setModifiedSince(modifiedSince);
+            }
 
-            elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+            elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers).addObserver(RelationshipStatisticsObserver.modifiedCounter()));
 
             // If we are only processing changes, we need to get the deleted relationships
             if (modifiedSince != null) {
                 relationshipFeedQuery.setDeleted(true);
-                elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers));
+                elementsAPI.execute(relationshipFeedQuery, new ElementsRelationshipHandler(elementsAPI, objectStore, objectsInRelationships).addObservers(relationshipObservers).addObserver(RelationshipStatisticsObserver.deletedCounter()));
             }
         }
 
@@ -176,6 +180,40 @@ public class ElementsFetch {
                     // Delete the RDF objects not marked to be kept
                     rdfStore.pruneExcept(eoCategory, objectsInRelationships.get(eoCategory));
                 }
+            }
+        }
+    }
+
+    private static class ObjectStatisticsObserver implements ElementsObjectObserver {
+        private boolean countingDeleted = false;
+        private ObjectStatisticsObserver(boolean type) { this.countingDeleted = type; }
+
+        static ObjectStatisticsObserver modifiedCounter() { return new ObjectStatisticsObserver(false); }
+        static ObjectStatisticsObserver deletedCounter()  { return new ObjectStatisticsObserver(true); }
+
+        @Override
+        public void observe(ElementsStoredObject object) {
+            if (countingDeleted) {
+                Statistics.deleted(object.getCategory().getPlural());
+            } else {
+                Statistics.modified(object.getCategory().getPlural());
+            }
+        }
+    }
+
+    private static class RelationshipStatisticsObserver implements ElementsRelationshipObserver {
+        private boolean countingDeleted = false;
+        private RelationshipStatisticsObserver(boolean type) { this.countingDeleted = type; }
+
+        static RelationshipStatisticsObserver modifiedCounter() { return new RelationshipStatisticsObserver(false); }
+        static RelationshipStatisticsObserver deletedCounter() { return new RelationshipStatisticsObserver(true); }
+
+        @Override
+        public void observe(ElementsStoredRelationship relationship, ElementsObjectsInRelationships objectsInRelationships) {
+            if (countingDeleted) {
+                Statistics.deleted(Statistics.RELATIONSHIPS);
+            } else {
+                Statistics.modified(Statistics.RELATIONSHIPS);
             }
         }
     }
