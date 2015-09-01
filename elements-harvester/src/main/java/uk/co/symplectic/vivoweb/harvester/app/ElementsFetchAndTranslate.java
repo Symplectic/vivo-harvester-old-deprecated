@@ -34,6 +34,7 @@ import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObser
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.util.Statistics;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -92,6 +93,11 @@ public class ElementsFetchAndTranslate {
                 // Are we using deltas from Elements (e.g. direct upload to triple store)
                 boolean useElementsDeltas = Configuration.getUseElementsDeltas();
                 Date lastExecuted = null;
+
+                // If we are getting images, disable the temporary cache, as they are going to be small anyway
+                if (vivoImageDir != null) {
+                    ImageIO.setUseCache(false);
+                }
 
                 if (useElementsDeltas) {
                     // Check that the configuration is consistent with deltas
