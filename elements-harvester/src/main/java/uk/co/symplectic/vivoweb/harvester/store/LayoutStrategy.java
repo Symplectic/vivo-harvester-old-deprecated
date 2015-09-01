@@ -11,13 +11,13 @@ import uk.co.symplectic.elements.api.ElementsObjectCategory;
 import java.io.File;
 
 public interface LayoutStrategy {
-    public File getObjectFile(File storeDir, ElementsObjectCategory category, String id);
+    public File getObjectFile(File storeDir, ElementsObjectCategory category, String id, FileFormat format);
 
-    public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type);
+    public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type, FileFormat format);
 
     public File getResourceFile(File storeDir, ElementsObjectCategory category, String resourceLabel, String id);
 
-    public File getRelationshipFile(File storeDir, String id);
+    public File getRelationshipFile(File storeDir, String id, FileFormat format);
 
     public String getRootNodeForType(String type);
 }

@@ -27,14 +27,6 @@ public class ElementsObjectStore {
         this.dir = new File(dir);
     }
 
-    public void setUseLegacyLayout(boolean layout) {
-        if (layout) {
-            layoutStrategy = new LegacyLayoutStrategy();
-        } else {
-            layoutStrategy = new DefaultLayoutStrategy();
-        }
-    }
-
     public File generateResourceHandle(ElementsObjectInfo objectInfo, String resourceLabel) {
         return getResourceFile(objectInfo.getCategory(), resourceLabel, objectInfo.getId());
     }
@@ -98,7 +90,7 @@ public class ElementsObjectStore {
     }
 
     private File getObjectFile(ElementsObjectCategory category, String id) {
-        return layoutStrategy.getObjectFile(dir, category, id);
+        return layoutStrategy.getObjectFile(dir, category, id, FileFormat.XML);
     }
 
     private File getResourceFile(ElementsObjectCategory category, String resourceLabel, String id) {
@@ -106,6 +98,6 @@ public class ElementsObjectStore {
     }
 
     private File getRelationshipFile(String id) {
-        return layoutStrategy.getRelationshipFile(dir, id);
+        return layoutStrategy.getRelationshipFile(dir, id, FileFormat.XML);
     }
 }

@@ -32,7 +32,7 @@ public class ElementsStoreFactory {
 
     public synchronized static ElementsTransferredRdfStore getTransferredRdfStore() {
         if (transferStore == null) {
-            Model tripleStore  = Configuration.getTripleStore();
+            Model tripleStore  = Configuration.getAssertedModel();
             String transferDir = Configuration.getTransferDir();
             if (tripleStore != null && !StringUtils.isEmpty(transferDir)) {
                 transferStore = new ElementsTransferredRdfStore(tripleStore, transferDir);

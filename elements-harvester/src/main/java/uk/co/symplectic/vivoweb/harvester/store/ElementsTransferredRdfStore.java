@@ -35,15 +35,15 @@ public class ElementsTransferredRdfStore {
     }
 
     public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) throws Exception {
-        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId()), storedRdf);
+        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.XML), storedRdf);
     }
 
     public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) throws Exception {
-        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type), storedRdf);
+        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.XML), storedRdf);
     }
 
     public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) throws Exception {
-        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId()), storedRdf);
+        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.XML), storedRdf);
     }
 
     private boolean transfer(String category, File transferredRdf, File translatedRdf) throws Exception {

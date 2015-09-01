@@ -13,12 +13,12 @@ import java.io.File;
 
 public class DefaultLayoutStrategy implements LayoutStrategy {
     @Override
-    public File getObjectFile(File storeDir, ElementsObjectCategory category, String id) {
-        return  getObjectExtraFile(storeDir, category, id, null);
+    public File getObjectFile(File storeDir, ElementsObjectCategory category, String id, FileFormat format) {
+        return  getObjectExtraFile(storeDir, category, id, null, format);
     }
 
     @Override
-    public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type) {
+    public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type, FileFormat format) {
         File file = storeDir;
         if (storeDir == null || category == null) {
             throw new IllegalStateException();
@@ -31,10 +31,11 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
             }
         }
 
+        String extension = StringUtils.isEmpty(format.getExtension()) ? "" : "." + format.getExtension();
         if (!StringUtils.isEmpty(type)) {
-            return new File(file, id + "-" + type);
+            return new File(file, id + "-" + type + extension);
         } else {
-            return new File(file, id);
+            return new File(file, id + extension);
         }
     }
 
@@ -56,7 +57,7 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
     }
 
     @Override
-    public File getRelationshipFile(File storeDir, String id) {
+    public File getRelationshipFile(File storeDir, String id, FileFormat format) {
         File file = storeDir;
         if (storeDir == null) {
             throw new IllegalStateException();
@@ -69,7 +70,8 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
             }
         }
 
-        return new File(file, id);
+        String extension = StringUtils.isEmpty(format.getExtension()) ? "" : "." + format.getExtension();
+        return new File(file, id + extension);
     }
 
     public String getRootNodeForType(String type) {

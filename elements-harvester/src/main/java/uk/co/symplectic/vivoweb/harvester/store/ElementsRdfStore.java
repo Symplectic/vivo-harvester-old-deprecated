@@ -32,6 +32,11 @@ public class ElementsRdfStore {
         this.dir = new File(dir);
     }
 
+    public ElementsRdfStore setKeepEmpty(boolean keepEmpty) {
+        this.keepEmpty = keepEmpty;
+        return this;
+    }
+
     public ElementsRdfStore addObserver(ElementsRdfStoreObserver newObserver) {
         this.storeObservers.add(newObserver);
         return this;
@@ -79,23 +84,39 @@ public class ElementsRdfStore {
     }
 
     public RdfTranslationResult getObjectTranslationResult(ElementsObjectInfo objectInfo) {
-        return new RdfTranslationResult(fileMemStore, objectInfo, getObjectFile(objectInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
-    }
-
-    public File getObjectFile(ElementsObjectInfo objectInfo) {
-        return layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId());
+        return new RdfTranslationResult(this, objectInfo);
     }
 
     public RdfTranslationResult getRelationshipTranslationResult(ElementsRelationshipInfo relationshipInfo) {
-        return new RdfTranslationResult(fileMemStore, relationshipInfo, getRelationshipFile(relationshipInfo)).setKeepEmpty(keepEmpty).setRdfStoreObservers(storeObservers);
+        return new RdfTranslationResult(this, relationshipInfo);
     }
 
-    public File getRelationshipFile(ElementsRelationshipInfo relationshipInfo) {
-        return layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId());
+    public void writeObject(ElementsObjectInfo objectInfo, byte[] rdf) throws IOException {
+        File file = layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.XML);
+
+        if (keepEmpty || (rdf != null && rdf.length > 0)) {
+            OutputStream outputStream = null;
+            try {
+                outputStream = new FileOutputStream(file);
+                outputStream.write(rdf);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            if (fileMemStore != null) {
+                fileMemStore.put(file, rdf);
+            }
+
+            for (ElementsRdfStoreObserver observer : storeObservers) {
+                observer.storedObjectRdf(objectInfo, file);
+            }
+        }
     }
 
     public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, byte[] rdf) {
-        File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type);
+        File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.XML);
 
         if (file != null) {
             try {
@@ -118,5 +139,29 @@ public class ElementsRdfStore {
         }
 
         return true;
+    }
+
+    public void writeRelationship(ElementsRelationshipInfo relationshipInfo, byte[] rdf) throws IOException {
+        File file = layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.XML);
+
+        if (keepEmpty || (rdf != null && rdf.length > 0)) {
+            OutputStream outputStream = null;
+            try {
+                outputStream = new FileOutputStream(file);
+                outputStream.write(rdf);
+            } finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+
+            if (fileMemStore != null) {
+                fileMemStore.put(file, rdf);
+            }
+
+            for (ElementsRdfStoreObserver observer : storeObservers) {
+                observer.storedRelationshipRdf(relationshipInfo, file);
+            }
+        }
     }
 }

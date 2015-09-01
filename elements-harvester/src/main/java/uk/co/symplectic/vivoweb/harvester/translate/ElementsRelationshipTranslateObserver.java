@@ -36,8 +36,6 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
     private boolean currentStaffOnly = true;
     private boolean visibleLinksOnly = true;
 
-    private boolean keepEmpty = false;
-
     private Map<String, String> xslParameters = null;
 
     private ElementsRelationshipTranslateObserver() {
@@ -74,11 +72,6 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
 
     public static ElementsRelationshipTranslateObserver create() {
         return new ElementsRelationshipTranslateObserver();
-    }
-
-    public ElementsRelationshipTranslateObserver setKeepEmpty(boolean keepEmpty) {
-        this.keepEmpty = keepEmpty;
-        return this;
     }
 
     public ElementsRelationshipTranslateObserver setXslParameters(Map<String, String> xslParameters) {
@@ -141,7 +134,7 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
              */
             TranslationTask task = translationService.translate(
                     relationship.getTranslationSource(),
-                    rdfStore.getRelationshipTranslationResult(relationship.getRelationshipInfo()).setKeepEmpty(keepEmpty),
+                    rdfStore.getRelationshipTranslationResult(relationship.getRelationshipInfo()),
                     templatesHolder,
                     xslParameters
             );

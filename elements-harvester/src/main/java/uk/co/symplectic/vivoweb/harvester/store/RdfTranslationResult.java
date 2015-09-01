@@ -16,44 +16,24 @@ import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RdfTranslationResult implements TranslationResult {
     private static final Logger log = LoggerFactory.getLogger(RdfTranslationResult.class);
-    private FileTempCache fileMemStore;
+    private ElementsRdfStore rdfStore;
     private File output;
 
     private ElementsObjectInfo objectInfo = null;
     private ElementsRelationshipInfo relationshipInfo = null;
 
-    private boolean keepEmpty = false;
-
-    private final List<ElementsRdfStoreObserver> storeObservers = new ArrayList<ElementsRdfStoreObserver>();
-
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    RdfTranslationResult(FileTempCache fileMemStore, ElementsObjectInfo objectInfo, File output) {
-        this.fileMemStore = fileMemStore;
-        this.output = output;
+    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsObjectInfo objectInfo) {
+        this.rdfStore = rdfStore;
         this.objectInfo = objectInfo;
     }
-    RdfTranslationResult(FileTempCache fileMemStore, ElementsRelationshipInfo relationshipInfo, File output) {
-        this.fileMemStore = fileMemStore;
-        this.output = output;
+    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsRelationshipInfo relationshipInfo) {
+        this.rdfStore = rdfStore;
         this.relationshipInfo = relationshipInfo;
-    }
-
-    public RdfTranslationResult setKeepEmpty(boolean keepEmpty) {
-        this.keepEmpty = keepEmpty;
-        return this;
-    }
-
-    public RdfTranslationResult setRdfStoreObservers(List<ElementsRdfStoreObserver> observers) {
-        if (observers != null) {
-            storeObservers.addAll(observers);
-        }
-        return this;
     }
 
     @Override
@@ -79,28 +59,10 @@ public class RdfTranslationResult implements TranslationResult {
             arr = xml.getBytes("utf-8");
         }
 
-        if (keepEmpty || (arr != null && arr.length > 0)) {
-            OutputStream outputStream = null;
-            try {
-                outputStream = new FileOutputStream(output);
-                outputStream.write(arr);
-            } finally {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-
-            if (fileMemStore != null) {
-                fileMemStore.put(output, arr);
-            }
-
-            for (ElementsRdfStoreObserver observer : storeObservers) {
-                if (objectInfo != null) {
-                    observer.storedObjectRdf(objectInfo, output);
-                } else if (relationshipInfo != null) {
-                    observer.storedRelationshipRdf(relationshipInfo, output);
-                }
-            }
+        if (objectInfo != null) {
+            rdfStore.writeObject(objectInfo, arr);
+        } else if (relationshipInfo != null) {
+            rdfStore.writeRelationship(relationshipInfo, arr);
         }
     }
 }

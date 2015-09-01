@@ -33,7 +33,10 @@ public class Configuration {
     private static final String ARG_RDF_OUTPUT_DIRECTORY = "rdfOutput";
 
     private static final String ARG_TRANSFER_DIR     = "transferDir";
-    private static final String ARG_LIVE_TRIPLESTORE = "liveStore";
+    private static final String ARG_TRIPLESTORE      = "liveStore";
+
+    private static final String ARG_TRANSLATE_FORMAT      = "translateFormat";
+    private static final String ARG_INFERENCE_MODEL_URI   = "inferenceModelUri";
 
     private static final String ARG_XSL_TEMPLATE         = "xslTemplate";
 
@@ -79,6 +82,8 @@ public class Configuration {
     private static final String DEFAULT_RAW_OUTPUT_DIR = "data/raw-records/";
     private static final String DEFAULT_RDF_OUTPUT_DIR = "data/translated-records/";
 
+    private static final String DEFAULT_INFERENCE_MODEL_URI = "http://vitro.mannlib.cornell.edu/default/vitro-kb-inf";
+
     private static ArgParser parser = null;
     private static ArgList argList = null;
 
@@ -110,14 +115,18 @@ public class Configuration {
         private String vivoImageDir = DEFAULT_IMAGE_DIR;
         private String baseURI = DEFAULT_BASE_URI;
         private String xslTemplate;
+        private String translateFormat = null;
 
         private String rawOutputDir = DEFAULT_RAW_OUTPUT_DIR;
         private String rdfOutputDir = DEFAULT_RDF_OUTPUT_DIR;
         private String transferDir  = DEFAULT_TRANSFER_DIR;
 
+        private String inferenceModelUri = DEFAULT_INFERENCE_MODEL_URI;
+
         private static boolean ignoreSSLErrors = false;
 
-        private Model tripleStore = null;
+        private Model assertedModel  = null;
+        private Model inferenceModel = null;
 
         private long maxTransferQueueSize = 1000;
         private long maxTranslationQueueSize = 1000;
@@ -199,9 +208,10 @@ public class Configuration {
     public static String getRdfOutputDir() { return values.rdfOutputDir; }
     public static String getTransferDir() { return values.transferDir; }
 
-    public static Model getTripleStore() { return values.tripleStore; }
+    public static Model getAssertedModel()  { return values.assertedModel; }
+    public static Model getInferenceModel() { return values.inferenceModel; }
 
-    public static boolean getUseElementsDeltas() { return values.tripleStore != null; }
+    public static boolean getUseElementsDeltas() { return values.assertedModel != null; }
 
     public static Map<String, String> getXslParameters() { return values.xslParameters; }
 
@@ -218,7 +228,7 @@ public class Configuration {
         parser.addArgument(new ArgDef().setShortOption('t').setLongOpt(ARG_RDF_OUTPUT_DIRECTORY).setDescription("Translated RecordHandler config file path").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_TRANSFER_DIR).setDescription("Directory for holding RDF/XML for deltas").withParameter(true, "CONFIG_FILE"));
-        parser.addArgument(new ArgDef().setLongOpt(ARG_LIVE_TRIPLESTORE).setDescription("Live triple store (Elements deltas)").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_TRIPLESTORE).setDescription("Live triple store (Elements deltas)").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('g').setLongOpt(ARG_API_PARAMS_GROUPS).setDescription("Groups to restrict queries to").withParameter(true, "CONFIG_FILE"));
 
@@ -250,6 +260,9 @@ public class Configuration {
         parser.addArgument(new ArgDef().setLongOpt(ARG_MAX_TRANSFER_THREADS).setDescription("Maximum number of Threads to use for the Triple Store loading").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setLongOpt(ARG_IGNORE_SSL_ERRORS).setDescription("Ignore SSL Errors").withParameter(true, "CONFIG_FILE"));
+
+        parser.addArgument(new ArgDef().setLongOpt(ARG_TRANSLATE_FORMAT).setDescription("Output format of translation").withParameter(true, "CONFIG_FILE"));
+        parser.addArgument(new ArgDef().setLongOpt(ARG_INFERENCE_MODEL_URI).setDescription("Inference model uri").withParameter(true, "CONFIG_FILE"));
 
         parser.addArgument(new ArgDef().setShortOption('z').setLongOpt(ARG_XSL_TEMPLATE).setDescription("XSL Template").withParameter(true, "CONFIG_FILE"));
 
@@ -285,17 +298,31 @@ public class Configuration {
             values.baseURI      = getString(ARG_VIVO_BASE_URI, DEFAULT_BASE_URI);
             values.vivoImageDir = getString(ARG_VIVO_IMAGE_DIR, DEFAULT_IMAGE_DIR);
             values.xslTemplate = getString(ARG_XSL_TEMPLATE);
-
+            values.translateFormat = getString(ARG_TRANSLATE_FORMAT);
             values.transferDir = getFileDir(argList.get(ARG_TRANSFER_DIR), DEFAULT_TRANSFER_DIR);
             values.rawOutputDir = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
             values.rdfOutputDir = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
 
             values.ignoreSSLErrors = getBoolean(ARG_IGNORE_SSL_ERRORS, false);
 
-            if ("memory".equalsIgnoreCase(argList.get(ARG_LIVE_TRIPLESTORE))) {
-                values.tripleStore = new MemJenaConnect().getJenaModel();
-            } else if (!StringUtils.isEmpty(argList.get(ARG_LIVE_TRIPLESTORE))) {
-                values.tripleStore = JenaConnect.parseConfig(argList.get(ARG_LIVE_TRIPLESTORE)).getJenaModel();
+            values.inferenceModelUri = getString(ARG_INFERENCE_MODEL_URI, DEFAULT_INFERENCE_MODEL_URI);
+
+            if ("memory".equalsIgnoreCase(argList.get(ARG_TRIPLESTORE))) {
+                values.assertedModel  = new MemJenaConnect().getJenaModel();
+                if ("trig".equalsIgnoreCase(values.translateFormat)) {
+                    values.inferenceModel = new MemJenaConnect().getJenaModel();
+                }
+            } else if (!StringUtils.isEmpty(argList.get(ARG_TRIPLESTORE))) {
+                values.assertedModel = JenaConnect.parseConfig(argList.get(ARG_TRIPLESTORE)).getJenaModel();
+                if ("trig".equalsIgnoreCase(values.translateFormat)) {
+                    Map<String, String> infModelOverride = new HashMap<String, String>();
+                    infModelOverride.put("modelName", values.inferenceModelUri);
+                    values.inferenceModel = JenaConnect.parseConfig(argList.get(ARG_TRIPLESTORE), infModelOverride).getJenaModel();
+                }
+            }
+
+            if (!StringUtils.isEmpty(values.translateFormat)) {
+                values.xslParameters.put("translateFormat", values.translateFormat);
             }
 
             if (!StringUtils.isEmpty(values.baseURI)) {

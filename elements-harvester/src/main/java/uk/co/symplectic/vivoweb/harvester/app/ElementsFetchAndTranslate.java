@@ -125,6 +125,8 @@ public class ElementsFetchAndTranslate {
                                     .setTransferredRdfStore(transferredRdfStore)
                     );
 
+                    rdfStore.setKeepEmpty(true);
+
                     // Get the time of last execution
                     lastExecuted = loadLastRun();
 
@@ -134,10 +136,12 @@ public class ElementsFetchAndTranslate {
                                     .setTransferQueueSize(maxTransferQueueSize)
                     );
                 } else {
+                    rdfStore.setKeepEmpty(false);
+
                     // We are not using the transfer service, so...
                     // Add a throttle to the API, ensuring that neither the translation service can get overwhelmed
                     elementsAPI.setAPIThrottle(new ServiceLimitAPIThrottle()
-                            .setTranslationQueueSize(maxTranslationQueueSize)
+                                    .setTranslationQueueSize(maxTranslationQueueSize)
                     );
                 }
 
@@ -159,7 +163,6 @@ public class ElementsFetchAndTranslate {
                 fetcher.addObjectObserver(
                         ElementsObjectTranslateObserver.create()
                                 .setRdfStore(rdfStore)
-                                .setKeepEmpty(useElementsDeltas)
                                 .setXslTemplate(xslFilename)
                                 .setXslParameters(Configuration.getXslParameters())
                                 .setCurrentStaffOnly(currentStaffOnly)
@@ -178,7 +181,6 @@ public class ElementsFetchAndTranslate {
                         ElementsRelationshipTranslateObserver.create()
                                 .setObjectStore(objectStore)
                                 .setRdfStore(rdfStore)
-                                .setKeepEmpty(useElementsDeltas)
                                 .setXslTemplate(xslFilename)
                                 .setXslParameters(Configuration.getXslParameters())
                                 .setCurrentStaffOnly(currentStaffOnly)

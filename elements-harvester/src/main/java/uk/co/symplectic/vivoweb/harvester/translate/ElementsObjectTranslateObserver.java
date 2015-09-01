@@ -32,8 +32,6 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private final TranslationService translationService = new TranslationService();
     private TemplatesHolder templatesHolder = null;
 
-    private boolean keepEmpty = false;
-
     private Map<String, String> xslParameters = null;
 
     private ElementsObjectTranslateObserver() { }
@@ -44,11 +42,6 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
 
     public ElementsObjectTranslateObserver setRdfStore(ElementsRdfStore rdfStore) {
         this.rdfStore = rdfStore;
-        return this;
-    }
-
-    public ElementsObjectTranslateObserver setKeepEmpty(boolean keepEmpty) {
-        this.keepEmpty = keepEmpty;
         return this;
     }
 
@@ -124,7 +117,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
              */
             TranslationTask task = translationService.translate(
                     object.getTranslationSource(),
-                    rdfStore.getObjectTranslationResult(object.getObjectInfo()).setKeepEmpty(keepEmpty),
+                    rdfStore.getObjectTranslationResult(object.getObjectInfo()),
                     templatesHolder,
                     xslParameters
             );
