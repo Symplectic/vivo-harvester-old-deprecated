@@ -11,6 +11,7 @@ import uk.co.symplectic.utils.ImageUtils;
 import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -109,7 +110,7 @@ class ElementsUserPhotosFetchCallback implements PostFetchCallback {
                 photoXml.write("</rdf:RDF>");
                 photoXml.flush();
 
-                rdfStore.writeObjectExtra(userInfo, "photo", photoOS.toByteArray());
+                rdfStore.writeObjectExtra(userInfo, "photo", photoOS.toByteArray(), FileFormat.RDF_XML);
             } catch (IOException e) {
 
             } finally {

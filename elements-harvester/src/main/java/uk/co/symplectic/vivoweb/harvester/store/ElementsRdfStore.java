@@ -115,8 +115,8 @@ public class ElementsRdfStore {
         }
     }
 
-    public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, byte[] rdf) {
-        File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.XML);
+    public boolean writeObjectExtra(ElementsObjectInfo objectInfo, String type, byte[] rdf, FileFormat format) {
+        File file = layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, format);
 
         if (file != null) {
             try {
