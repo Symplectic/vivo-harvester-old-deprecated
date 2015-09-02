@@ -16,12 +16,10 @@ import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectsInRelationships;
 import uk.co.symplectic.vivoweb.harvester.fetch.ElementsRelationshipObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsObjectStore;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
-import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredRelationship;
+import uk.co.symplectic.vivoweb.harvester.store.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +35,7 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
     private boolean visibleLinksOnly = true;
 
     private Map<String, String> xslParameters = null;
+    private FileFormat outputFormat = FileFormat.RDF_XML;
 
     private ElementsRelationshipTranslateObserver() {
     }
@@ -75,9 +74,21 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
     }
 
     public ElementsRelationshipTranslateObserver setXslParameters(Map<String, String> xslParameters) {
-        this.xslParameters = xslParameters;
+        this.xslParameters = new HashMap<String, String>(xslParameters);
+        if (this.outputFormat != null && !StringUtils.isEmpty(this.outputFormat.getLabel())) {
+            xslParameters.put("outputFormat", this.outputFormat.getLabel());
+        }
         return this;
     }
+
+    public ElementsRelationshipTranslateObserver setOutputFormat(FileFormat outputFormat) {
+        this.outputFormat = outputFormat == null ? FileFormat.RDF_XML : outputFormat;
+        if (this.outputFormat != null && !StringUtils.isEmpty(this.outputFormat.getLabel())) {
+            xslParameters.put("outputFormat", this.outputFormat.getLabel());
+        }
+        return this;
+    }
+
 
     public ElementsRelationshipTranslateObserver addObserver(ElementsRelationshipTranslateStagesObserver newObserver) {
         if (newObserver != null) {
@@ -134,7 +145,7 @@ public class ElementsRelationshipTranslateObserver implements ElementsRelationsh
              */
             TranslationTask task = translationService.translate(
                     relationship.getTranslationSource(),
-                    rdfStore.getRelationshipTranslationResult(relationship.getRelationshipInfo()),
+                    rdfStore.getRelationshipTranslationResult(relationship.getRelationshipInfo(), outputFormat),
                     templatesHolder,
                     xslParameters
             );

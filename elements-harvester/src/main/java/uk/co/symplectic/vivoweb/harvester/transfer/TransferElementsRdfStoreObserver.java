@@ -10,6 +10,7 @@ import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStoreObserver;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
 import java.io.File;
 
@@ -35,17 +36,17 @@ public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserve
     }
 
     @Override
-    public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) {
-        transferService.transferObjectRdf(transferredRdfStore, objectInfo, storedRdf);
+    public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf, FileFormat storedFormat) {
+        transferService.transferObjectRdf(transferredRdfStore, objectInfo, storedRdf, storedFormat);
     }
 
     @Override
-    public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) {
-        transferService.transferObjectExtraRdf(transferredRdfStore, objectInfo, type, storedRdf);
+    public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf, FileFormat storedFormat) {
+        transferService.transferObjectExtraRdf(transferredRdfStore, objectInfo, type, storedRdf, storedFormat);
     }
 
     @Override
-    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) {
-        transferService.transferRelationshipRdf(transferredRdfStore, relationshipInfo, storedRdf);
+    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf, FileFormat storedFormat) {
+        transferService.transferRelationshipRdf(transferredRdfStore, relationshipInfo, storedRdf, storedFormat);
     }
 }

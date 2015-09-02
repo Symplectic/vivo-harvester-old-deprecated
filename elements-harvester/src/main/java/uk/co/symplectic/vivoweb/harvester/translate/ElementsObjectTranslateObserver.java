@@ -15,11 +15,9 @@ import uk.co.symplectic.vivoweb.harvester.fetch.ElementsObjectObserver;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsStoredObject;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private final List<ElementsObjectTranslateStagesObserver> objectObservers = new ArrayList<ElementsObjectTranslateStagesObserver>();
@@ -33,6 +31,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     private TemplatesHolder templatesHolder = null;
 
     private Map<String, String> xslParameters = null;
+    private FileFormat outputFormat = FileFormat.RDF_XML;
 
     private ElementsObjectTranslateObserver() { }
 
@@ -54,7 +53,18 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
     }
 
     public ElementsObjectTranslateObserver setXslParameters(Map<String, String> xslParameters) {
-        this.xslParameters = xslParameters;
+        this.xslParameters = new HashMap<String, String>(xslParameters);
+        if (this.outputFormat != null && !StringUtils.isEmpty(this.outputFormat.getLabel())) {
+            this.xslParameters.put("outputFormat", this.outputFormat.getLabel());
+        }
+        return this;
+    }
+
+    public ElementsObjectTranslateObserver setOutputFormat(FileFormat outputFormat) {
+        this.outputFormat = outputFormat == null ? FileFormat.RDF_XML : outputFormat;
+        if (this.outputFormat != null && !StringUtils.isEmpty(this.outputFormat.getLabel())) {
+            xslParameters.put("outputFormat", this.outputFormat.getLabel());
+        }
         return this;
     }
 
@@ -117,7 +127,7 @@ public class ElementsObjectTranslateObserver implements ElementsObjectObserver {
              */
             TranslationTask task = translationService.translate(
                     object.getTranslationSource(),
-                    rdfStore.getObjectTranslationResult(object.getObjectInfo()),
+                    rdfStore.getObjectTranslationResult(object.getObjectInfo(), outputFormat),
                     templatesHolder,
                     xslParameters
             );

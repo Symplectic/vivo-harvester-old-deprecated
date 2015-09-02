@@ -24,6 +24,7 @@ import uk.co.symplectic.vivoweb.harvester.config.Configuration;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,9 +64,9 @@ public class ElementsTranslate implements RecordStreamOrigin {
             for (File file : fileList) {
                 TranslationResult output;
                 if (category != null) {
-                    output = rdfStore.getObjectTranslationResult(ElementsObjectInfo.create(category, file.getName()));
+                    output = rdfStore.getObjectTranslationResult(ElementsObjectInfo.create(category, file.getName()), FileFormat.RDF_XML);
                 } else {
-                    output = rdfStore.getRelationshipTranslationResult(ElementsRelationshipInfo.create(file.getName()));
+                    output = rdfStore.getRelationshipTranslationResult(ElementsRelationshipInfo.create(file.getName()), FileFormat.RDF_XML);
                 }
 
                 if (output != null) {

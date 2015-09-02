@@ -12,6 +12,7 @@ import uk.co.symplectic.utils.ExecutorServiceUtils;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -22,32 +23,34 @@ final public class TransferServiceImpl {
 
     private TransferServiceImpl() { }
 
-    static void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
-        wrapper.submit(new TransferObjectHandler(outputStore, objectInfo, translatedRdf));
+    static void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf, FileFormat rdfFormat) {
+        wrapper.submit(new TransferObjectHandler(outputStore, objectInfo, translatedRdf, rdfFormat));
     }
 
-    static void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
-        wrapper.submit(new TransferObjectExtraHandler(outputStore, objectInfo, type, translatedRdf));
+    static void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf, FileFormat rdfFormat) {
+        wrapper.submit(new TransferObjectExtraHandler(outputStore, objectInfo, type, translatedRdf, rdfFormat));
     }
 
-    static void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
-        wrapper.submit(new TransferRelationshipHandler(outputStore, relationshipInfo, translatedRdf));
+    static void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf, FileFormat rdfFormat) {
+        wrapper.submit(new TransferRelationshipHandler(outputStore, relationshipInfo, translatedRdf, rdfFormat));
     }
 
     static class TransferObjectHandler implements Callable<Boolean> {
         private ElementsTransferredRdfStore outputStore;
         private File translatedRdf;
+        private FileFormat rdfFormat;
 
         private ElementsObjectInfo objectInfo;
 
-        TransferObjectHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+        TransferObjectHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf, FileFormat rdfFormat) {
             this.outputStore   = outputStore;
             this.objectInfo    = objectInfo;
             this.translatedRdf = translatedRdf;
+            this.rdfFormat     = rdfFormat;
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceObjectRdf(objectInfo, translatedRdf);
+            outputStore.replaceObjectRdf(objectInfo, translatedRdf, rdfFormat);
             return true;
         }
     }
@@ -55,19 +58,21 @@ final public class TransferServiceImpl {
     static class TransferObjectExtraHandler implements Callable<Boolean> {
         private ElementsTransferredRdfStore outputStore;
         private File translatedRdf;
+        private FileFormat rdfFormat;
 
         private ElementsObjectInfo objectInfo;
         private String type;
 
-        TransferObjectExtraHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+        TransferObjectExtraHandler(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf, FileFormat rdfFormat) {
             this.outputStore   = outputStore;
             this.objectInfo    = objectInfo;
             this.type          = type;
             this.translatedRdf = translatedRdf;
+            this.rdfFormat     = rdfFormat;
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceObjectExtraRdf(objectInfo, type, translatedRdf);
+            outputStore.replaceObjectExtraRdf(objectInfo, type, translatedRdf, rdfFormat);
             return true;
         }
     }
@@ -75,17 +80,19 @@ final public class TransferServiceImpl {
     static class TransferRelationshipHandler implements Callable<Boolean> {
         private ElementsTransferredRdfStore outputStore;
         private File translatedRdf;
+        private FileFormat rdfFormat;
 
         private ElementsRelationshipInfo relationshipInfo;
 
-        TransferRelationshipHandler(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+        TransferRelationshipHandler(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf, FileFormat rdfFormat) {
             this.outputStore      = outputStore;
             this.relationshipInfo = relationshipInfo;
             this.translatedRdf    = translatedRdf;
+            this.rdfFormat        = rdfFormat;
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceRelationshipRdf(relationshipInfo, translatedRdf);
+            outputStore.replaceRelationshipRdf(relationshipInfo, translatedRdf, rdfFormat);
             return true;
         }
     }

@@ -20,20 +20,23 @@ import java.io.*;
 public class RdfTranslationResult implements TranslationResult {
     private static final Logger log = LoggerFactory.getLogger(RdfTranslationResult.class);
     private ElementsRdfStore rdfStore;
-    private File output;
 
     private ElementsObjectInfo objectInfo = null;
     private ElementsRelationshipInfo relationshipInfo = null;
 
+    private FileFormat outputFormat = FileFormat.RDF_XML;
+
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsObjectInfo objectInfo) {
+    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsObjectInfo objectInfo, FileFormat outputFormat) {
         this.rdfStore = rdfStore;
         this.objectInfo = objectInfo;
+        this.outputFormat = outputFormat;
     }
-    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsRelationshipInfo relationshipInfo) {
+    RdfTranslationResult(ElementsRdfStore rdfStore, ElementsRelationshipInfo relationshipInfo, FileFormat outputFormat) {
         this.rdfStore = rdfStore;
         this.relationshipInfo = relationshipInfo;
+        this.outputFormat = outputFormat;
     }
 
     @Override
@@ -60,9 +63,9 @@ public class RdfTranslationResult implements TranslationResult {
         }
 
         if (objectInfo != null) {
-            rdfStore.writeObject(objectInfo, arr);
+            rdfStore.writeObject(objectInfo, arr, outputFormat);
         } else if (relationshipInfo != null) {
-            rdfStore.writeRelationship(relationshipInfo, arr);
+            rdfStore.writeRelationship(relationshipInfo, arr, outputFormat);
         }
     }
 }

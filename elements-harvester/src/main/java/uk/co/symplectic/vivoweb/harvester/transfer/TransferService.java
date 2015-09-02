@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsTransferredRdfStore;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 
 import java.io.File;
 
@@ -19,16 +20,16 @@ public class TransferService {
 
     //private TransferServiceConfig config = new TransferServiceConfig();
 
-    public void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
-        TransferServiceImpl.transferObjectRdf(outputStore, objectInfo, translatedRdf);
+    public void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf, FileFormat rdfFormat) {
+        TransferServiceImpl.transferObjectRdf(outputStore, objectInfo, translatedRdf, rdfFormat);
     }
 
-    public void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
-        TransferServiceImpl.transferObjectExtraRdf(outputStore, objectInfo, type, translatedRdf);
+    public void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf, FileFormat rdfFormat) {
+        TransferServiceImpl.transferObjectExtraRdf(outputStore, objectInfo, type, translatedRdf, rdfFormat);
     }
 
-    public void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
-        TransferServiceImpl.transferRelationshipRdf(outputStore, relationshipInfo, translatedRdf);
+    public void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf, FileFormat rdfFormat) {
+        TransferServiceImpl.transferRelationshipRdf(outputStore, relationshipInfo, translatedRdf, rdfFormat);
     }
 
     public static long getQueueSize() {

@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
 import uk.co.symplectic.vivoweb.harvester.util.InitLog;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -115,7 +116,7 @@ public class Configuration {
         private String vivoImageDir = DEFAULT_IMAGE_DIR;
         private String baseURI = DEFAULT_BASE_URI;
         private String xslTemplate;
-        private String translateFormat = null;
+        private FileFormat translateFormat = null;
 
         private String rawOutputDir = DEFAULT_RAW_OUTPUT_DIR;
         private String rdfOutputDir = DEFAULT_RDF_OUTPUT_DIR;
@@ -221,6 +222,8 @@ public class Configuration {
 
     public static long getMaxTranslationQueueSize() { return values.maxTranslationQueueSize; }
 
+    public static FileFormat getTranslateFormat() { return values.translateFormat; }
+
     public static void parse(String appName, String[] args) throws IOException, UsageException {
         argList = null;
         parser = new ArgParser(appName);
@@ -295,13 +298,13 @@ public class Configuration {
 
             values.useFullUTF8 = getBoolean(ARG_USE_FULL_UTF8, false);
 
-            values.baseURI      = getString(ARG_VIVO_BASE_URI, DEFAULT_BASE_URI);
-            values.vivoImageDir = getString(ARG_VIVO_IMAGE_DIR, DEFAULT_IMAGE_DIR);
-            values.xslTemplate = getString(ARG_XSL_TEMPLATE);
-            values.translateFormat = getString(ARG_TRANSLATE_FORMAT);
-            values.transferDir = getFileDir(argList.get(ARG_TRANSFER_DIR), DEFAULT_TRANSFER_DIR);
-            values.rawOutputDir = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
-            values.rdfOutputDir = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
+            values.baseURI         = getString(ARG_VIVO_BASE_URI, DEFAULT_BASE_URI);
+            values.vivoImageDir    = getString(ARG_VIVO_IMAGE_DIR, DEFAULT_IMAGE_DIR);
+            values.xslTemplate     = getString(ARG_XSL_TEMPLATE);
+            values.translateFormat = FileFormat.valueOf(getString(ARG_TRANSLATE_FORMAT));
+            values.transferDir     = getFileDir(argList.get(ARG_TRANSFER_DIR), DEFAULT_TRANSFER_DIR);
+            values.rawOutputDir    = getFileDirFromConfig(argList.get(ARG_RAW_OUTPUT_DIRECTORY), DEFAULT_RAW_OUTPUT_DIR);
+            values.rdfOutputDir    = getFileDirFromConfig(argList.get(ARG_RDF_OUTPUT_DIRECTORY), DEFAULT_RDF_OUTPUT_DIR);
 
             values.ignoreSSLErrors = getBoolean(ARG_IGNORE_SSL_ERRORS, false);
 
@@ -309,20 +312,16 @@ public class Configuration {
 
             if ("memory".equalsIgnoreCase(argList.get(ARG_TRIPLESTORE))) {
                 values.assertedModel  = new MemJenaConnect().getJenaModel();
-                if ("trig".equalsIgnoreCase(values.translateFormat)) {
+                if (FileFormat.TRIG == values.translateFormat) {
                     values.inferenceModel = new MemJenaConnect().getJenaModel();
                 }
             } else if (!StringUtils.isEmpty(argList.get(ARG_TRIPLESTORE))) {
                 values.assertedModel = JenaConnect.parseConfig(argList.get(ARG_TRIPLESTORE)).getJenaModel();
-                if ("trig".equalsIgnoreCase(values.translateFormat)) {
+                if (FileFormat.TRIG == values.translateFormat) {
                     Map<String, String> infModelOverride = new HashMap<String, String>();
                     infModelOverride.put("modelName", values.inferenceModelUri);
                     values.inferenceModel = JenaConnect.parseConfig(argList.get(ARG_TRIPLESTORE), infModelOverride).getJenaModel();
                 }
-            }
-
-            if (!StringUtils.isEmpty(values.translateFormat)) {
-                values.xslParameters.put("translateFormat", values.translateFormat);
             }
 
             if (!StringUtils.isEmpty(values.baseURI)) {

@@ -165,6 +165,7 @@ public class ElementsFetchAndTranslate {
                                 .setRdfStore(rdfStore)
                                 .setXslTemplate(xslFilename)
                                 .setXslParameters(Configuration.getXslParameters())
+                                .setOutputFormat(Configuration.getTranslateFormat())
                                 .setCurrentStaffOnly(currentStaffOnly)
                                 .setExcludedUsers(getExcludedUsers(elementsAPI))
                                 .addObserver(
@@ -183,6 +184,7 @@ public class ElementsFetchAndTranslate {
                                 .setRdfStore(rdfStore)
                                 .setXslTemplate(xslFilename)
                                 .setXslParameters(Configuration.getXslParameters())
+                                .setOutputFormat(Configuration.getTranslateFormat())
                                 .setCurrentStaffOnly(currentStaffOnly)
                                 .setVisibleLinksOnly(visibleLinksOnly)
                 );

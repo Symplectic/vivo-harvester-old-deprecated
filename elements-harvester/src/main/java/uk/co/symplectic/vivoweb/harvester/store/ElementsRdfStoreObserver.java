@@ -12,9 +12,9 @@ import uk.co.symplectic.vivoweb.harvester.model.ElementsRelationshipInfo;
 import java.io.File;
 
 public interface ElementsRdfStoreObserver {
-    public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf);
+    public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf, FileFormat storedFormat);
 
-    public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf);
+    public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf, FileFormat storedFormat);
 
-    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfoInfo, File storedRdf);
+    public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfoInfo, File storedRdf, FileFormat storedFormat);
 }

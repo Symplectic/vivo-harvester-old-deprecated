@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.shared.JenaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
@@ -48,29 +49,29 @@ public class ElementsTransferredRdfStore {
     /**
      * Replace the RDF associated with an "object" (user, publication, etc.)
      */
-    public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) throws Exception {
-        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.RDF_XML), storedRdf);
+    public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf, FileFormat rdfFormat) throws Exception {
+        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), rdfFormat), storedRdf, rdfFormat);
     }
 
     /**
      * Replace the RDF associated with an extra RDF file related to an "object" (e.g. used for user photos)
      */
-    public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) throws Exception {
-        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.RDF_XML), storedRdf);
+    public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf, FileFormat rdfFormat) throws Exception {
+        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, rdfFormat), storedRdf, rdfFormat);
     }
 
     /**
      * Replace the RDF associated with a relationship
      */
-    public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) throws Exception {
-        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.RDF_XML), storedRdf);
+    public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf, FileFormat rdfFormat) throws Exception {
+        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), rdfFormat), storedRdf, rdfFormat);
     }
 
     /**
      * Transfer the RDF to the triple store, removing the cached data and updating the cache as necessary
      * Note: Handles either file not being present, so general purpose method for adding, updating and removing RDF
      */
-    private boolean transfer(String statisticsCategory, File transferredRdf, File translatedRdf) throws Exception {
+    private boolean transfer(String statisticsCategory, File transferredRdf, File translatedRdf, FileFormat rdfFormat) throws Exception {
         boolean wasRemoved = false;
         boolean wasAdded = false;
 
@@ -79,7 +80,7 @@ public class ElementsTransferredRdfStore {
         try {
             // If we have previously loaded data, construct the Jena model
             if (transferredRdf != null && transferredRdf.exists() && transferredRdf.length() > 3) {
-                transferredModel = loadRdfXml(transferredRdf);
+                transferredModel = loadRdf(transferredRdf, rdfFormat);
             }
 
             // If we have constructed a model of previously loaded data, remove it from the output store
@@ -121,7 +122,7 @@ public class ElementsTransferredRdfStore {
         try {
             // If we have data to load, construct the Jena model
             if (translatedRdf != null && translatedRdf.exists() && translatedRdf.length() > 3) {
-                translatedModel = loadRdfXml(translatedRdf);
+                translatedModel = loadRdf(translatedRdf, rdfFormat);
             }
 
             // If we have constructed a model of data to load, add it to the output store
@@ -173,31 +174,30 @@ public class ElementsTransferredRdfStore {
     }
 
     // Helper method to load RDF/XML to a Jena Model
-    private Model loadRdfXml(File rdfXml) throws IOException {
+    private Model loadRdf(File rdfFile, FileFormat rdfFormat) throws IOException {
         Model model = ModelFactory.createDefaultModel();
 
-        InputStream is = getRdfXmlInputStream(rdfXml);
+        InputStream is = getRdfInputStream(rdfFile);
         try {
-            model.read(is, "RDF/XML");
-            // "TURTLE"
-            // "TriG"
+            return model.read(is, null, rdfFormat.getJenaFormatName());
+        } catch (JenaException je) {
+            log.error("Unable to read " + rdfFile.getName(), je);
+            throw new IOException("Unable to read " + rdfFile.getName(), je);
         } finally {
             is.close();
         }
-
-        return model;
     }
 
     // Helper method to get an RDF/XML data stream
-    private InputStream getRdfXmlInputStream(File rdfXml) throws IOException {
+    private InputStream getRdfInputStream(File rdfFile) throws IOException {
         // Check whether there is a cached document for the RDF/XML file
-        byte[] xml = fileMemStore.remove(rdfXml);
+        byte[] xml = fileMemStore.remove(rdfFile);
         if (xml != null) {
             // Return a memory based InputStream from the cached document
             return new ByteArrayInputStream(xml);
         }
 
         // Return a file based InputStream
-        return new BufferedInputStream(new FileInputStream(rdfXml));
+        return new BufferedInputStream(new FileInputStream(rdfFile));
     }
 }
