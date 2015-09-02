@@ -7,33 +7,51 @@
 package uk.co.symplectic.vivoweb.harvester.store;
 
 import uk.co.symplectic.translate.TranslationSource;
-import uk.co.symplectic.vivoweb.harvester.cache.CachingServiceImpl;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileTempCache {
     private static boolean isEnabled = true;
+
+    private static final Map<String, byte[]> fileCache = new HashMap<String, byte[]>();
+    private static long cacheSize = 0;
+    private static long maxCacheSize = 0;
+
+    static {
+        long maxBytes      = 1024 * 1024 * 1024; // 1 Gig
+        long reservedBytes = 200  * 1024 * 1024; // 200 Meg
+
+        // Ensure that the runtime thinks we have more than 200 Meg available
+        if (Runtime.getRuntime().maxMemory() > reservedBytes) {
+            maxCacheSize = Math.min(maxBytes, Runtime.getRuntime().maxMemory() - reservedBytes);
+        } else {
+            isEnabled = false;
+        }
+    }
 
     public static void setEnabled(boolean isEnabled) {
         FileTempCache.isEnabled = isEnabled;
     }
 
     public synchronized void put(File file, byte[] xml) {
-        if (isEnabled) {
-            CachingServiceImpl.put(file.getAbsolutePath(), ByteBuffer.wrap(xml));
+        if (isEnabled && cacheSize + xml.length < maxCacheSize) {
+            fileCache.put(file.getAbsolutePath(), xml);
+            cacheSize += xml.length;
         }
     }
 
     public synchronized byte[] remove(File file) {
         if (isEnabled) {
-            Object content = CachingServiceImpl.get(file.getAbsolutePath());
-            if (content instanceof ByteBuffer) {
-                CachingServiceImpl.remove(file.getAbsolutePath());
-                return ((ByteBuffer)content).array();
+            byte[] bytes = fileCache.remove(file.getAbsolutePath());
+            if (bytes != null) {
+                cacheSize -= bytes.length;
             }
+
+            return bytes;
         }
 
         return null;
