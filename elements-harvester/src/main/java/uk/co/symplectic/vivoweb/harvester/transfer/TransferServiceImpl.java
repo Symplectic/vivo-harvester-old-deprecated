@@ -22,15 +22,15 @@ final public class TransferServiceImpl {
 
     private TransferServiceImpl() { }
 
-    static void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+    static void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
         wrapper.submit(new TransferObjectHandler(outputStore, objectInfo, translatedRdf));
     }
 
-    static void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+    static void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
         wrapper.submit(new TransferObjectExtraHandler(outputStore, objectInfo, type, translatedRdf));
     }
 
-    static void transfer(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+    static void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
         wrapper.submit(new TransferRelationshipHandler(outputStore, relationshipInfo, translatedRdf));
     }
 

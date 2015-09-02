@@ -19,16 +19,16 @@ public class TransferService {
 
     //private TransferServiceConfig config = new TransferServiceConfig();
 
-    public void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
-        TransferServiceImpl.transfer(outputStore, objectInfo, translatedRdf);
+    public void transferObjectRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, File translatedRdf) {
+        TransferServiceImpl.transferObjectRdf(outputStore, objectInfo, translatedRdf);
     }
 
-    public void transfer(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
-        TransferServiceImpl.transfer(outputStore, objectInfo, type, translatedRdf);
+    public void transferObjectExtraRdf(ElementsTransferredRdfStore outputStore, ElementsObjectInfo objectInfo, String type, File translatedRdf) {
+        TransferServiceImpl.transferObjectExtraRdf(outputStore, objectInfo, type, translatedRdf);
     }
 
-    public void transfer(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
-        TransferServiceImpl.transfer(outputStore, relationshipInfo, translatedRdf);
+    public void transferRelationshipRdf(ElementsTransferredRdfStore outputStore, ElementsRelationshipInfo relationshipInfo, File translatedRdf) {
+        TransferServiceImpl.transferRelationshipRdf(outputStore, relationshipInfo, translatedRdf);
     }
 
     public static long getQueueSize() {

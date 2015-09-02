@@ -36,16 +36,16 @@ public class TransferElementsRdfStoreObserver implements ElementsRdfStoreObserve
 
     @Override
     public void storedObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) {
-        transferService.transfer(transferredRdfStore, objectInfo, storedRdf);
+        transferService.transferObjectRdf(transferredRdfStore, objectInfo, storedRdf);
     }
 
     @Override
     public void storedObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) {
-        transferService.transfer(transferredRdfStore, objectInfo, type, storedRdf);
+        transferService.transferObjectExtraRdf(transferredRdfStore, objectInfo, type, storedRdf);
     }
 
     @Override
     public void storedRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) {
-        transferService.transfer(transferredRdfStore, relationshipInfo, storedRdf);
+        transferService.transferRelationshipRdf(transferredRdfStore, relationshipInfo, storedRdf);
     }
 }
