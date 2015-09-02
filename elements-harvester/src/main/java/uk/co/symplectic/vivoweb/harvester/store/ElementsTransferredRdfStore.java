@@ -79,9 +79,7 @@ public class ElementsTransferredRdfStore {
         Model transferredModel = null;
         try {
             // If we have previously loaded data, construct the Jena model
-            if (transferredRdf != null && transferredRdf.exists() && transferredRdf.length() > 3) {
-                transferredModel = loadRdf(transferredRdf, rdfFormat);
-            }
+            transferredModel = loadRdf(transferredRdf, rdfFormat);
 
             // If we have constructed a model of previously loaded data, remove it from the output store
             if (transferredModel != null) {
@@ -121,9 +119,7 @@ public class ElementsTransferredRdfStore {
         Model translatedModel = null;
         try {
             // If we have data to load, construct the Jena model
-            if (translatedRdf != null && translatedRdf.exists() && translatedRdf.length() > 3) {
-                translatedModel = loadRdf(translatedRdf, rdfFormat);
-            }
+            translatedModel = loadRdf(translatedRdf, rdfFormat);
 
             // If we have constructed a model of data to load, add it to the output store
             if (translatedModel != null) {
@@ -175,29 +171,39 @@ public class ElementsTransferredRdfStore {
 
     // Helper method to load RDF/XML to a Jena Model
     private Model loadRdf(File rdfFile, FileFormat rdfFormat) throws IOException {
-        Model model = ModelFactory.createDefaultModel();
-
-        InputStream is = getRdfInputStream(rdfFile);
-        try {
-            return model.read(is, null, rdfFormat.getJenaFormatName());
-        } catch (JenaException je) {
-            log.error("Unable to read " + rdfFile.getName(), je);
-            throw new IOException("Unable to read " + rdfFile.getName(), je);
-        } finally {
-            is.close();
+        if (rdfFile != null) {
+            InputStream is = getRdfInputStream(rdfFile);
+            if (is != null) {
+                try {
+                    if (rdfFormat != null) {
+                        return ModelFactory.createDefaultModel().read(is, null, rdfFormat.getJenaLang());
+                    } else {
+                        return ModelFactory.createDefaultModel().read(is, null);
+                    }
+                } catch (JenaException je) {
+                    log.error("Unable to read " + rdfFile.getName(), je);
+                    throw new IOException("Unable to read " + rdfFile.getName(), je);
+                } finally {
+                    is.close();
+                }
+            }
         }
+
+        return null;
     }
 
     // Helper method to get an RDF/XML data stream
     private InputStream getRdfInputStream(File rdfFile) throws IOException {
         // Check whether there is a cached document for the RDF/XML file
         byte[] xml = fileMemStore.remove(rdfFile);
-        if (xml != null) {
+        if (xml != null && xml.length > 2) {
             // Return a memory based InputStream from the cached document
             return new ByteArrayInputStream(xml);
+        } else if (rdfFile.exists() && rdfFile.length() > 2) {
+            // Return a file based InputStream
+            return new BufferedInputStream(new FileInputStream(rdfFile));
         }
 
-        // Return a file based InputStream
-        return new BufferedInputStream(new FileInputStream(rdfFile));
+        return null;
     }
 }

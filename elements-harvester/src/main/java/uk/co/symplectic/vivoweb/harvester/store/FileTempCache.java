@@ -21,13 +21,13 @@ public class FileTempCache {
         FileTempCache.isEnabled = isEnabled;
     }
 
-    public void put(File file, byte[] xml) {
+    public synchronized void put(File file, byte[] xml) {
         if (isEnabled) {
             CachingServiceImpl.put(file.getAbsolutePath(), ByteBuffer.wrap(xml));
         }
     }
 
-    public byte[] remove(File file) {
+    public synchronized byte[] remove(File file) {
         if (isEnabled) {
             Object content = CachingServiceImpl.get(file.getAbsolutePath());
             if (content instanceof ByteBuffer) {

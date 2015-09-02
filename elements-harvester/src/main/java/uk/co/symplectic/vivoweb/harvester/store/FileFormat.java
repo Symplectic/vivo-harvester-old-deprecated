@@ -39,7 +39,7 @@ public final class FileFormat {
         return extension;
     }
 
-    public String getJenaFormatName() {
+    public String getJenaLang() {
         return jenaFormat;
     }
 
