@@ -13,8 +13,9 @@ public final class FileFormat {
     private static final Map<String, FileFormat> formats = new HashMap<String, FileFormat>();
 
     public static final FileFormat XML     = new FileFormat("xml",    "xml");
-    public static final FileFormat RDF_XML = new FileFormat("rdfxml", "xml");
+    public static final FileFormat RDF_XML = new FileFormat("rdfxml", "rdf");
     public static final FileFormat TRIG    = new FileFormat("trig",   "trig");
+    public static final FileFormat TURTLE  = new FileFormat("turtle", "ttl");
 
     private final String label;
     private final String extension;

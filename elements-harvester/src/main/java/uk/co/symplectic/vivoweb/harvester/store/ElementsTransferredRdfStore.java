@@ -49,21 +49,21 @@ public class ElementsTransferredRdfStore {
      * Replace the RDF associated with an "object" (user, publication, etc.)
      */
     public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf) throws Exception {
-        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.XML), storedRdf);
+        transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.RDF_XML), storedRdf);
     }
 
     /**
      * Replace the RDF associated with an extra RDF file related to an "object" (e.g. used for user photos)
      */
     public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf) throws Exception {
-        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.XML), storedRdf);
+        transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, FileFormat.RDF_XML), storedRdf);
     }
 
     /**
      * Replace the RDF associated with a relationship
      */
     public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf) throws Exception {
-        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.XML), storedRdf);
+        transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.RDF_XML), storedRdf);
     }
 
     /**
@@ -178,7 +178,9 @@ public class ElementsTransferredRdfStore {
 
         InputStream is = getRdfXmlInputStream(rdfXml);
         try {
-            model.read(is, null);
+            model.read(is, "RDF/XML");
+            // "TURTLE"
+            // "TriG"
         } finally {
             is.close();
         }

@@ -92,7 +92,7 @@ public class ElementsRdfStore {
     }
 
     public void writeObject(ElementsObjectInfo objectInfo, byte[] rdf) throws IOException {
-        File file = layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.XML);
+        File file = layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), FileFormat.RDF_XML);
 
         if (keepEmpty || (rdf != null && rdf.length > 0)) {
             OutputStream outputStream = null;
@@ -142,7 +142,7 @@ public class ElementsRdfStore {
     }
 
     public void writeRelationship(ElementsRelationshipInfo relationshipInfo, byte[] rdf) throws IOException {
-        File file = layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.XML);
+        File file = layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), FileFormat.RDF_XML);
 
         if (keepEmpty || (rdf != null && rdf.length > 0)) {
             OutputStream outputStream = null;
