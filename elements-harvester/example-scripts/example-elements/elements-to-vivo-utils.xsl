@@ -712,18 +712,21 @@
         <xsl:if test="$rdfNodes/*">
             <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-                     xmlns:vivo="http://vivoweb.org/ontology/core#"
+                     xmlns:bibo="http://purl.org/ontology/bibo/"
                      xmlns:dc="http://purl.org/dc/elements/1.1/"
                      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+                     xmlns:obo="http://purl.obolibrary.org/obo/"
                      xmlns:owl="http://www.w3.org/2002/07/owl#"
                      xmlns:owlPlus="http://www.w3.org/2006/12/owl2-xml#"
                      xmlns:score="http://vivoweb.org/ontology/score#"
                      xmlns:skos="http://www.w3.org/2008/05/skos#"
                      xmlns:swvocab="http://www.w3.org/2003/06/sw-vocab-status/ns#"
-                     xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
-                     xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
-                     xmlns:vocab="http://purl.org/vocab/vann/"
                      xmlns:symp="http://www.symplectic.co.uk/ontology/elements/"
+                     xmlns:ufVivo="http://vivo.ufl.edu/ontology/vivo-ufl/"
+                     xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+                     xmlns:vitro="http://vitro.mannlib.cornell.edu/ns/vitro/0.7#"
+                     xmlns:vivo="http://vivoweb.org/ontology/core#"
+                     xmlns:vocab="http://purl.org/vocab/vann/"
                     >
                 <xsl:copy-of select="$rdfNodes" />
             </rdf:RDF>
