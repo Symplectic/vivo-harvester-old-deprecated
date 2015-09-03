@@ -114,7 +114,6 @@ http://purl.obolibrary.org/obo/ERO_0000565 (Technology Transfer Office)
     <config:organization-type name="Paisley College"                                            type="http://vivoweb.org/ontology/core#University" />
     <config:organization-type name="Princeton"                                                  type="http://vivoweb.org/ontology/core#University" />
     <config:organization-type name="Royal Institution"                                          type="http://vivoweb.org/ontology/core#Institute" />
-    <config:organization-type name="Santa Fe Institute"                                         type="http://vivoweb.org/ontology/core#Institute" />
     <config:organization-type name="Rensselaer Polytechnic Institute"                           type="http://vivoweb.org/ontology/core#University" />
     <config:organization-type name="Santa Fe Institute"                                         type="http://vivoweb.org/ontology/core#Institute" />
     <config:organization-type name="Silicon Valley Community Foundation"                        type="http://vivoweb.org/ontology/core#FundingOrganization" />
