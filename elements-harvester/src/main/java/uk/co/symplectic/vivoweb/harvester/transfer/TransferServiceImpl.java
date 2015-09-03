@@ -50,8 +50,13 @@ final public class TransferServiceImpl {
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceObjectRdf(objectInfo, translatedRdf, rdfFormat);
-            return true;
+            try {
+                outputStore.replaceObjectRdf(objectInfo, translatedRdf, rdfFormat);
+                return true;
+            } catch (Exception e) {
+                log.error("Unable to replace Object RDF: " + objectInfo.getCategory() + "/" + objectInfo.getId(), e);
+                return false;
+            }
         }
     }
 
@@ -72,8 +77,13 @@ final public class TransferServiceImpl {
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceObjectExtraRdf(objectInfo, type, translatedRdf, rdfFormat);
-            return true;
+            try {
+                outputStore.replaceObjectExtraRdf(objectInfo, type, translatedRdf, rdfFormat);
+                return true;
+            } catch (Exception e) {
+                log.error("Unable to replace Object extra RDF: " + objectInfo.getCategory() + "/" + objectInfo.getId() + "-" + type, e);
+                return false;
+            }
         }
     }
 
@@ -92,8 +102,13 @@ final public class TransferServiceImpl {
         }
 
         public Boolean call() throws Exception {
-            outputStore.replaceRelationshipRdf(relationshipInfo, translatedRdf, rdfFormat);
-            return true;
+            try {
+                outputStore.replaceRelationshipRdf(relationshipInfo, translatedRdf, rdfFormat);
+                return true;
+            } catch (Exception e) {
+                log.error("Unable to replace Relationship RDF: " + relationshipInfo.getId(), e);
+                return false;
+            }
         }
     }
 

@@ -30,7 +30,7 @@ public class ElementsTransferredRdfStore {
     private final static Logger log = LoggerFactory.getLogger(ElementsTransferredRdfStore.class);
 
     // Destination triple store
-    private Model tripleStore;
+    private final Model tripleStore;
 
     // Cache of loaded RDF
     private File dir = null;
@@ -49,21 +49,21 @@ public class ElementsTransferredRdfStore {
     /**
      * Replace the RDF associated with an "object" (user, publication, etc.)
      */
-    public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf, FileFormat rdfFormat) throws Exception {
+    public void replaceObjectRdf(ElementsObjectInfo objectInfo, File storedRdf, FileFormat rdfFormat) throws IOException {
         transfer(objectInfo.getCategory().getPlural(), layoutStrategy.getObjectFile(dir, objectInfo.getCategory(), objectInfo.getId(), rdfFormat), storedRdf, rdfFormat);
     }
 
     /**
      * Replace the RDF associated with an extra RDF file related to an "object" (e.g. used for user photos)
      */
-    public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf, FileFormat rdfFormat) throws Exception {
+    public void replaceObjectExtraRdf(ElementsObjectInfo objectInfo, String type, File storedRdf, FileFormat rdfFormat) throws IOException {
         transfer(null, layoutStrategy.getObjectExtraFile(dir, objectInfo.getCategory(), objectInfo.getId(), type, rdfFormat), storedRdf, rdfFormat);
     }
 
     /**
      * Replace the RDF associated with a relationship
      */
-    public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf, FileFormat rdfFormat) throws Exception {
+    public void replaceRelationshipRdf(ElementsRelationshipInfo relationshipInfo, File storedRdf, FileFormat rdfFormat) throws IOException {
         transfer(Statistics.RELATIONSHIPS, layoutStrategy.getRelationshipFile(dir, relationshipInfo.getId(), rdfFormat), storedRdf, rdfFormat);
     }
 
@@ -71,7 +71,7 @@ public class ElementsTransferredRdfStore {
      * Transfer the RDF to the triple store, removing the cached data and updating the cache as necessary
      * Note: Handles either file not being present, so general purpose method for adding, updating and removing RDF
      */
-    private boolean transfer(String statisticsCategory, File transferredRdf, File translatedRdf, FileFormat rdfFormat) throws Exception {
+    private boolean transfer(String statisticsCategory, File transferredRdf, File translatedRdf, FileFormat rdfFormat) throws IOException {
         boolean wasRemoved = false;
         boolean wasAdded = false;
 
@@ -108,6 +108,9 @@ public class ElementsTransferredRdfStore {
                     return false;
                 }
             }
+        } catch (IOException ioe) {
+            log.error("Unable to read transferred RDF" + (transferredRdf == null ? "" : transferredRdf.getAbsolutePath()), ioe);
+            throw ioe;
         } finally {
             // We no longer need the model of previously loaded data, so free the resources
             if (transferredModel != null) {
@@ -145,10 +148,13 @@ public class ElementsTransferredRdfStore {
                 // The translated data was empty, so just remove the file
                 if (translatedRdf != null && translatedRdf.exists()) {
                     if (!translatedRdf.delete()) {
-                        log.error("Unable to remove unused translated RDF/XML");
+                        log.error("Unable to remove unused translated RDF");
                     }
                 }
             }
+        } catch (IOException ioe) {
+            log.error("Unable to read translated RDF" + (translatedRdf == null ? "" : translatedRdf.getAbsolutePath()), ioe);
+            throw ioe;
         } finally {
             // We no longer need the model of data to add, so free the resources
             if (translatedModel != null) {

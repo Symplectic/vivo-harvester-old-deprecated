@@ -8,6 +8,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 
 import org.apache.commons.lang.StringUtils;
 import uk.co.symplectic.elements.api.ElementsObjectCategory;
+import uk.co.symplectic.vivoweb.harvester.util.ThreadSafe;
 
 import java.io.File;
 
@@ -19,16 +20,16 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
 
     @Override
     public File getObjectExtraFile(File storeDir, ElementsObjectCategory category, String id, String type, FileFormat format) {
-        File file = storeDir;
         if (storeDir == null || category == null) {
             throw new IllegalStateException();
         }
 
-        file = new File(file, category.getSingular());
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                throw new IllegalStateException();
-            }
+        // Get the directory we will be writing the file to
+        File file = new File(storeDir, category.getSingular());
+
+        // If the directory doesn't exist
+        if (!ThreadSafe.mkdirs(file)) {
+            throw new IllegalStateException("Missing directory " + file.getAbsolutePath());
         }
 
         String extension = StringUtils.isEmpty(format.getExtension()) ? "" : "." + format.getExtension();
@@ -47,10 +48,8 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
         }
 
         file = new File(file, category.getSingular() + "-" + resourceLabel);
-        if (!file.exists()) {
-            if (!file.mkdirs() && !file.exists()) {
-                throw new IllegalStateException();
-            }
+        if (!ThreadSafe.mkdirs(file)) {
+            throw new IllegalStateException("Missing directory " + file.getAbsolutePath());
         }
 
         return new File(file, id);
@@ -64,10 +63,8 @@ public class DefaultLayoutStrategy implements LayoutStrategy {
         }
 
         file = new File(file, "relationship");
-        if (!file.exists()) {
-            if (!file.mkdirs() && !file.exists()) {
-                throw new IllegalStateException();
-            }
+        if (!ThreadSafe.mkdirs(file)) {
+            throw new IllegalStateException("Missing directory " + file.getAbsolutePath());
         }
 
         String extension = StringUtils.isEmpty(format.getExtension()) ? "" : "." + format.getExtension();

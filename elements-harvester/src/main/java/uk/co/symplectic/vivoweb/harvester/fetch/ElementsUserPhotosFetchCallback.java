@@ -12,6 +12,7 @@ import uk.co.symplectic.vivoweb.harvester.fetch.resources.PostFetchCallback;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsUserInfo;
 import uk.co.symplectic.vivoweb.harvester.store.ElementsRdfStore;
 import uk.co.symplectic.vivoweb.harvester.store.FileFormat;
+import uk.co.symplectic.vivoweb.harvester.util.ThreadSafe;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -50,10 +51,8 @@ class ElementsUserPhotosFetchCallback implements PostFetchCallback {
         if (image != null) {
             // Write out full size image
             File fullImageDir = new File(new File(vivoImageDir, "harvestedImages"), "fullImages");
-            if (!fullImageDir.exists()) {
-                if (!fullImageDir.mkdirs() && !fullImageDir.exists()) {
-                    return;
-                }
+            if (!ThreadSafe.mkdirs(fullImageDir)) {
+                return;
             }
 
             ImageUtils.writeFile(image, new File(fullImageDir, uriUserName + ".jpg"), "jpeg");
@@ -61,7 +60,7 @@ class ElementsUserPhotosFetchCallback implements PostFetchCallback {
             // Write out thumbnail
             File thumbnailDir = new File(new File(vivoImageDir, "harvestedImages"), "thumbnails");
             if (!thumbnailDir.exists()) {
-                if (!thumbnailDir.mkdirs() && !thumbnailDir.exists()) {
+                if (!ThreadSafe.mkdirs(thumbnailDir)) {
                     return ;
                 }
             }

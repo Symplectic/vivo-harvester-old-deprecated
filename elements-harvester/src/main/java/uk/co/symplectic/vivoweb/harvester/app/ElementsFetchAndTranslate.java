@@ -33,6 +33,7 @@ import uk.co.symplectic.vivoweb.harvester.transfer.TransferService;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsObjectTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.translate.ElementsRelationshipTranslateObserver;
 import uk.co.symplectic.vivoweb.harvester.util.Statistics;
+import uk.co.symplectic.vivoweb.harvester.util.ThreadSafe;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -291,7 +292,7 @@ public class ElementsFetchAndTranslate {
                     vivoImageDir = null;
                 }
             } else {
-                if (!vivoImageDir.mkdirs() && !vivoImageDir.exists()) {
+                if (!ThreadSafe.mkdirs(vivoImageDir)) {
                     vivoImageDir = null;
                 }
             }
