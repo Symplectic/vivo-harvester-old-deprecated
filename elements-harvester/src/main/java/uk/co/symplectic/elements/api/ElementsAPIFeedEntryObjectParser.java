@@ -65,6 +65,9 @@ class ElementsAPIFeedEntryObjectParser implements ElementsFeedEntryParser {
                         }
                     }
                     break;
+
+                default:
+                    break;
             }
 
             entryReader.next();

@@ -59,6 +59,9 @@ class ElementsAPIFeedEntryRelationshipParser implements ElementsFeedEntryParser 
                         }
                     }
                     break;
+
+                default:
+                    break;
             }
 
             entryReader.next();

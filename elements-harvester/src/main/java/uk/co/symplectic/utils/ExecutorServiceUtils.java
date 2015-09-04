@@ -85,19 +85,17 @@ public final class ExecutorServiceUtils {
             }
         });
 
-        if (service != null) {
-            ExecutorServiceWrapper wrapper = new ExecutorServiceWrapper(service, poolName);
+        // newFixedThreadPool never returns null, so we don't need to check
 
-            /**
-             * Shutdown hook to gracefully terminate the ExecutorService. Gives any existing tasks a chance to
-             * complete before forcing termination.
-             */
-            Runtime.getRuntime().addShutdownHook(new ShutdownHook(wrapper));
+        ExecutorServiceWrapper wrapper = new ExecutorServiceWrapper(service, poolName);
 
-            return wrapper;
-        }
+        /**
+         * Shutdown hook to gracefully terminate the ExecutorService. Gives any existing tasks a chance to
+         * complete before forcing termination.
+         */
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook(wrapper));
 
-        return null;
+        return wrapper;
     }
 
     static void shutdown(ExecutorServiceWrapper wrapper) {

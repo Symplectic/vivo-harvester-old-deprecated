@@ -95,9 +95,8 @@ public class InitLog {
         JoranConfigurator jc = new JoranConfigurator();
         jc.setContext(context);
 
+        InputStream is = null;
         try {
-            InputStream is = null;
-
             if (is == null) {
                 File logFile = new File("logback-test.xml");
                 if (logFile.exists()) {
@@ -126,6 +125,14 @@ public class InitLog {
             throw new IllegalArgumentException(e);
         } catch(JoranException e) {
             throw new IllegalArgumentException(e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException io) {
+                    System.err.println("Unable to close configuration stream");
+                }
+            }
         }
     }
 
@@ -148,9 +155,9 @@ public class InitLog {
                 try {
                     test = (!argList.has(testFlag));
                 } catch (IllegalArgumentException e) {
-                    for(String subFlag : testFlag.split("|")) {
+                    for(char subFlag : testFlag.toCharArray()) {
                         try {
-                            if(argList.has(subFlag)) {
+                            if(argList.has(Character.toString(subFlag))) {
                                 test = false;
                                 break;
                             }

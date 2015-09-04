@@ -160,6 +160,9 @@ public class XMLStreamCopyToWriterObserver implements XMLStreamObserver {
                     xsw.writeEntityRef(localName);
                 }
                 break;
+
+            default:
+                break;
         }
     }
 
