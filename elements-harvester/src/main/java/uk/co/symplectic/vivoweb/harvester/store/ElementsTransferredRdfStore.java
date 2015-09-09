@@ -9,6 +9,7 @@ package uk.co.symplectic.vivoweb.harvester.store;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.shared.Lock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
@@ -32,6 +33,9 @@ public class ElementsTransferredRdfStore {
     // Destination triple store
     private final Model tripleStore;
 
+    // Destination inference store
+    private final Model inferenceStore;
+
     // Cache of loaded RDF
     private File dir = null;
 
@@ -41,8 +45,9 @@ public class ElementsTransferredRdfStore {
     // Access to a temporary cache for passing data between stores
     private FileTempCache fileMemStore = new FileTempCache();
 
-    public ElementsTransferredRdfStore(Model outputStore, String dir) {
+    public ElementsTransferredRdfStore(Model outputStore, Model inferenceStore, String dir) {
         this.tripleStore = outputStore;
+        this.inferenceStore = inferenceStore;
         this.dir = new File(dir);
     }
 
@@ -83,9 +88,12 @@ public class ElementsTransferredRdfStore {
 
             // If we have constructed a model of previously loaded data, remove it from the output store
             if (transferredModel != null) {
-                synchronized (tripleStore) {
+                tripleStore.enterCriticalSection(Lock.WRITE);
+                try {
                     tripleStore.remove(transferredModel);
                     wasRemoved = true;
+                } finally {
+                    tripleStore.leaveCriticalSection();
                 }
             }
 
@@ -101,9 +109,12 @@ public class ElementsTransferredRdfStore {
 
                 // If we were unable to delete the file, reload the previously loaded data and abort
                 if (!deleted && transferredModel != null) {
-                    synchronized (tripleStore) {
+                    tripleStore.enterCriticalSection(Lock.WRITE);
+                    try {
                         tripleStore.add(transferredModel);
                         wasRemoved = false;
+                    } finally {
+                        tripleStore.leaveCriticalSection();
                     }
                     return false;
                 }
@@ -126,10 +137,14 @@ public class ElementsTransferredRdfStore {
 
             // If we have constructed a model of data to load, add it to the output store
             if (translatedModel != null) {
-                synchronized (tripleStore) {
+                tripleStore.enterCriticalSection(Lock.WRITE);
+                try {
                     tripleStore.add(translatedModel);
                     wasAdded = true;
+                } finally {
+                    tripleStore.leaveCriticalSection();
                 }
+
                 try {
                     // We've added the new data, so move the incoming file to the previously transferred store
                     // (this allows us to use it for removing the loaded data on a future update)
@@ -138,9 +153,12 @@ public class ElementsTransferredRdfStore {
                     log.error("Unable to move file " + translatedRdf.toPath() + " to " + transferredRdf.toPath(), e);
                     // Oops, we couldn't move the file, so remove the newly loaded data from the triple store
                     if (!transferredRdf.exists()) {
-                        synchronized (tripleStore) {
+                        tripleStore.enterCriticalSection(Lock.WRITE);
+                        try {
                             tripleStore.remove(translatedModel);
                             wasAdded = false;
+                        } finally {
+                            tripleStore.leaveCriticalSection();
                         }
                     }
                 }
