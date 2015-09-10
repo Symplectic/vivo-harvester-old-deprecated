@@ -6,10 +6,17 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.shared.Lock;
+import com.hp.hpl.jena.sparql.core.DatasetGraph;
+import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
+import org.openjena.riot.Lang;
+import org.openjena.riot.RiotLoader;
+import org.openjena.riot.RiotReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
@@ -199,7 +206,12 @@ public class ElementsTransferredRdfStore {
             InputStream is = getRdfInputStream(rdfFile);
             if (is != null) {
                 try {
-                    if (rdfFormat != null) {
+                    if (rdfFormat == FileFormat.TRIG) {
+                        DatasetGraph graph = DatasetGraphFactory.createMem();
+                        RiotLoader.read(is, graph, Lang.get(rdfFormat.getJenaLang()), null);
+                        //graph.getGraph(Node.createURI("x"));
+                        return ModelFactory.createModelForGraph(graph.getDefaultGraph());
+                    } else if (rdfFormat != null) {
                         return ModelFactory.createDefaultModel().read(is, null, rdfFormat.getJenaLang());
                     } else {
                         return ModelFactory.createDefaultModel().read(is, null);
