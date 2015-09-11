@@ -6,17 +6,17 @@
  ******************************************************************************/
 package uk.co.symplectic.vivoweb.harvester.store;
 
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
+import org.apache.commons.lang.StringUtils;
 import org.openjena.riot.Lang;
 import org.openjena.riot.RiotLoader;
-import org.openjena.riot.RiotReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.symplectic.vivoweb.harvester.model.ElementsObjectInfo;
@@ -42,6 +42,7 @@ public class ElementsTransferredRdfStore {
 
     // Destination inference store
     private final Model inferenceStore;
+    private final Node  inferenceGraph;
 
     // Cache of loaded RDF
     private File dir = null;
@@ -52,9 +53,15 @@ public class ElementsTransferredRdfStore {
     // Access to a temporary cache for passing data between stores
     private FileTempCache fileMemStore = new FileTempCache();
 
-    public ElementsTransferredRdfStore(Model outputStore, Model inferenceStore, String dir) {
+    public ElementsTransferredRdfStore(Model outputStore, String dir, Model inferenceStore, String inferenceGraphUri) {
         this.tripleStore = outputStore;
         this.inferenceStore = inferenceStore;
+        if (inferenceStore != null && !StringUtils.isEmpty(inferenceGraphUri)) {
+            this.inferenceGraph = Node.createURI(inferenceGraphUri);
+        } else {
+            this. inferenceGraph = null;
+        }
+
         this.dir = new File(dir);
     }
 
@@ -87,105 +94,160 @@ public class ElementsTransferredRdfStore {
         boolean wasRemoved = false;
         boolean wasAdded = false;
 
-        // Jena model for data that has previously been loaded into the triple store
-        Model transferredModel = null;
         try {
-            // If we have previously loaded data, construct the Jena model
-            transferredModel = loadRdf(transferredRdf, rdfFormat);
+            // Jena model for data that has previously been loaded into the triple store
+            Models transferredModels = null;
+            try {
+                // If we have previously loaded data, construct the Jena model
+                transferredModels = loadRdf(transferredRdf, rdfFormat);
 
-            // If we have constructed a model of previously loaded data, remove it from the output store
-            if (transferredModel != null) {
-                tripleStore.enterCriticalSection(Lock.WRITE);
-                try {
-                    tripleStore.remove(transferredModel);
-                    wasRemoved = true;
-                } finally {
-                    tripleStore.leaveCriticalSection();
-                }
-            }
-
-            // If a file exists in the previously transferred directory
-            if (transferredRdf != null && transferredRdf.exists()) {
-                // Delete the file
-                boolean deleted = false;
-                try {
-                    deleted = transferredRdf.delete();
-                } catch (Exception e) {
-                    log.error("Unable to delete unloaded RDF: " + transferredRdf.getAbsolutePath(), e);
-                }
-
-                // If we were unable to delete the file, reload the previously loaded data and abort
-                if (!deleted && transferredModel != null) {
-                    tripleStore.enterCriticalSection(Lock.WRITE);
-                    try {
-                        tripleStore.add(transferredModel);
-                        wasRemoved = false;
-                    } finally {
-                        tripleStore.leaveCriticalSection();
+                // If we have constructed a model of previously loaded data, remove it from the output store
+                if (transferredModels != null) {
+                    if (transferredModels.assertions != null) {
+                        tripleStore.enterCriticalSection(Lock.WRITE);
+                        try {
+                            tripleStore.remove(transferredModels.assertions);
+                            wasRemoved = true;
+                        } finally {
+                            tripleStore.leaveCriticalSection();
+                        }
                     }
-                    return false;
+
+                    if (wasRemoved && inferenceStore != null && transferredModels.inferences != null) {
+                        inferenceStore.enterCriticalSection(Lock.WRITE);
+                        try {
+                            inferenceStore.remove(transferredModels.inferences);
+                        } finally {
+                            inferenceStore.leaveCriticalSection();
+                        }
+                    }
+                }
+
+                // If a file exists in the previously transferred directory
+                if (transferredRdf != null && transferredRdf.exists()) {
+                    // Delete the file
+                    boolean deleted = false;
+                    try {
+                        deleted = transferredRdf.delete();
+                    } catch (Exception e) {
+                        log.error("Unable to delete unloaded RDF: " + transferredRdf.getAbsolutePath(), e);
+                    }
+
+                    // If we were unable to delete the file, reload the previously loaded data and abort
+                    if (!deleted && transferredModels != null) {
+                        if (transferredModels.assertions != null) {
+                            tripleStore.enterCriticalSection(Lock.WRITE);
+                            try {
+                                tripleStore.add(transferredModels.assertions);
+                                wasRemoved = false;
+                            } finally {
+                                tripleStore.leaveCriticalSection();
+                            }
+                        }
+
+                        if (!wasRemoved && inferenceStore != null && transferredModels.inferences != null) {
+                            inferenceStore.enterCriticalSection(Lock.WRITE);
+                            try {
+                                inferenceStore.add(transferredModels.inferences);
+                            } finally {
+                                inferenceStore.leaveCriticalSection();
+                            }
+                        }
+                        return false;
+                    }
+                }
+            } finally {
+                // We no longer need the model of previously loaded data, so free the resources
+                if (transferredModels != null) {
+                    if (transferredModels.assertions != null) {
+                        transferredModels.assertions.close();
+                    }
+                    if (transferredModels.inferences != null) {
+                        transferredModels.inferences.close();
+                    }
                 }
             }
         } catch (IOException ioe) {
             log.error("Unable to read transferred RDF" + (transferredRdf == null ? "" : transferredRdf.getAbsolutePath()), ioe);
             throw ioe;
-        } finally {
-            // We no longer need the model of previously loaded data, so free the resources
-            if (transferredModel != null) {
-                transferredModel.close();
-            }
         }
 
-        // Jena model for data that needs to be loaded
-        Model translatedModel = null;
         try {
-            // If we have data to load, construct the Jena model
-            translatedModel = loadRdf(translatedRdf, rdfFormat);
+            // Jena model for data that needs to be loaded
+            Models translatedModels = null;
+            try {
+                // If we have data to load, construct the Jena model
+                translatedModels = loadRdf(translatedRdf, rdfFormat);
 
-            // If we have constructed a model of data to load, add it to the output store
-            if (translatedModel != null) {
-                tripleStore.enterCriticalSection(Lock.WRITE);
-                try {
-                    tripleStore.add(translatedModel);
-                    wasAdded = true;
-                } finally {
-                    tripleStore.leaveCriticalSection();
-                }
+                // If we have constructed a model of data to load, add it to the output store
+                if (translatedModels != null && translatedModels.assertions != null) {
+                    tripleStore.enterCriticalSection(Lock.WRITE);
+                    try {
+                        tripleStore.add(translatedModels.assertions);
+                        wasAdded = true;
+                    } finally {
+                        tripleStore.leaveCriticalSection();
+                    }
 
-                try {
-                    // We've added the new data, so move the incoming file to the previously transferred store
-                    // (this allows us to use it for removing the loaded data on a future update)
-                    Files.move(translatedRdf.toPath(), transferredRdf.toPath());
-                } catch (Exception e) {
-                    log.error("Unable to move file " + translatedRdf.toPath() + " to " + transferredRdf.toPath(), e);
-                    // Oops, we couldn't move the file, so remove the newly loaded data from the triple store
-                    if (!transferredRdf.exists()) {
-                        tripleStore.enterCriticalSection(Lock.WRITE);
+                    if (inferenceStore != null && translatedModels.inferences != null) {
+                        inferenceStore.enterCriticalSection(Lock.WRITE);
                         try {
-                            tripleStore.remove(translatedModel);
-                            wasAdded = false;
+                            inferenceStore.add(translatedModels.inferences);
                         } finally {
-                            tripleStore.leaveCriticalSection();
+                            inferenceStore.leaveCriticalSection();
+                        }
+                    }
+
+                    try {
+                        // We've added the new data, so move the incoming file to the previously transferred store
+                        // (this allows us to use it for removing the loaded data on a future update)
+                        Files.move(translatedRdf.toPath(), transferredRdf.toPath());
+                    } catch (Exception e) {
+                        log.error("Unable to move file " + translatedRdf.toPath() + " to " + transferredRdf.toPath(), e);
+                        // Oops, we couldn't move the file, so remove the newly loaded data from the triple store
+                        if (!transferredRdf.exists()) {
+                            tripleStore.enterCriticalSection(Lock.WRITE);
+                            try {
+                                tripleStore.remove(translatedModels.assertions);
+                                wasAdded = false;
+                            } finally {
+                                tripleStore.leaveCriticalSection();
+                            }
+
+                            if (inferenceStore != null && translatedModels.inferences != null) {
+                                inferenceStore.enterCriticalSection(Lock.WRITE);
+                                try {
+                                    inferenceStore.remove(translatedModels.inferences);
+                                } finally {
+                                    inferenceStore.leaveCriticalSection();
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // The translated data was empty, so just remove the file
+                    if (translatedRdf != null && translatedRdf.exists()) {
+                        if (!translatedRdf.delete()) {
+                            log.error("Unable to remove unused translated RDF");
                         }
                     }
                 }
-            } else {
-                // The translated data was empty, so just remove the file
-                if (translatedRdf != null && translatedRdf.exists()) {
-                    if (!translatedRdf.delete()) {
-                        log.error("Unable to remove unused translated RDF");
+            } finally {
+                // We no longer need the model of data to add, so free the resources
+                if (translatedModels != null) {
+                    if (translatedModels.assertions != null) {
+                        translatedModels.assertions.close();
+                    }
+                    if (translatedModels.inferences != null) {
+                        translatedModels.inferences.close();
                     }
                 }
+
             }
         } catch (IOException ioe) {
             log.error("Unable to read translated RDF" + (translatedRdf == null ? "" : translatedRdf.getAbsolutePath()), ioe);
             throw ioe;
         } finally {
-            // We no longer need the model of data to add, so free the resources
-            if (translatedModel != null) {
-                translatedModel.close();
-            }
-
             if (statisticsCategory != null) {
                 if (wasRemoved && wasAdded) {
                     Statistics.updated(statisticsCategory);
@@ -201,20 +263,33 @@ public class ElementsTransferredRdfStore {
     }
 
     // Helper method to load RDF/XML to a Jena Model
-    private Model loadRdf(File rdfFile, FileFormat rdfFormat) throws IOException {
+    private Models loadRdf(File rdfFile, FileFormat rdfFormat) throws IOException {
         if (rdfFile != null) {
+            Models models = new Models();
             InputStream is = getRdfInputStream(rdfFile);
             if (is != null) {
                 try {
                     if (rdfFormat == FileFormat.TRIG) {
                         DatasetGraph graph = DatasetGraphFactory.createMem();
                         RiotLoader.read(is, graph, Lang.get(rdfFormat.getJenaLang()), null);
-                        //graph.getGraph(Node.createURI("x"));
-                        return ModelFactory.createModelForGraph(graph.getDefaultGraph());
+
+                        models.assertions = ModelFactory.createModelForGraph(graph.getDefaultGraph());
+                        Graph infGraph = graph.getGraph(inferenceGraph);
+                        if (infGraph != null && !infGraph.isEmpty()) {
+                            models.inferences = ModelFactory.createModelForGraph(infGraph);
+                            if (models.inferences.isEmpty()) {
+                                models.inferences.close();
+                                models.inferences = null;
+                            }
+                        }
+
+                        return models;
                     } else if (rdfFormat != null) {
-                        return ModelFactory.createDefaultModel().read(is, null, rdfFormat.getJenaLang());
+                        models.assertions = ModelFactory.createDefaultModel().read(is, null, rdfFormat.getJenaLang());
+                        return models;
                     } else {
-                        return ModelFactory.createDefaultModel().read(is, null);
+                        models.assertions = ModelFactory.createDefaultModel().read(is, null);
+                        return models;
                     }
                 } catch (JenaException je) {
                     log.error("Unable to read " + rdfFile.getName(), je);
@@ -241,5 +316,10 @@ public class ElementsTransferredRdfStore {
         }
 
         return null;
+    }
+
+    private static class Models {
+        Model assertions = null;
+        Model inferences = null;
     }
 }

@@ -224,6 +224,8 @@ public class Configuration {
 
     public static FileFormat getTranslateFormat() { return values.translateFormat; }
 
+    public static String getInferenceModelUri() { return values.inferenceModelUri; }
+
     public static void parse(String appName, String[] args) throws IOException, UsageException {
         argList = null;
         parser = new ArgParser(appName);
