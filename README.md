@@ -1,7 +1,16 @@
+# Important Notices
+|                         Deprecation/Replacement|
+|----------------------------------------------------------------------------------------------------------------------------------|
+|This Code is now deprecated as the Elements API it integrates with has reached end of life (see below). It has been superceded by a newer and more capable version which has been made available [here](https://github.com/Symplectic/Vivo_Harvester_V2). |
 
-|                         IMPORTANT NOTICE: Elements API Endpoint Specification v4.9 - End of Life                                 |
+<br/>
+
+
+|                         Elements API Endpoint Specification v4.9 - End of Life                                 |
 |----------------------------------------------------------------------------------------------------------------------------------|
 |The Element's v4.9 API endpoint specification (*which is the most recent spec this code can integrate with*) reached end of life with the release of Elements v5.16 (June 2019).<br/><br/>Consequently any integration using this code will no longer work if the source system is upgraded to v5.16 or later of Elements.<br/><br/>This project's status has been changed to "archived" to reflect this.   |
+
+<br/>
 
 # Symplectic Elements Harvester Extensions for VIVO
 
